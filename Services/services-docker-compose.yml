@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  sender_messages:
+    build:
+      context: sender_messages/
+      dockerfile: Dockerfile
+    container_name: sender_messages
+    command: /usr/bin/supervisord
+    env_file:
+      - ./.env
+    networks:
+      - telegram_wallet_services
+    logging:
+      options:
+        max-size: 100m
+  checker_system:
+    build:
+      context: checker_system/
+      dockerfile: Dockerfile
+    container_name: checker_system
+    command: /usr/bin/supervisord
+    env_file:
+      - ./.env
+    networks:
+      - telegram_wallet_services
+    logging:
+      options:
+        max-size: 100m
+
+networks:
+  telegram_wallet_services:
+    driver: bridge

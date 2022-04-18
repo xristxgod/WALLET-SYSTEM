@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  tron_api:
+    build:
+      context: Tron/api/
+      dockerfile: Dockerfile
+    container_name: tron_api
+    command: uvicorn app:app --host 0.0.0.0 --port 6000
+    env_file:
+      - ./.env
+    ports:
+      - "82:6000"
+    expose:
+      - 82
+    networks:
+      - telegram_wallet_tron_systme
+    volumes:
+      - ./src/files:/home/app/files
+    logging:
+      options:
+        max-size: 100m
+  tron_demon:
+    build:
+      context: Tron/demon/
+      dockerfile: Dockerfile
+    container_name: tron_demon
+    command: /usr/bin/supervisord
+    env_file:
+      - ./.env
+    networks:
+      - telegram_wallet_tron_systme
+    logging:
+      options:
+        max-size: 100m
+  tron_balancer:
+    build:
+      context: Tron/balancer/
+      dockerfile: Dockerfile
+    container_name: tron_balancer
+    command: /usr/bin/supervisord
+    env_file:
+      - ./.env
+    networks:
+      - telegram_wallet_tron_systme
+    logging:
+      options:
+        max-size: 100m
+
+networks:
+  telegram_wallet_tron_systme:
+    driver: bridge

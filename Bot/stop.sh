@@ -1,0 +1,1 @@
+docker-compose --file bot-docker-compose.yml stop

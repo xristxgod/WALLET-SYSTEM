@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  user_bot:
+      build:
+        context: user_bot/
+        dockerfile: Dockerfile
+      container_name: user_bot
+      entrypoint: python app.py
+      env_file:
+        - ./.env
+      networks:
+        - telegram_wallet_bot
+      logging:
+        options:
+          max-size: 100m
+
+networks:
+  telegram_wallet_bot:
+    driver: bridge
