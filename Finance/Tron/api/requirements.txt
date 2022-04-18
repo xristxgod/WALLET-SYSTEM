@@ -1,0 +1,5 @@
+fastapi==0.74.1
+uvicorn==0.17.5
+tronpy==0.2.6
+asyncpg==0.25.0
+hdwallet==2.1.1
