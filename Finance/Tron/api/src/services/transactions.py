@@ -1,23 +1,23 @@
 import asyncio
-import typing
 import random
+import typing
 from decimal import Decimal
 from typing import List, Dict
 
 import requests
 
-from src import DB
+from src.__init__ import DB
 from src.services import NodeTron
 from src.types import TAddress, TransactionHash
 from config import Config, decimals
 
 class TransactionParser(NodeTron):
 
-    async def get_transaction(self, transaction_hash: TransactionHash):
+    async def get_transaction(self, transaction_hash: TransactionHash) -> typing.List:
         return await self.__get_transactions(transactions=[await self.node.get_transaction(txn_id=transaction_hash)])
 
     @staticmethod
-    def get_url(network: str, address: TAddress, token: str) -> str:
+    async def get_url(network: str, address: TAddress, token: str) -> str:
         url = f"https://api.{'' if network == 'mainnet' else f'{network.lower()}.'}trongrid.io/v1/accounts/{address}/transactions"
         url += f"/trc20?limit=200&contract_address={(await DB.get_token_info(token=token))['address']}" if token is not None else "?limit=200"
         return url
@@ -26,9 +26,9 @@ class TransactionParser(NodeTron):
     def get_headers():
         return {"Accept": "application/json", "TRON-PRO-API-KEY": Config.TRON_API_KEYS[random.randint(0, 5)]}
 
-    async def get_all_transactions(self, address: TAddress, token: str = None):
+    async def get_all_transactions(self, address: TAddress, token: str = None) -> typing.List:
         transactions = requests.get(
-            TransactionParser.get_url(network=NodeTron.NETWORK, address=address, token=token),
+            (await TransactionParser.get_url(network=NodeTron.NETWORK, address=address, token=token)),
             headers=TransactionParser.get_headers()
         ).json()["data"]
         return await self.__get_transactions(transactions=transactions, token=token)

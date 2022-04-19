@@ -7,13 +7,17 @@ TPublicKey = typing.Union[str, bytes]       # Public key for account
 
 class Coins:
 
-    TRX = "trx"
+    TRX = ["trx", "tron", "native", None]
     TOKEN_USDT = "usdt"
 
     @staticmethod
-    def is_native(coin: str):
-        return coin.lower() == Coins.TRX
+    def is_native(coin: str) -> bool:
+        return coin.lower() in Coins.TRX
 
     @staticmethod
-    def is_token(coin: str):
-        return coin.lower() in [value for key, value in Coins.__dict__.items() if key.startswith('TOKEN_')]
+    def is_token(coin: str) -> typing.Union[bool, str]:
+        for key, value in Coins.__dict__.items():
+            if key.startswith('TOKEN_') and coin.lower() in value:
+                return value[0].upper()
+        else:
+            return False

@@ -5,6 +5,15 @@ import asyncpg
 
 from config import Config
 
+TOKENS = [
+    {
+        "token": "USDT",
+        "address": "TRvz1r3URQq5otL7ioTbxVUfim9RVSm1hA",
+        "decimals": 6,
+        "token_info": '{"bandwidth": 345, "feeLimit": 1000, "isBalanceNotNullEnergy": 14631, "isBalanceNullEnergy": 29631}',
+    }
+]
+
 class DB:
     """
     <<<--------------------------------------------------->>>
@@ -34,9 +43,12 @@ class DB:
 
     @staticmethod
     async def get_token_info(token: str, network: str = "TRON"):
-        data = await DB.__select_method((
-            f"SELECT address, decimals, token_info FROM token_model WHERE token = '{token}' AND network = '{network}';"
-        ))
+        if Config.NODE_NETWORK == "TEST":
+            data = [t for t in TOKENS if t["token"] == token][0]
+        else:
+            data = await DB.__select_method((
+                f"SELECT address, decimals, token_info FROM token_model WHERE token = '{token}' AND network = '{network}';"
+            ))
         return {
             "token": token,
             "address": data["address"],

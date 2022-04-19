@@ -1,4 +1,5 @@
 import json
+import typing
 from typing import Optional, List, Dict
 
 from pydantic import BaseModel, Field
@@ -22,8 +23,8 @@ class BodyCreateWallet(BaseModel):
 
 class BodyCreateTransaction(BaseModel):
     """Create a transaction TRX or Tokens TRC20"""
-    fromAddress: TAddress = Field(default=None, description="Sender's address")
-    outputs: Optional[List[Dict]] = Field(description="Sender's address")
+    fromAddress: TAddress = Field(description="Sender's address")
+    outputs: List[Dict] = Field(description="Sender's address")
 
     def __init__(self, **kwargs):
         super(BodyCreateTransaction, self).__init__(**kwargs)
@@ -33,7 +34,7 @@ class BodyCreateTransaction(BaseModel):
 class BodySignAndSendTransaction(BaseModel):
     """Sign and send transaction"""
     createTxHex: str = Field(description="The hex of the unsigned transaction")
-    privateKeys: List[TPrivateKey] = Field(default=None, description="The private key of the sender")
+    privateKeys: List[TPrivateKey] = Field(description="The private key of the sender")
 
     def __init__(self, **kwargs):
         super(BodySignAndSendTransaction, self).__init__(**kwargs)
@@ -70,4 +71,14 @@ class ResponseCreateTransaction(BaseModel):
     fee: str = Field(description="Transaction fee")
 
 class ResponseSignAndSendTransaction(BaseModel):
-    pass
+    time: int = Field(description="The time when the transaction was sent")
+    transactionHash: str = Field(description="The Transaction Hash")
+    transactionType: str = Field(description="The Transaction Type")
+    fee: Optional[str] = Field(default=None, description="Transaction fee")
+    amount: Optional[str] = Field(default=None, description="The amount of the shipment")
+    senders: Optional[List[Dict[TAddress, str]]] = Field(default=None, description="Information about the sender")
+    recipients: Optional[List[Dict[TAddress, str]]] = Field(default=None, description="Information about the recipient")
+    data: Optional[Dict] = Field(default=None, description="This includes what the api could not process")
+
+class ResponseAllTransaction(BaseModel):
+    data: typing.List[ResponseSignAndSendTransaction]
