@@ -42,16 +42,20 @@ class DB:
                 await connection.close()
 
     @staticmethod
-    async def get_token_info(token: str, network: str = "TRON"):
-        if Config.NODE_NETWORK == "TEST":
-            data = [t for t in TOKENS if t["token"] == token][0]
-        else:
-            data = await DB.__select_method((
-                f"SELECT address, decimals, token_info FROM token_model WHERE token = '{token}' AND network = '{network}';"
-            ))
-        return {
-            "token": token,
-            "address": data["address"],
-            "decimals": data["decimals"],
-            "token_info": json.loads(data["token_info"]),
-        }
+    async def get_token_info(token: str, network: str = "TRON") -> typing.Union[typing.Dict, None]:
+        try:
+            if Config.NODE_NETWORK == "TEST":
+                data = [t for t in TOKENS if t["token"] == token.upper()][0]
+            else:
+                data = await DB.__select_method((
+                    f"SELECT address, decimals, token_info FROM token_model "
+                    f"WHERE token = '{token.upper()}' AND network = '{network.upper()}';"
+                ))
+            return {
+                "token": token,
+                "address": data["address"],
+                "decimals": data["decimals"],
+                "token_info": json.loads(data["token_info"]),
+            }
+        except Exception:
+            return None

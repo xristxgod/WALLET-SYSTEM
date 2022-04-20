@@ -95,12 +95,10 @@ async def get_all_transactions_by_address(address: TAddress, network: str):
     try:
         logger.error(f"Calling '/{network}/get-all-transactions/{address}'")
         if Coins.is_token(coin=network) or Coins.is_native(coin=network):
-            return ResponseAllTransaction(**(
-                await transaction_parser.get_all_transactions(
+            return await transaction_parser.get_all_transactions(
                     address=address,
                     token=Coins.is_token(coin=network) if not Coins.is_native(coin=network) else None
                 )
-            ))
         else:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Network "{network}" was not found')
     except Exception as error:

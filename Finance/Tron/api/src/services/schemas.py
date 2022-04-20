@@ -81,4 +81,5 @@ class ResponseSignAndSendTransaction(BaseModel):
     data: Optional[Dict] = Field(default=None, description="This includes what the api could not process")
 
 class ResponseAllTransaction(BaseModel):
-    data: typing.List[ResponseSignAndSendTransaction]
+    address: TAddress = Field(description="Wallet address")
+    data: Optional[typing.List[ResponseSignAndSendTransaction]] = Field(description="All transactions", default=None)

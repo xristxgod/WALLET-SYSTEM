@@ -2,14 +2,24 @@ import asyncio
 import random
 import typing
 from decimal import Decimal
-from typing import List, Dict
+from typing import List, Dict, Union
 
 import requests
 
+from src.services.schemas import ResponseSignAndSendTransaction, ResponseAllTransaction
 from src.__init__ import DB
 from src.services import NodeTron
-from src.types import TAddress, TransactionHash
+from src.types import TAddress, TransactionHash, Coins
 from config import Config, decimals
+
+def get_all_trx_for_format(txns: List, address: TAddress):
+    res = []
+    for txn in txns:
+        res.append(ResponseSignAndSendTransaction(**txn))
+    return ResponseAllTransaction(
+        address=address,
+        data=res
+    )
 
 class TransactionParser(NodeTron):
 
@@ -24,14 +34,17 @@ class TransactionParser(NodeTron):
 
     @staticmethod
     def get_headers():
-        return {"Accept": "application/json", "TRON-PRO-API-KEY": Config.TRON_API_KEYS[random.randint(0, 5)]}
+        return {"Accept": "application/json", "TRON-PRO-API-KEY": Config.TRON_API_KEYS[random.randint(0, 2)]}
 
-    async def get_all_transactions(self, address: TAddress, token: str = None) -> typing.List:
+    async def get_all_transactions(self, address: TAddress, token: str = None) -> ResponseAllTransaction:
         transactions = requests.get(
             (await TransactionParser.get_url(network=NodeTron.NETWORK, address=address, token=token)),
             headers=TransactionParser.get_headers()
         ).json()["data"]
-        return await self.__get_transactions(transactions=transactions, token=token)
+        return get_all_trx_for_format(
+            txns=await self.__get_transactions(transactions=transactions, token=token),
+            address=address
+        )
 
     async def __get_transactions(self, transactions: List, token: str = None) -> List:
         """Get all transactions by address"""
@@ -43,6 +56,7 @@ class TransactionParser(NodeTron):
             )
             for right_border in range(len(transactions))
         ])
+        await self.node.close()
         for transactions in list_transactions:
             fund_trx_for_send.extend(transactions)
         return fund_trx_for_send
@@ -61,12 +75,14 @@ class TransactionParser(NodeTron):
                 funded_trx_for_sending.append(await self.__packaging_for_dispatch(txn=txn, txn_type=txn_type))
         return funded_trx_for_sending
 
-    async def __packaging_for_dispatch_token(self, txn: Dict) -> Dict:
+    async def __packaging_for_dispatch_token(self, txn: Dict) -> Union[Dict, None]:
         """
         Packaging the necessary transaction to send
         :param txn: Transaction
         :param txn_type: Transaction type
         """
+        if not Coins.is_token(txn["token_info"]["symbol"]):
+            return None
         tx_fee = await self.node.get_transaction_info(txn_id=txn["transaction_id"])
         if "fee" in tx_fee:
             fee = "%.8f" % decimals.create_decimal(self.fromSun(tx_fee["fee"]))
@@ -191,9 +207,9 @@ class TransactionParser(NodeTron):
         :param contract_address: Smart contract (Token TRC20) address
         """
         try:
-            contract = self.node.get_contract(addr=contract_address)
-            token_name = contract.functions.symbol()
-            dec = contract.functions.decimals()
+            contract = await self.node.get_contract(addr=contract_address)
+            token_name = await contract.functions.symbol()
+            dec = await contract.functions.decimals()
             amount = Decimal(value=int("0x" + data[72:], 0) / 10 ** int(dec))
             to_address = self.node.to_base58check_address("41" + data[32:72])
             return {
@@ -205,3 +221,10 @@ class TransactionParser(NodeTron):
             return {"data": str(data)}
 
 transaction_parser = TransactionParser()
+
+if __name__ == '__main__':
+    address = "YourAddress"
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    result = loop.run_until_complete(transaction_parser.get_all_transactions(address))
+    print(result)

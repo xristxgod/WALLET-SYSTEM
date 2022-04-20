@@ -66,9 +66,3 @@ class TronUtils:
             raise ValueError("Resulting wei value must be between 1 and 2**256 - 1")
 
         return int(result)
-
-class TransactionUtils:
-
-    @staticmethod
-    def get_transaction_body(tnx: Dict) -> json:
-        pass

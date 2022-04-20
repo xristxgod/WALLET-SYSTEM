@@ -7,7 +7,7 @@ TPublicKey = typing.Union[str, bytes]       # Public key for account
 
 class Coins:
 
-    TRX = ["trx", "tron", "native", None]
+    TRX = ["trx", "tron", "native"]
     TOKEN_USDT = "usdt"
 
     @staticmethod
