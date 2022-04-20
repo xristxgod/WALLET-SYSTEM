@@ -1,10 +1,7 @@
-TRON API for Python
+TRON DEMON for Python
 ===================
 
-Search for Tron positions in a transaction array of addresses.
-
-Usage
-=====
+Search for Tron transactions in a transaction array of addresses.
 
 Search for transactions by node.
 --------------
