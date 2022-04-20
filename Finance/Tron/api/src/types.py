@@ -1,5 +1,7 @@
 import typing
 
+TPath: str = "m/44'/195'/0'/0/0"
+
 TransactionHash = typing.Union[str, bytes]  # Transaction Hash
 TAddress = str                              # Wallet address
 TPrivateKey = typing.Union[str, bytes]      # Private key for account

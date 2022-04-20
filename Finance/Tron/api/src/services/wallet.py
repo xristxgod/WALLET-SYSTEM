@@ -4,13 +4,14 @@ import json
 import tronpy.exceptions
 import tronpy.async_tron
 from hdwallet import BIP44HDWallet
+from hdwallet.derivations import BIP44Derivation
 from hdwallet.cryptocurrencies import TronMainnet
 
 from src.services.transactions import transaction_parser
 from src.services.schemas import (
     ResponseCreateWallet, BodyCreateWallet, ResponseGetBalance,
     ResponseGetOptimalFee, BodyCreateTransaction, BodySignAndSendTransaction,
-    ResponseCreateTransaction, ResponseSignAndSendTransaction
+    ResponseCreateTransaction, ResponseSignAndSendTransaction, BodyGenerateAddress
 )
 from src.services import NodeTron
 from src.utils import TransactionUtils
@@ -25,6 +26,22 @@ class TronMethods(NodeTron):
         """Create a tron wallet"""
         hdwallet: BIP44HDWallet = BIP44HDWallet(cryptocurrency=TronMainnet)
         hdwallet.from_mnemonic(mnemonic=body.mnemonic_words, language="english", passphrase=body.passphrase)
+        return ResponseCreateWallet(
+            passphrase=body.passphrase,
+            mnemonic_words=body.mnemonic_words,
+            privateKey=hdwallet.private_key(),
+            publicKey=hdwallet.public_key(),
+            address=hdwallet.address()
+        )
+
+    @staticmethod
+    def generate_acc_by_mnemonic(body: BodyGenerateAddress) -> ResponseCreateWallet:
+        """Generate a tron wallet by mnemonic"""
+        hdwallet: BIP44HDWallet = BIP44HDWallet(cryptocurrency=TronMainnet)
+        hdwallet.from_mnemonic(mnemonic=body.mnemonic_words, language="english", passphrase=body.passphrase)
+        hdwallet.clean_derivation()
+        derivation = BIP44Derivation(cryptocurrency=TronMainnet, account=body.account, change=False, address=body.index)
+        hdwallet.from_path(path=derivation)
         return ResponseCreateWallet(
             passphrase=body.passphrase,
             mnemonic_words=body.mnemonic_words,
@@ -88,7 +105,10 @@ class TronMethods(NodeTron):
             # Creates and build a transaction
             txn = self.node.trx.transfer(from_=body.fromAddress, to=to_address, amount=amount)
             txn = await txn.build()
-            body_transaction = TransactionUtils.get_transaction_body(txn=txn.to_json())
+            body_transaction = TransactionUtils.get_transaction_body(
+                txn=txn.to_json(), fee=fee.fee, amount="%.8f" % amount,
+                from_address=body.fromAddress, to_address=to_address
+            )
         else:
             to_address, to_amount = list(body.outputs[0].items())[0]
             # Token information
@@ -104,7 +124,10 @@ class TronMethods(NodeTron):
             # Creating a transaction
             txn = await contract.functions.transfer(to_address, amount).with_owner(body.fromAddress)
             txn = await txn.build()
-            body_transaction = TransactionUtils.get_transaction_body(txn=txn.to_json())
+            body_transaction = TransactionUtils.get_transaction_body(
+                txn=txn.to_json(), fee=fee.fee, amount="%.8f" % amount, token=token,
+                from_address=body.fromAddress, to_address=to_address
+            )
         return ResponseCreateTransaction(
             # The original transaction data for signing and sending the transaction
             createTxHex=json.dumps(txn.to_json()["raw_data"]).encode("utf-8").hex(),

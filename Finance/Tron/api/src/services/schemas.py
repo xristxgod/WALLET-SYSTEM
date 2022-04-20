@@ -21,6 +21,19 @@ class BodyCreateWallet(BaseModel):
         if self.mnemonic_words is None or self.mnemonic_words == "string":
             self.mnemonic_words = generate_mnemonic(language="english", strength=128)
 
+class BodyGenerateAddress(BaseModel):
+    mnemonic_words: str = Field(description="Mnemonic phrase")
+    passphrase: Optional[str] = Field(default=None, description="Secret word for account recovery")
+    account: Optional[int]
+    index: Optional[int]
+
+    def __init__(self, **kwargs):
+        super(BodyGenerateAddress, self).__init__(**kwargs)
+        if self.account is None or self.account == "string":
+            self.account = 0
+        if self.mnemonic_words is None or self.mnemonic_words == "string":
+            self.index = 1
+
 class BodyCreateTransaction(BaseModel):
     """Create a transaction TRX or Tokens TRC20"""
     fromAddress: TAddress = Field(description="Sender's address")

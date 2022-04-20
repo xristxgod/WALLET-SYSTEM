@@ -1,8 +1,10 @@
 import json
+import datetime
+
 from decimal import Decimal, localcontext
 from typing import Union, Dict
 
-TPath: str = "m/44'/195'/0'/0/0"
+from src.types import TAddress
 
 class TronUtils:
 
@@ -66,3 +68,30 @@ class TronUtils:
             raise ValueError("Resulting wei value must be between 1 and 2**256 - 1")
 
         return int(result)
+
+class TransactionUtils:
+
+    @staticmethod
+    def get_transaction_body(
+            txn: Dict, fee: str, from_address: TAddress, to_address: TAddress, amount: str, token: str = None
+    ):
+        return json.dumps({
+            "time": int(datetime.datetime.timestamp(datetime.datetime.now())),
+            "transactionHash": txn["txID"],
+            "transactionType": txn["raw_data"]["contract"][0]["type"],
+            "fee": fee,
+            "amount": amount,
+            "senders": [
+                {
+                    "address": from_address,
+                    "amount": amount,
+                },
+            ],
+            "recipients": [
+                {
+                    "address": to_address,
+                    "amount": amount,
+                },
+            ],
+            "token": token if token is not None else "-"
+        })
