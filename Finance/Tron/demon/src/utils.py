@@ -3,12 +3,13 @@ import json
 import base58
 import uuid
 import decimal
+import random
 from typing import Union, Dict
 from datetime import datetime
 
 import aiofiles
 
-from config import NOT_SEND, ERROR, LAST_BLOCK, decimals
+from config import NOT_SEND, ERROR, LAST_BLOCK, Config, decimals
 
 class Errors:
 
@@ -23,6 +24,17 @@ class Errors:
         async with aiofiles.open(Utils.get_helper_file_name(), 'w') as file:
             # Write all the verified data to a json file, and do not praise the work
             await file.write(values)
+
+    @staticmethod
+    async def write_to_send(error: Exception, msg: str, title: str, func: str) -> json:
+        return json.dumps({
+            "status": "ERROR",
+            "time": Utils.get_datetime(),
+            "title": title,
+            "func": func,
+            "error": f"{error}",
+            "message": msg,
+        })
 
 class TronUtils:
 
@@ -114,9 +126,29 @@ class Utils:
         return os.path.join(NOT_SEND, f'{int(datetime.timestamp(datetime.now()))}-{uuid.uuid4()}.json')
 
     @staticmethod
+    def get_datetime(is_timestamp: bool = True) -> Union[int, str]:
+        date = datetime.now()
+        if is_timestamp:
+            return int(datetime.timestamp(date))
+        return date.strftime('%Y-%m-%d %H:%M:%S')
+
+    @staticmethod
     def convert_time(timestamp: int) -> str:
         """
         Convert from timestamp to date and time
         :param timestamp: Timestamp data
         """
         return datetime.fromtimestamp(int(timestamp)).strftime('%d-%m-%Y %H:%M:%S')
+
+    @staticmethod
+    def write_if_start(msg: str, title: str) -> json:
+        return json.dumps({
+            "status": "INFO",
+            "time": Utils.get_datetime(),
+            "title": title,
+            "message": msg,
+        })
+
+    @staticmethod
+    def get_tron_gird_key() -> str:
+        return Config.TRON_API_KEYS[random.randint(0, 2)]

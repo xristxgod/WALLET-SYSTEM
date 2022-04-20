@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Union
 import asyncpg
 import aio_pika
 
-from src.utils import Errors
+from src.utils import Errors, Utils
 from src.types import TAddress
 from config import Config, logger
 
@@ -56,6 +56,9 @@ class DB:
             connection = await asyncpg.connect(Config.DATABASE_URL)
             return await connection.fetch(sql)
         except Exception as error:
+            await RabbitMQ.send_to_checker(
+                error=error, msg="ERROR 'DB' STEP 56", title="DEMON", func=DB.__select_method.__name__
+            ),
             raise error
         finally:
             if connection is not None:
@@ -72,6 +75,14 @@ class DB:
         return [tx_hash[0] for tx_hash in data]
 
     @staticmethod
+    async def get_transaction_hash(transaction_hash: str) -> Dict:
+        return dict(
+            await DB.__select_method(
+                sql=f"SELECT * FROM tron_transaction WHERE status=0 and transaction_id='{transaction_hash}';"
+            )
+        )
+
+    @staticmethod
     async def get_all_tokens() -> List[Dict]:
         if Config.NODE_NETWORK == "TEST":
             return TOKENS
@@ -79,14 +90,6 @@ class DB:
             return await DB.__select_method(
                 sql="SELECT address, decimals, token_info FROM token_model WHERE network='TRON'"
             )
-
-    @staticmethod
-    async def get_transaction_hash(transaction_hash: str) -> Dict:
-        return dict(
-            await DB.__select_method(
-                sql=f"SELECT * FROM tron_transaction WHERE status=0 and transaction_id='{transaction_hash}';"
-            )
-        )
 
     @staticmethod
     async def get_token_info(address: TAddress, network: str = "TRON") -> Union[Dict, None]:
@@ -107,21 +110,61 @@ class DB:
         except Exception:
             return None
 
+    @staticmethod
+    async def get_all_token_address() -> List[TAddress]:
+        if Config.NODE_NETWORK == "TEST":
+            return [symbol["address"] for symbol in TOKENS]
+        else:
+            return [
+                symbol["address"]
+                for symbol in dict(await DB.__select_method(sql="SELECT address FROM token_model WHERE network='TRON'"))
+            ]
+
 class RabbitMQ:
 
+    RABBITMQ_URL = Config.RABBITMQ_URL
+    RABBITMQ_QUEUE_SENDER = Config.RABBITMQ_QUEUE_SENDER
+    RABBITMQ_ROUTING_KEY_SENDER = Config.RABBITMQ_ROUTING_KEY_SENDER
+
+    RABBITMQ_QUEUE_CHECKER = Config.RABBITMQ_QUEUE_CHECKER
+    RABBITMQ_ROUTING_KEY_CHECKER = Config.RABBITMQ_ROUTING_KEY_CHECKER
+
     @staticmethod
-    async def send_message(msg: aio_pika.Message, queue_name: str, routing_key: str) -> None:
+    async def __send_message(msg: aio_pika.Message, queue_name: str, routing_key: str) -> None:
         connection: Optional[aio_pika.Connection] = None
-        channel: Optional[aio_pika.Channel] = None
         try:
-            connection = await aio_pika.connect_robust(url=Config.RABBITMQ_URL)
+            connection = await aio_pika.connect_robust(url=RabbitMQ.RABBITMQ_URL)
             channel = await connection.channel()
             await channel.declare_queue(queue_name)
             await channel.default_exchange.publish(message=msg, routing_key=routing_key)
         except Exception as error:
             logger.error(f'ERROR RABBIT MQ SEND STEP 96: {error}')
-            await Errors.write_to_error(error=error, msg="RABBIT MQ NOT SEND | STEP 96")
+            await Errors.write_to_error(error=error, msg="ERROR 'RABBITMQ' STEP 96")
             await Errors.write_to_helper_file(json.dumps(msg))
         finally:
             if connection is not None:
                 await connection.close()
+
+    @staticmethod
+    async def send_to_sender(values: json):
+        await RabbitMQ.__send_message(
+            msg=aio_pika.Message(values),
+            queue_name=RabbitMQ.RABBITMQ_QUEUE_SENDER,
+            routing_key=RabbitMQ.RABBITMQ_ROUTING_KEY_SENDER
+        )
+
+    @staticmethod
+    async def send_to_checker(error: Exception, msg: str, title: str, func: str):
+        await RabbitMQ.__send_message(
+            msg=aio_pika.Message(await Errors.write_to_send(error=error, msg=msg, title=title, func=func)),
+            queue_name=RabbitMQ.RABBITMQ_QUEUE_CHECKER,
+            routing_key=RabbitMQ.RABBITMQ_ROUTING_KEY_CHECKER
+        )
+
+    @staticmethod
+    async def send_to_checker_info(msg: str, title: str):
+        await RabbitMQ.__send_message(
+            msg=aio_pika.Message(Utils.write_if_start(msg=msg, title=title)),
+            queue_name=RabbitMQ.RABBITMQ_QUEUE_CHECKER,
+            routing_key=RabbitMQ.RABBITMQ_ROUTING_KEY_CHECKER
+        )
