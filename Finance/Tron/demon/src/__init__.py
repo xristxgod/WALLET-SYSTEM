@@ -1,10 +1,11 @@
 import json
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 import asyncpg
 import aio_pika
 
 from src.utils import Errors
+from src.types import TAddress
 from config import Config, logger
 
 TOKENS = [
@@ -86,6 +87,25 @@ class DB:
                 sql=f"SELECT * FROM tron_transaction WHERE status=0 and transaction_id='{transaction_hash}';"
             )
         )
+
+    @staticmethod
+    async def get_token_info(address: TAddress, network: str = "TRON") -> Union[Dict, None]:
+        try:
+            if Config.NODE_NETWORK == "TEST":
+                data = [t for t in TOKENS if t["address"] == address][0]
+            else:
+                data = await DB.__select_method((
+                    f"SELECT token, address, decimals, token_info FROM token_model "
+                    f"WHERE address = '{address}' AND network = '{network.upper()}';"
+                ))
+            return {
+                "token": data["token"],
+                "address": data["address"],
+                "decimals": data["decimals"],
+                "token_info": json.loads(data["token_info"]),
+            }
+        except Exception:
+            return None
 
 class RabbitMQ:
 
