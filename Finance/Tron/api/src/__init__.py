@@ -1,5 +1,5 @@
 import json
-import typing
+from typing import Dict, List, Optional, Union
 
 import asyncpg
 
@@ -23,18 +23,15 @@ class DB:
         token: String(256) NOT NULL
         address: String(256) NOT NULL
         decimals: String(256) NOT NULL UNIQUE = TRUE
-        token_info: String(256)
+        token_info: JSON NOT NULL
     <<<--------------------------------------------------->>>
     """
     @staticmethod
-    async def __select_method(sql, is_all: bool = False) -> typing.Dict:
-        connection: asyncpg.Connection = None
+    async def __select_method(sql) -> Dict:
+        connection: Optional[asyncpg.Connection] = None
         try:
-            connection: asyncpg.Connection = await asyncpg.connect(Config.DATABASE_URL)
-            if is_all:
-                return dict(await connection.fetchrow(sql))
-            else:
-                return dict(await connection.fetch(sql))
+            connection = await asyncpg.connect(Config.DATABASE_URL)
+            return dict(await connection.fetch(sql))
         except Exception as error:
             raise error
         finally:
@@ -42,7 +39,7 @@ class DB:
                 await connection.close()
 
     @staticmethod
-    async def get_token_info(token: str, network: str = "TRON") -> typing.Union[typing.Dict, None]:
+    async def get_token_info(token: str, network: str = "TRON") -> Union[Dict, None]:
         try:
             if Config.NODE_NETWORK == "TEST":
                 data = [t for t in TOKENS if t["token"] == token.upper()][0]

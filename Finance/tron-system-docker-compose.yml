@@ -33,20 +33,6 @@ services:
     logging:
       options:
         max-size: 100m
-  tron_balancer:
-    build:
-      context: Tron/balancer/
-      dockerfile: Dockerfile
-    container_name: tron_balancer
-    command: /usr/bin/supervisord
-    env_file:
-      - ./.env
-    networks:
-      - telegram_wallet_tron_systme
-    logging:
-      options:
-        max-size: 100m
-
 networks:
   telegram_wallet_tron_systme:
     driver: bridge
