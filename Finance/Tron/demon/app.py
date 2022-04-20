@@ -1,5 +1,4 @@
 from src.demon import TransactionDemon
-from src.search_by_addresses import AddressesDemon
 from config import Config, logger
 from asyncio import run
 
