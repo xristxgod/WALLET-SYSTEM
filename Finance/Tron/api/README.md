@@ -1,4 +1,4 @@
-TRON DEMON for Python
+TRON API for Python
 ===================
 
 Api for working with the tron node.
