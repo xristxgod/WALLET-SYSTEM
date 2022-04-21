@@ -8,6 +8,7 @@ Checker bot
 # To test the whole system.
 python3 check_systems_fast.py --all
 python3 check_systems_fast.py -a
+python3 check_systems_fast.py 
 # To check the subsystem.
 python3 check_systems_fast.py --sub 'FINANCE'
 python3 check_systems_fast.py -s 'FINANCE'
