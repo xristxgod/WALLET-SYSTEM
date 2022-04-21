@@ -13,6 +13,8 @@ decimals.prec = 8
 logger = logging.getLogger(__name__)
 
 class Config:
+    BOT_TOKEN_CHECKER = os.getenv("BOT_TOKEN_CHECKER")
+
     DATABASE_URL = os.getenv("DATABASE_URL")
 
     RABBITMQ_QUEUE_SENDER = os.getenv("RABBITMQ_QUEUE_SENDER")

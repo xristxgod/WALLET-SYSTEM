@@ -1,5 +1,5 @@
 import json
-from typing import Optional
+from typing import Optional, List
 
 import asyncpg
 import aio_pika
@@ -8,20 +8,34 @@ from src.utils import Errors, Utils
 from config import Config, logger
 
 class DB:
+    """
+    <<<--------------------------------------------------->>>
+    table = user_model
+        id: Integer Primary Key
+        username: String(256) NOT NULL
+        chat_id: INTEGER NOT NULL UNIQUE = TRUE
+        is_admin BOOL NOT NULL DEFAULT = FALSE
+    <<<--------------------------------------------------->>>
+    """
+    DATABASE_URL = Config.DATABASE_URL
+
     @staticmethod
     async def __select_method(sql):
         connection: Optional[asyncpg.Connection] = None
         try:
-            connection = await asyncpg.connect(Config.DATABASE_URL)
+            connection = await asyncpg.connect(DB.DATABASE_URL)
             return await connection.fetch(sql)
         except Exception as error:
-            await RabbitMQ.send_to_checker(
-                error=error, msg="ERROR 'DB' STEP 56", title="DEMON", func=DB.__select_method.__name__
-            ),
+            await Errors.write_to_error(error=error, msg="ERROR DB STEP 17")
             raise error
         finally:
             if connection is not None:
                 await connection.close()
+
+    @staticmethod
+    async def get_admin_ids() -> List:
+        return [_id[0] for _id in await DB.__select_method("SELECT chat_id FROM user_model WHERE is_admin=1;")]
+
 
 class RabbitMQ:
 
