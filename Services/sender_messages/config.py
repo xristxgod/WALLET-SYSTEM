@@ -28,3 +28,5 @@ class Config:
     RABBITMQ_ROUTING_KEY_CHECKER = os.getenv("RABBITMQ_ROUTING_KEY_CHECKER")
 
     RABBITMQ_URL = os.getenv("RABBITMQ_URL")
+
+    BLOCKCHAIN_TRON = os.getenv("BLOCKCHAIN_TRON", "https://tronscan.org/#/transaction/")

@@ -1,5 +1,5 @@
 import json
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 import aio_pika
 import asyncpg
@@ -36,7 +36,7 @@ class DB:
     <<<--------------------------------------------------->>>
     """
     @staticmethod
-    async def __select_method(sql):
+    async def __select_method(sql) -> List:
         connection: Optional[asyncpg.Connection] = None
         try:
             connection = await asyncpg.connect(Config.DATABASE_URL)
@@ -67,32 +67,38 @@ class DB:
                 await connection.close()
 
     @staticmethod
-    async def update_transaction(transaction_hash: str, user_id: int) -> bool:
+    async def update_transaction(transaction_hash: str, user_id: int, network: str) -> bool:
         return await DB.__insert_method(
             "UPDATE wallet_transaction "
             "SET status = 1 "
-            f"WHERE transaction_hash = '{transaction_hash}' AND user_id = {user_id}"
+            f"WHERE transaction_hash='{transaction_hash}' "
+            f"AND user_id={user_id} AND network='{network}';"
         )
 
     @staticmethod
-    async def insert_transaction(transaction_info: Dict, user_id: int, network: str):
+    async def insert_transaction(transaction_info: Dict, user_id: int, network: str) -> bool:
         return await DB.__insert_method(
             "INSERT INTO wallet_transaction "
             "(network, time, transaction_hash, fee, amount, senders, recipients, token, status, user_id) VALUES "
-            f"('{network}', {transaction_info['time']}, '{transaction_info['transaction_hash']}', "
+            f"('{network}', {transaction_info['time']}, '{transaction_info['transactionHash']}', "
             f"{decimals.create_decimal(transaction_info['fee'])}, {decimals.create_decimal(transaction_info['amount'])} "
             f"'{transaction_info['senders']}', '{transaction_info['recipients']}', '{transaction_info['token']}', 1,"
             f" {user_id});"
         )
 
     @staticmethod
-    async def get_chat_id_by_wallet_address(wallet_address: str, network: str) -> int:
-        data = await DB.__select_method(
-            "SELECT chat_id FORM user_model "
+    async def get_chat_id_by_wallet_address(wallet_address: str, network: str) -> Dict:
+        return dict((await DB.__select_method(
+            "SELECT id, chat_id FORM user_model "
             "WHERE id = ("
             f"SELECT user_id FROM wallet WHERE network = '{network}' AND address = '{wallet_address}');"
-        )
-        return [chat_id[0] for chat_id in data][0]
+        ))[0])
+
+    @staticmethod
+    async def get_transaction(transaction_hash: str) -> bool:
+        return (await DB.__select_method(
+            f"SELECT id FROM wallet_transaction WHERE transaction_hash='{transaction_hash}';"
+        ))[0] is not None
 
 class RabbitMQ:
 
