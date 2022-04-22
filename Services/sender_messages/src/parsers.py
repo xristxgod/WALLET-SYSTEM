@@ -10,7 +10,7 @@ from src.utils import Errors, BotUtils, ParserDemonUtils
 from config import Config, logger
 
 class ParserDemon:
-    
+
 
     @staticmethod
     async def packed_message(network: str, txn: Dict, user_ids: Dict, address: str):

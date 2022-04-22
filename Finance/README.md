@@ -10,10 +10,10 @@ Working with finances!
 
 
 ```shell
->> START:
-docker-compose --file Finance/tron-system-docker-compose.yml up --build
->> STOP:
-docker-compose --file Finance/tron-system-docker-compose.yml stop
+>> START TRON:
+docker-compose --file Finance/Tron/tron-system-docker-compose.yml up --build
+>> STOP TRON:
+docker-compose --file Finance/Tron/tron-system-docker-compose.yml stop
 
 >> Or you can run a bash script: 
 >> START:

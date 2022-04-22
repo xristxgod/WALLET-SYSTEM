@@ -27,6 +27,25 @@ services:
     logging:
       options:
         max-size: 100m
+  coins_monitor:
+    build:
+      context: coins_monitor/
+      dockerfile: Dockerfile
+    container_name: coins_monitor
+    command: uvicorn app:app --host 0.0.0.0 --port 8080
+    env_file:
+      - ./.env
+    ports:
+      - "85:8080"
+    expose:
+      - 85
+    networks:
+      - telegram_wallet_services
+    volumes:
+      - ./src/files:/home/app/files
+    logging:
+      options:
+        max-size: 100m
 
 networks:
   telegram_wallet_services:
