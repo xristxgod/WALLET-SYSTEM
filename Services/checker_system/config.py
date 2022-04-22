@@ -6,6 +6,10 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.join(ROOT_DIR, "files")
 ERROR = os.path.join(BASE_DIR, "error.txt")
 NOT_SEND = os.path.join(BASE_DIR, 'not_send')
+ENDPOINTS_FILE = os.path.join(BASE_DIR, "endpoints.json")
+
+if "files" not in os.listdir(ROOT_DIR):
+    os.mkdir(BASE_DIR)
 
 decimals = decimal.Context()
 decimals.prec = 8

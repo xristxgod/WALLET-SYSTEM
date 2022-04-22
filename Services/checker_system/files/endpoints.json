@@ -1,0 +1,126 @@
+{
+  "FINANCE": {
+    "TRON": [
+      {
+        "url": "{domain_tron_api}",
+        "title": "Connection to the Tron api",
+        "tag": "finance",
+        "method": "get",
+        "json_query": [
+          "message=bool_true"
+        ],
+        "headers": null,
+        "result_status": null,
+        "delay_success": 180,
+        "delay_error": 15,
+        "data_for_check": null,
+        "auth": null
+      },
+      {
+        "url": "{domain_tron_api}/is-node-alive",
+        "title": "Connecting to the Tron node",
+        "tag": "finance",
+        "method": "get",
+        "json_query": [
+          "message=bool_true"
+        ],
+        "headers": null,
+        "result_status": null,
+        "delay_success": 180,
+        "delay_error": 15,
+        "data_for_check": null,
+        "auth": null
+      },
+      {
+        "url": "{domain_tron_api}/is-demon-alive",
+        "title": "Connecting to the Tron daemon",
+        "tag": "finance",
+        "method": "get",
+        "json_query": [
+          "message=bool_true"
+        ],
+        "headers": null,
+        "result_status": null,
+        "delay_success": 180,
+        "delay_error": 15,
+        "data_for_check": null,
+        "auth": null
+      }
+    ]
+  },
+  "SERVICES": {
+    "CHECKER": [null],
+    "SENDER": [
+      {
+        "url": "{rabbit_mq_url}",
+        "title": "Connection with the Sender",
+        "tag": "service",
+        "method": "get",
+        "json_query": [
+          "message=bool_true"
+        ],
+        "headers": null,
+        "result_status": null,
+        "delay_success": 180,
+        "delay_error": 15,
+        "data_for_check": null,
+        "auth": null
+      }
+    ],
+    "COINCER": [
+      {
+        "url": "{domain_coincer_api}",
+        "title": "Connection to the Coincer api",
+        "tag": "service",
+        "method": "get",
+        "json_query": [
+          "message=bool_true"
+        ],
+        "headers": null,
+        "result_status": null,
+        "delay_success": 180,
+        "delay_error": 15,
+        "data_for_check": null,
+        "auth": null
+      },
+      {
+        "url": "{domain_coincer_api}/is-demon-alive",
+        "title": "Connecting to the Coincer daemon",
+        "tag": "service",
+        "method": "get",
+        "json_query": [
+          "message=bool_true"
+        ],
+        "headers": null,
+        "result_status": null,
+        "delay_success": 180,
+        "delay_error": 15,
+        "data_for_check": null,
+        "auth": null
+      }
+    ]
+  },
+  "ADMIN": {
+    "SITE": [
+      {
+        "url": "{domain_admin_site}/api/health/check/is-work",
+        "title": "Connection to the admin panel.",
+        "tag": "admin",
+        "method": "get",
+        "json_query": [
+          "message=bool_true"
+        ],
+        "headers": null,
+        "result_status": null,
+        "delay_success": 180,
+        "delay_error": 15,
+        "data_for_check": null,
+        "auth": "Bearer key"
+      }
+    ]
+  },
+  "BOT": {
+    "BOT_MAIN": [],
+    "BOT_ALERT": []
+  }
+}

@@ -13,7 +13,7 @@ python3 check_systems_fast.py
 python3 check_systems_fast.py --sub 'FINANCE'
 python3 check_systems_fast.py -s 'FINANCE'
 # To test a separate module (Not everyone has it)
-python3 check_systems_fast.py --sub 'FINANCE' --module 'TRON'
+python3 check_systems_fast.py --sub 'FINANCE' --mod 'TRON'
 python3 check_systems_fast.py -s 'FINANCE' -m 'TRON'
 ```
 
@@ -26,8 +26,6 @@ python3 check_systems_fast.py -s 'FINANCE' -m 'TRON'
 > 
 >> `ADMIN` \
 >> Its modules:
->>> `BOT`
->>
 >>> `SITE`
 > 
 >> `SERVICES` \
@@ -39,3 +37,6 @@ python3 check_systems_fast.py -s 'FINANCE' -m 'TRON'
 >>> `SENDER`
 >
 >> `BOT`
+>>> `BOT_MAIN`
+>>
+>>> `BOT_ALERT`

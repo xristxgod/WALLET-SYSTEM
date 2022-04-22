@@ -21,6 +21,15 @@ class Errors:
             # Write all the verified data to a json file, and do not praise the work
             await file.write(values)
 
+class CheckerUtils:
+    @staticmethod
+    def get_hello_text() -> str:
+        pass
+
+    @staticmethod
+    def get_report(text: str) -> str:
+        pass
+
 class Utils:
 
     @staticmethod
