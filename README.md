@@ -1,6 +1,6 @@
 Crypto wallet for Telegram
 ====
-######:::: `Start date of development: April 18, 2022` :::: `DEVELOPMENT` :::: `End date of development: January 25, 2023` ::::
+:::: `Start date of development: April 18, 2022` :::: `DEVELOPMENT` :::: `End date of development: January 25, 2023` ::::
 
 ---
 > This service will be a crypto wallet that is somewhat similar to `Trust Wallet` and `similar`. 
