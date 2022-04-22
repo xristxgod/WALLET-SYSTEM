@@ -5,7 +5,7 @@ import aio_pika
 import asyncpg
 
 from src.utils import Errors, Utils
-from config import Config, logger
+from config import Config, logger, decimals
 
 class DB:
     """
@@ -72,6 +72,17 @@ class DB:
             "UPDATE wallet_transaction "
             "SET status = 1 "
             f"WHERE transaction_hash = '{transaction_hash}' AND user_id = {user_id}"
+        )
+
+    @staticmethod
+    async def insert_transaction(transaction_info: Dict, user_id: int, network: str):
+        return await DB.__insert_method(
+            "INSERT INTO wallet_transaction "
+            "(network, time, transaction_hash, fee, amount, senders, recipients, token, status, user_id) VALUES "
+            f"('{network}', {transaction_info['time']}, '{transaction_info['transaction_hash']}', "
+            f"{decimals.create_decimal(transaction_info['fee'])}, {decimals.create_decimal(transaction_info['amount'])} "
+            f"'{transaction_info['senders']}', '{transaction_info['recipients']}', '{transaction_info['token']}', 1,"
+            f" {user_id});"
         )
 
     @staticmethod
