@@ -52,7 +52,7 @@
     "CHECKER": [null],
     "SENDER": [
       {
-        "url": "{rabbit_mq_url}",
+        "url": "{domain_rabbit_mq_url}",
         "title": "Connection with the Sender",
         "tag": "service",
         "method": "get",

@@ -2,6 +2,7 @@ import os
 import json
 import uuid
 from datetime import datetime
+from typing import Dict
 
 import aiofiles
 
@@ -22,13 +23,35 @@ class Errors:
             await file.write(values)
 
 class CheckerUtils:
+
     @staticmethod
     def get_hello_text() -> str:
         pass
 
     @staticmethod
-    def get_report(text: str) -> str:
-        pass
+    def get_request_params(data_for_check: str = None) -> Dict:
+        return {'json': data_for_check} if data_for_check is not None else {}
+
+    @staticmethod
+    def get_headers(auth: str = None, headers: str = None) -> Dict:
+        session_params = {'headers': {'Authorization': auth}} if auth is not None else {}
+        if headers is not None:
+            if 'headers' in session_params:
+                session_params['headers'].update(headers)
+            else:
+                session_params = {'headers': headers}
+        return session_params
+
+    @staticmethod
+    async def str_to_coded_type(s: str):
+        t, value = s.split('_')
+        if t == 'str':
+            return value
+        elif t == 'int':
+            return int(value)
+        elif t == 'bool':
+            return value.lower() == 'true'
+        return value
 
 class Utils:
 

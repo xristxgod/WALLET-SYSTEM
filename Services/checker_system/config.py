@@ -28,3 +28,5 @@ class Config:
     RABBITMQ_ROUTING_KEY_CHECKER = os.getenv("RABBITMQ_ROUTING_KEY_CHECKER")
 
     RABBITMQ_URL = os.getenv("RABBITMQ_URL")
+
+    DOMAINS = {x: y for x, y in os.environ.items() if x.startswith('domain_')}
