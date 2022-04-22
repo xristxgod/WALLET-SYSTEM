@@ -22,23 +22,26 @@ class DB:
     <<<--------------------------------------------------->>>
     table = token_model
         id: Integer Primary Key
-        network: String(256) NOT NULL UNIQUE = TRUE
+        network: String(256) NOT NULL 
         token: String(256) NOT NULL
         address: String(256) NOT NULL
         decimals: String(256) NOT NULL UNIQUE = TRUE
         token_info: JSON NOT NULL
     <<<--------------------------------------------------->>>
-    tabel = tron_wallet
+    tabel = wallet
         id: Integer Primary Key
+        network: String(256) NOT NULL 
         address: String(256) NOT NULL UNIQUE = TRUE
         private_key: String(256) NOT NULL UNIQUE = TRUE
         public_key: String(256) NOT NULL UNIQUE = TRUE
         passphrase: String(256) NOT NULL UNIQUE = TRUE
         mnemonic_phrase: String(256) NOT NULL UNIQUE = TRUE
         accounts: JSON NOT NULL
+        user_id: Integer Foreign Key To user_model
     <<<--------------------------------------------------->>>
-    table = tron_transaction
+    table = wallet_transaction
         id: Integer Primary Key
+        network: String(256) NOT NULL 
         time: INTEGER NOT NULL
         transaction_hash: String(256) NOT NULL UNIQUE = TRUE
         fee: DECIMAL NOT NULL
@@ -47,6 +50,7 @@ class DB:
         recipients: JSON NOT NULL
         token: String(256) NOT NULL
         status: BOOL NOT NULL DEFAULT = FALSE
+        user_id: Integer Foreign Key To user_model
     <<<--------------------------------------------------->>>
     """
     @staticmethod

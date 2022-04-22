@@ -1,5 +1,5 @@
 import asyncio
-from src.sender import run
+from src.service import run
 
 async def main(loop):
     await asyncio.gather(*[
