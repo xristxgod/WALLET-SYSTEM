@@ -1,0 +1,12 @@
+[
+  {
+    "name": "tron",
+    "symbol": "trx",
+    "defaultPrice": null
+  },
+  {
+    "name": "tether",
+    "symbol": "usdt",
+    "defaultPrice": null
+  }
+]
