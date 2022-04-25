@@ -6,11 +6,11 @@ Sender bot
 Start in manual mode:
 ```shell
 # Check for unsent messages. If found, then send it immediately.
-python3 ./Services/is_not_send.py --send
-python3 ./Services/is_not_send.py -s
+python3 ./Services/sender_messages/is_not_send.py --send
+python3 ./Services/sender_messages/is_not_send.py -s
 # Check for unsent messages. If found, then just output to the terminal.
-python3 ./Services/is_not_send.py
-python3 ./Services/is_not_send.py
+python3 ./Services/sender_messages/is_not_send.py
+python3 ./Services/sender_messages/is_not_send.py
 # Run
-python3 ./Services/app.py
+python3 ./Services/sender_messages/app.py
 ```
