@@ -36,5 +36,3 @@ class Client:
                 title="COINS",
                 func=Client.get_current_prices.__name__
             )
-
-client = Client
