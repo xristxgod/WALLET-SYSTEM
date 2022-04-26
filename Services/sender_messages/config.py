@@ -2,7 +2,6 @@ import os
 import decimal
 import logging
 
-
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.join(ROOT_DIR, "files")
 ERROR = os.path.join(BASE_DIR, "error.txt")
@@ -16,7 +15,7 @@ decimals.prec = 8
 
 logger = logging.getLogger(__name__)
 
-class Config:
+class Config(object):
     BOT_TOKEN_ALERT = os.getenv("BOT_TOKEN_ALERT")
 
     DATABASE_URL = os.getenv("DATABASE_URL")

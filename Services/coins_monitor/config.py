@@ -16,7 +16,7 @@ decimals.prec = 8
 
 logger = logging.getLogger(__name__)
 
-class Config:
+class Config(object):
     DATABASE_URL = os.getenv("DATABASE_COINS_URL")
 
     API_COINS = os.getenv("API_COINS", "https://api.coingecko.com")

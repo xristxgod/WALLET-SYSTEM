@@ -16,7 +16,7 @@ decimals.prec = 8
 
 logger = logging.getLogger(__name__)
 
-class Config:
+class Config(object):
     BOT_TOKEN_CHECKER = os.getenv("BOT_TOKEN_CHECKER")
 
     DATABASE_URL = os.getenv("DATABASE_URL")
