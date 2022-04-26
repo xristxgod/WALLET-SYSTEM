@@ -1,11 +1,25 @@
+import pyotp
 from flask_login import UserMixin
 
 from src.__init__ import login_manager
 from src.settings import db
 
+from config import Config
+
 @login_manager.user_loader
 def load_user(user_id):
     return UserModel.query.get(int(user_id))
+
+def is_password_correction(password: str):
+    if Config.ADMIN_PASSWORD == password:
+        return True
+    return False
+
+def is_google_auth_code_correction(code: str):
+    if pyotp.TOTP(Config.ADMIN_GOOGLE_AUTH_SECRET_KEY).now() == code:
+        return True
+    return False
+
 
 class UserModel(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)

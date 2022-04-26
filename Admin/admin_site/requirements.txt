@@ -1,9 +1,10 @@
 pip==21.1.2
 setuptools==57.0.0
 wheel==0.36.2
+pyotp==2.6.0
 flask
 flask_login
-flask_bcrypt
 flask_sqlalchemy
 flask_migrate
 flask_apscheduler
+flask_wtf
