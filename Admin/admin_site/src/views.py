@@ -14,6 +14,8 @@ from config import Config
 app = Blueprint("main", __name__)
 favorites = FavoritesUsers()
 
+# <<<========================================>>> Authorization <<<===================================================>>>
+
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
     form = LoginForm()
