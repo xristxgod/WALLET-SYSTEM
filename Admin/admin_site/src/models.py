@@ -12,7 +12,10 @@ class UserModel(db.Model, UserMixin):
     username = db.Column(db.String(256), nullable=False, unique=True)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
 
-class Wallet(db.Model):
+    wallets = db.relationship('WalletModel', backref='user', lazy=True)
+    transactions = db.relationship('WalletTransactionModel', backref='user', lazy=True)
+
+class WalletModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     network = db.Column(db.String(256), nullable=False)
     address = db.Column(db.String(256), nullable=False, unique=True)
@@ -20,5 +23,26 @@ class Wallet(db.Model):
     public_key = db.Column(db.String(256), nullable=False, unique=True)
     passphrase = db.Column(db.String(256), nullable=False)
     mnemonic_phrase = db.Column(db.String(256), nullable=False, unique=True)
-    accounts = db.Column(db.JSON(), nullable=False)
+    accounts = db.Column(db.JSON(), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user_model.id'))
+
+class WalletTransactionModel(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    network = db.Column(db.String(256), nullable=False)
+    time = db.Column(db.Integer)
+    transaction_hash = db.Column(db.String(256), nullable=False, unique=True)
+    fee = db.Column(db.DECIMAL(), nullable=True)
+    amount = db.Column(db.DECIMAL(), nullable=False)
+    senders = db.Column(db.JSON(), nullable=True)
+    recipients = db.Column(db.JSON(), nullable=True)
+    token = db.Column(db.String(256), nullable=False)
+    status = db.Column(db.Boolean, nullable=False, default=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user_model.id'))
+
+class TokenModel(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    network = db.Column(db.String(256), nullable=False)
+    token = db.Column(db.String(256), nullable=False)
+    address = db.Column(db.String(256), nullable=False, unique=True)
+    decimals = db.Column(db.Integer)
+    token_info = db.Column(db.JSON(), nullable=True)
