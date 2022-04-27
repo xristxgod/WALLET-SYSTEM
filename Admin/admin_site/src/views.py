@@ -1,7 +1,7 @@
 import json
 
 from flask import Blueprint, redirect, url_for, render_template, request, flash
-from flask_login import login_user
+from flask_login import login_user, logout_user, login_required, current_user
 
 from src.forms import LoginForm, GoogleAuthForm
 from src.models import UserModel, is_password_correction, is_google_auth_code_correction
@@ -14,7 +14,7 @@ from config import Config
 app = Blueprint("main", __name__)
 favorites = FavoritesUsers()
 
-# <<<========================================>>> Authorization <<<===================================================>>>
+# <<<==================================>>> Authorization pages <<<===================================================>>>
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
@@ -22,7 +22,7 @@ def login_page():
     if form.validate_on_submit():
         attempted_user = UserModel.query.filter_by(username=form.username.data).first()
         if attempted_user and attempted_user.is_admin and is_password_correction(password=form.password.data):
-            return redirect(url_for('main.checking_code', hash_info=json.dumps({
+            return redirect(url_for('main.checking_code_page', hash_info=json.dumps({
                 "id": attempted_user.id,
                 "username": attempted_user.username,
             }).encode("utf-8").hex(), _external=True))
@@ -34,11 +34,11 @@ def login_page():
     )
 
 @app.route("/checking-code/<hash_info>", methods=['GET', 'POST'])
-def checking_code(hash_info: str):
+def checking_code_page(hash_info: str):
     user = UserModel.query.filter_by(id=json.loads(bytes.fromhex(hash_info).decode("utf-8")).get("id")).first()
     if not user.is_admin:
         flash('You are not an admin!', category='danger')
-        return redirect(url_for("main.login_page"))
+        return redirect(url_for("main.main_page"))
     form = GoogleAuthForm()
     if form.validate_on_submit():
         if is_google_auth_code_correction(code=form.code.data):
@@ -51,3 +51,17 @@ def checking_code(hash_info: str):
         "checking_code.html",
         form=form
     )
+
+@app.route('/logout')
+@login_required
+def logout_page():
+    logout_user()
+    flash("You have been logged out!", category='info')
+    return redirect(url_for("main.login_page"))
+
+# <<<==================================>>> Main pages <<<============================================================>>>
+
+@app.route("/")
+@login_required
+def main_page():
+    pass
