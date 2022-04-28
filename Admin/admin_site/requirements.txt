@@ -8,3 +8,4 @@ flask_sqlalchemy
 flask_migrate
 flask_apscheduler
 flask_wtf
+psycopg2
