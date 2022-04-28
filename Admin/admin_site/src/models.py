@@ -20,6 +20,7 @@ def is_google_auth_code_correction(code: str):
         return True
     return False
 
+# <<<==========================================>>> USER MODELS <<<===================================================>>>
 
 class UserModel(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -45,8 +46,8 @@ class WalletTransactionModel(db.Model):
     network = db.Column(db.String(256), nullable=False)
     time = db.Column(db.Integer)
     transaction_hash = db.Column(db.String(256), nullable=False, unique=True)
-    fee = db.Column(db.DECIMAL(), nullable=True)
-    amount = db.Column(db.DECIMAL(), nullable=False)
+    fee = db.Column(db.DECIMAL(), nullable=True, default=0)
+    amount = db.Column(db.DECIMAL(), nullable=False, default=0)
     senders = db.Column(db.JSON(), nullable=True)
     recipients = db.Column(db.JSON(), nullable=True)
     token = db.Column(db.String(256), nullable=False)
@@ -60,3 +61,12 @@ class TokenModel(db.Model):
     address = db.Column(db.String(256), nullable=False, unique=True)
     decimals = db.Column(db.Integer)
     token_info = db.Column(db.JSON(), nullable=True)
+
+# <<<==========================================>>> ADMIN MODELS <<<==================================================>>>
+
+class TotalBalance(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    network = db.Column(db.String(256), nullable=False)
+    token = db.Column(db.String(256), nullable=False)
+    time = db.Column(db.Integer)
+    balance = db.Column(db.DECIMAL(), nullable=False, default=0)
