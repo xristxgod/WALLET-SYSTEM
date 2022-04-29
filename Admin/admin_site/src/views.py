@@ -44,7 +44,7 @@ def checking_code_page(hash_info: str):
             return redirect(url_for('main.index_page'))
         else:
             flash("The code didn't fit. Try again", "danger")
-            return redirect(url_for('main.checking_code', hash_info=hash_info, _external=True))
+            return redirect(url_for('main.checking_code_page', hash_info=hash_info, _external=True))
     return render_template(
         "checking_code.html",
         form=form
