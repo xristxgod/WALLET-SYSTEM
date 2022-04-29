@@ -7,6 +7,11 @@ Search for transactions by node.
 --------------
 Run script via console
 
+> Starting the container.
+> ```shell
+> docker exec -it tron_demon /bin/bash
+> ```
+
 > Run the script from number to number.
 >```shell
 > python search_in_history_script.py -s startBlockNumber -e endBlockNumber
