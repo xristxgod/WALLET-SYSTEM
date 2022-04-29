@@ -6,10 +6,6 @@ from src.settings import db
 
 from config import Config
 
-@login_manager.user_loader
-def load_user(user_id):
-    return UserModel.query.get(int(user_id))
-
 def is_password_correction(password: str):
     if Config.ADMIN_PASSWORD == password:
         return True

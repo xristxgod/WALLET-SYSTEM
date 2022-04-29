@@ -5,13 +5,17 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 
-from src import settings, views, jobs
+from src import settings, views, jobs, models
 
 app = Flask(__name__)
 migrate = Migrate(app, settings.db)
 login_manager = LoginManager(app)
 login_manager.login_view = "main.login_page"
 login_manager.login_message_category = "info"
+
+@login_manager.user_loader
+def load_user(user_id):
+    return models.UserModel.query.get(int(user_id))
 
 def clear_trailing():
     rp = request.path

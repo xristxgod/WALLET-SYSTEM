@@ -9,8 +9,6 @@ from src.models import UserModel, is_password_correction, is_google_auth_code_co
 from src.services.events import Events
 from src.services.favorites import FavoritesUsers
 
-from config import Config
-
 app = Blueprint("main", __name__)
 favorites = FavoritesUsers()
 
@@ -63,5 +61,5 @@ def logout_page():
 
 @app.route("/")
 @login_required
-def main_page():
+def dashboards_page():
     pass

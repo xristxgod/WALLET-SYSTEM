@@ -12,5 +12,5 @@ class Config(object):
     DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:mamedov00@localhost/wallets_system")
 
     ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin")
-    ADMIN_GOOGLE_AUTH_SECRET_KEY = os.getenv("ADMIN_GOOGLE_AUTH_SECRET_KEY", "")
+    ADMIN_GOOGLE_AUTH_SECRET_KEY = os.getenv("ADMIN_GOOGLE_AUTH_SECRET_KEY", "MFVTA33HIRWUY5TO")
 
