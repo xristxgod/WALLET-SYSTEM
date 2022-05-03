@@ -16,8 +16,8 @@ from config import NOT_SEND, Config, logger, decimals
 class TransactionDemon:
 
     # Provider config
-    PROVIDER = AsyncHTTPProvider(Config.NODE_URL)
-    NETWORK: str = "shasta" if Config.NODE_NETWORK == "TEST" else "mainnet"
+    PROVIDER = AsyncHTTPProvider(Config.TRON_NODE_URL)
+    NETWORK: str = "shasta" if Config.NETWORK == "TESTNET" else "mainnet"
     # Tron utils
     fromSun = staticmethod(TronUtils.from_sun)
     toBase58CheckAddress = staticmethod(TronUtils.to_base58check_address)
@@ -66,7 +66,7 @@ class TransactionDemon:
             tnx = list(filter(lambda x: x is not None, tnx))
             if len(tnx) > 0:
                 await asyncio.gather(*[
-                    self.send_to_rabbit(
+                    TransactionDemon.send_to_rabbit(
                         package=tx,
                         block_number=block_number
                     ) for tx in tnx
@@ -75,12 +75,6 @@ class TransactionDemon:
         except Exception as error:
             logger.error(f"ERROR DEMON PROCESSING BLOCK STEP 50: {error}")
             await Errors.write_to_error(error=error, msg="ERROR 'TransactionDemon' STEP 50")
-            await RabbitMQ.send_to_checker(
-                error=error,
-                msg="ERROR 'TransactionDemon' STEP 50",
-                title="DEMON",
-                func=self.processing_block.__name__
-            )
             return False
 
     async def processing_transaction(
@@ -176,15 +170,10 @@ class TransactionDemon:
         except Exception as error:
             logger.error(f"ERROR DEMON PROCESSING TRANSACTION STEP 100: {error}")
             await Errors.write_to_error(error=error, msg="ERROR 'TransactionDemon' STEP 100")
-            await RabbitMQ.send_to_checker(
-                error=error,
-                msg="ERROR 'TransactionDemon' STEP 100",
-                title="DEMON",
-                func=self.processing_transaction.__name__
-            )
             return None
 
-    async def send_to_rabbit(self, package, block_number) -> None:
+    @staticmethod
+    async def send_to_rabbit(package, block_number) -> None:
         """
         We are preparing transactions to be sent to RabbitMQ
         :param package: Ready transaction
@@ -212,12 +201,6 @@ class TransactionDemon:
         except Exception as error:
             logger.error(f"ERROR DEMON SEND TO RABBIT STEP 212: {error}")
             await Errors.write_to_error(error=error, msg="ERROR 'TransactionDemon' STEP 212")
-            await RabbitMQ.send_to_checker(
-                error=error,
-                msg="ERROR 'TransactionDemon' STEP 212",
-                title="DEMON",
-                func=self.send_to_rabbit.__name__
-            )
 
     async def run(self):
         """The script runs all the time"""
@@ -246,12 +229,6 @@ class TransactionDemon:
                     except Exception as error:
                         logger.error(f"ERROR DEMON RUN STEP 232: {error}")
                         await Errors.write_to_error(error=error, msg="ERROR 'TransactionDemon' STEP 232")
-                        await RabbitMQ.send_to_checker(
-                            error=error,
-                            msg="ERROR 'TransactionDemon' STEP 232",
-                            title="DEMON",
-                            func=self.run.__name__
-                        )
                         continue
 
     async def start_in_range(self, start_block: int, end_block: int, list_addresses: List[TAddress] = None):
@@ -285,17 +262,9 @@ class TransactionDemon:
         elif not start_block and end_block:
             await self.start_in_range(await self.get_node_block_number(), end_block)
         else:
-            await RabbitMQ.send_to_checker_info(
-                msg="DEMON IS START",
-                title="DEMON"
-            )
             await self.send_all_from_folder_not_send()
             await self.run()
         logger.error("END OF SEARCH")
-        await RabbitMQ.send_to_checker_info(
-            msg="DEMON IS END",
-            title="DEMON"
-        )
 
     @staticmethod
     async def send_all_from_folder_not_send(self):

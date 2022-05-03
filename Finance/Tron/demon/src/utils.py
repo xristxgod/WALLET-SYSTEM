@@ -25,17 +25,6 @@ class Errors:
             # Write all the verified data to a json file, and do not praise the work
             await file.write(values)
 
-    @staticmethod
-    async def write_to_send(error: Exception, msg: str, title: str, func: str) -> json:
-        return json.dumps({
-            "status": "ERROR",
-            "time": Utils.get_datetime(),
-            "title": title,
-            "func": func,
-            "error": f"{error}",
-            "message": msg,
-        })
-
 class TronUtils:
 
     SUN = decimal.Decimal("1000000")
@@ -139,15 +128,6 @@ class Utils:
         :param timestamp: Timestamp data
         """
         return datetime.fromtimestamp(int(timestamp)).strftime('%d-%m-%Y %H:%M:%S')
-
-    @staticmethod
-    def write_if_start(msg: str, title: str) -> json:
-        return json.dumps({
-            "status": "INFO",
-            "time": Utils.get_datetime(),
-            "title": title,
-            "message": msg,
-        })
 
     @staticmethod
     def get_tron_gird_key() -> str:

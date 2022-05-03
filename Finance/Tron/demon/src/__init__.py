@@ -60,9 +60,6 @@ class DB:
             connection = await asyncpg.connect(Config.DATABASE_URL)
             return await connection.fetch(sql)
         except Exception as error:
-            await RabbitMQ.send_to_checker(
-                error=error, msg="ERROR 'DB' STEP 56", title="DEMON", func=DB.__select_method.__name__
-            ),
             raise error
         finally:
             if connection is not None:
@@ -88,7 +85,7 @@ class DB:
 
     @staticmethod
     async def get_all_tokens() -> List[Dict]:
-        if Config.NODE_NETWORK == "TEST":
+        if Config.NETWORK == "TESTNET":
             return TOKENS
         else:
             return await DB.__select_method(
@@ -98,7 +95,7 @@ class DB:
     @staticmethod
     async def get_token_info(address: TAddress, network: str = "TRON") -> Union[Dict, None]:
         try:
-            if Config.NODE_NETWORK == "TEST":
+            if Config.NETWORK == "TESTNET":
                 data = [t for t in TOKENS if t["address"] == address][0]
             else:
                 data = await DB.__select_method((
@@ -116,7 +113,7 @@ class DB:
 
     @staticmethod
     async def get_all_token_address() -> List[TAddress]:
-        if Config.NODE_NETWORK == "TEST":
+        if Config.NETWORK == "TESTNET":
             return [symbol["address"] for symbol in TOKENS]
         else:
             return [
@@ -127,20 +124,16 @@ class DB:
 class RabbitMQ:
 
     RABBITMQ_URL = Config.RABBITMQ_URL
-    RABBITMQ_QUEUE_SENDER = Config.RABBITMQ_QUEUE_SENDER
-    RABBITMQ_ROUTING_KEY_SENDER = Config.RABBITMQ_ROUTING_KEY_SENDER
-
-    RABBITMQ_QUEUE_CHECKER = Config.RABBITMQ_QUEUE_CHECKER
-    RABBITMQ_ROUTING_KEY_CHECKER = Config.RABBITMQ_ROUTING_KEY_CHECKER
+    RABBITMQ_QUEUE_FOR_SENDER = Config.RABBITMQ_QUEUE_FOR_SENDER
 
     @staticmethod
-    async def __send_message(msg: aio_pika.Message, queue_name: str, routing_key: str) -> None:
-        connection: Optional[aio_pika.Connection] = None
+    async def __send_message(msg: aio_pika.Message, queue_name: str) -> None:
+        connection = None
         try:
             connection = await aio_pika.connect_robust(url=RabbitMQ.RABBITMQ_URL)
             channel = await connection.channel()
             await channel.declare_queue(queue_name)
-            await channel.default_exchange.publish(message=msg, routing_key=routing_key)
+            await channel.default_exchange.publish(message=msg)
         except Exception as error:
             logger.error(f'ERROR RABBIT MQ SEND STEP 96: {error}')
             await Errors.write_to_error(error=error, msg="ERROR 'RABBITMQ' STEP 96")
@@ -153,22 +146,5 @@ class RabbitMQ:
     async def send_to_sender(values: json):
         await RabbitMQ.__send_message(
             msg=aio_pika.Message(values),
-            queue_name=RabbitMQ.RABBITMQ_QUEUE_SENDER,
-            routing_key=RabbitMQ.RABBITMQ_ROUTING_KEY_SENDER
-        )
-
-    @staticmethod
-    async def send_to_checker(error: Exception, msg: str, title: str, func: str):
-        await RabbitMQ.__send_message(
-            msg=aio_pika.Message(await Errors.write_to_send(error=error, msg=msg, title=title, func=func)),
-            queue_name=RabbitMQ.RABBITMQ_QUEUE_CHECKER,
-            routing_key=RabbitMQ.RABBITMQ_ROUTING_KEY_CHECKER
-        )
-
-    @staticmethod
-    async def send_to_checker_info(msg: str, title: str):
-        await RabbitMQ.__send_message(
-            msg=aio_pika.Message(Utils.write_if_start(msg=msg, title=title)),
-            queue_name=RabbitMQ.RABBITMQ_QUEUE_CHECKER,
-            routing_key=RabbitMQ.RABBITMQ_ROUTING_KEY_CHECKER
+            queue_name=RabbitMQ.RABBITMQ_QUEUE_FOR_SENDER,
         )

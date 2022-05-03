@@ -1,6 +1,6 @@
 import typing
 
-TPath: str = "m/44'/195'/0'/0/0"
+TPath: str = "m/44'/195'/0'/0/0"            # Tron path
 
 TransactionHash = typing.Union[str, bytes]  # Transaction Hash
 TAddress = str                              # Wallet address

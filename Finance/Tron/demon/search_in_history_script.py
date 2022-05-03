@@ -15,7 +15,7 @@ def create_parser():
     return parser
 
 async def async_run(**kwargs):
-    logger.error(f"Creating demon instance. Network: {Config.NODE_NETWORK}")
+    logger.error(f"Creating demon instance. Network: {Config.NETWORK}")
     logger.error(f"Start search in history")
     if "list_addresses" in kwargs and kwargs["list_addresses"] is not None:
         demon = AddressesDemon()
