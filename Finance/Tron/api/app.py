@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from config import Config
-from src.services.endpoints import router
+from src.services import endpoints, system
 
 app = FastAPI(
     title=f"TronNetwork '{Config.NETWORK}'",
@@ -10,7 +10,8 @@ app = FastAPI(
     docs_url="/tron/docs",
     redoc_url="/tron/redoc"
 )
-app.include_router(router)
+app.include_router(endpoints.router)
+app.include_router(system.router)
 
 if __name__ == '__main__':
     import uvicorn

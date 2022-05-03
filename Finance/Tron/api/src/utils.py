@@ -95,3 +95,9 @@ class TransactionUtils:
             ],
             "token": token if token is not None else "-"
         })
+
+class Utils:
+
+    @staticmethod
+    def is_valid(val_one: int, val_two: int, accept: int = 20) -> bool:
+        return (val_one == val_two) or (val_two - val_one <= accept)

@@ -1,5 +1,5 @@
 import json
-from typing import Dict, List, Optional, Union
+from typing import Dict, Optional, Union
 
 import asyncpg
 
@@ -42,7 +42,7 @@ class DB:
     @staticmethod
     async def get_token_info(token: str, network: str = "TRON") -> Union[Dict, None]:
         try:
-            if Config.NODE_NETWORK == "TEST":
+            if Config.NETWORK == "TESTNET":
                 data = [t for t in TOKENS if t["token"] == token.upper()][0]
             else:
                 data = await DB.__select_method((

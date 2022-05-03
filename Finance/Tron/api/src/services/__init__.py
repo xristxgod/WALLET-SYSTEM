@@ -13,7 +13,7 @@ class NodeTron:
     fromSun = staticmethod(TronUtils.from_sun)
     toSun = staticmethod(TronUtils.to_sun)
 
-    def __init__(self, node_url: AsyncHTTPProvider = PROVIDER, network: str = NETWORK):
+    def __init__(self):
         """
         Connect to Tron Node
         :param node_url: Node url
