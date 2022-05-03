@@ -1,6 +1,20 @@
-from src.settings import db
+import pyotp
+from flask_login import UserMixin
 
-class UserModel(db.Model):
+from src.settings import db
+from config import Config
+
+def is_password_correction(password: str):
+    if Config.DATABASE_INTERFACE_PASSWORD == password:
+        return True
+    return False
+
+def is_google_auth_code_correction(code: str):
+    if pyotp.TOTP(Config.DATABASE_INTERFACE_GOOGLE_AUTH_SECRET_KEY).now() == code:
+        return True
+    return False
+
+class UserModel(db.Model, UserMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(256), nullable=False)
@@ -41,10 +55,3 @@ class TokenModel(db.Model):
     address = db.Column(db.String(256), nullable=False, unique=True)
     decimals = db.Column(db.Integer)
     token_info = db.Column(db.JSON, nullable=True)
-
-TABLES = {
-        1: UserModel(),
-        2: WalletModel(),
-        3: WalletTransactionModel(),
-        4: TokenModel(),
-    }
