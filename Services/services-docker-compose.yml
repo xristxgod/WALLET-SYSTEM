@@ -27,23 +27,6 @@ services:
     logging:
       options:
         max-size: 100m
-
-  coins_monitor:
-    build:
-      context: coins_monitor/
-      dockerfile: Dockerfile
-    container_name: coins_monitor
-    command: /usr/bin/supervisord
-    env_file:
-      - .env
-    logging:
-      options:
-        max-size: 10m
-    volumes:
-      - ./files:/home/app/files
-    networks:
-      - telegram_wallet_services
-
 networks:
   telegram_wallet_services:
     driver: bridge

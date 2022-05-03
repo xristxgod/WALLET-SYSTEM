@@ -1,4 +1,4 @@
-bash ./Admin/stop.sh
-bash ./Bot/stop.sh
+bash ./Database/stop.sh
+bash ./Bots/stop.sh
 bash ./Finance/stop.sh
 bash ./Services/stop.sh
