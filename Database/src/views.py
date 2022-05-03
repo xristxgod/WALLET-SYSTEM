@@ -1,10 +1,11 @@
 import json
 
 from flask import Blueprint, render_template, redirect, url_for, flash
+from flask_login import login_user, logout_user, login_required, current_user
 
 from src.forms import LoginForm, GoogleAuthForm
 from src.models import UserModel
-from src.models import is_password_correction
+from src.models import is_password_correction, is_google_auth_code_correction
 
 app = Blueprint("main", __name__)
 
@@ -26,3 +27,36 @@ def login_page():
         "login.html",
         form=form
     )
+
+@app.route("/checking-code/<hash_info>", methods=['GET', 'POST'])
+def checking_code_page(hash_info: str):
+    user = UserModel.query.filter_by(id=json.loads(bytes.fromhex(hash_info).decode("utf-8")).get("id")).first()
+    if not user.is_admin:
+        flash('You are not an admin!', category='danger')
+        return redirect(url_for("main.main_page"))
+    form = GoogleAuthForm()
+    if form.validate_on_submit():
+        if is_google_auth_code_correction(code=form.code.data):
+            login_user(user)
+            return redirect(url_for('main.index_page'))
+        else:
+            flash("The code didn't fit. Try again", "danger")
+            return redirect(url_for('main.checking_code_page', hash_info=hash_info, _external=True))
+    return render_template(
+        "checking_code.html",
+        form=form
+    )
+
+@app.route('/logout')
+@login_required
+def logout_page():
+    logout_user()
+    flash("You have been logged out!", category='info')
+    return redirect(url_for("main.login_page"))
+
+# <<<==================================>>> Main pages <<<============================================================>>>
+
+@app.route('/')
+@login_required
+def index_page():
+    pass

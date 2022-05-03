@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  database_interface:
+    build:
+      context: admin_site/
+      dockerfile: Dockerfile
+    container_name: admin_site
+    command: python app.py
+    env_file:
+      - ./.env
+    ports:
+      - "80:8000"
+    expose:
+      - 85
+    networks:
+      - telegram_wallet_database
+    logging:
+      options:
+        max-size: 100m
+
+networks:
+  telegram_wallet_database:
+    driver: bridge
