@@ -3,6 +3,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse
 
+from src.services.client import Client
 from src.services.wallet import wallet
 from src.services.transactions import transaction_parser
 from src.services.schemas import (
@@ -13,9 +14,22 @@ from src.services.schemas import (
     ResponseCreateTransaction
 )
 from src.types import TAddress, TransactionHash, Coins
-from config import logger
+from config import logger, COINS
 
 router = APIRouter()
+
+# <<<----------------------------------->>> Coins <<<---------------------------------------------------------------->>>
+@router.get(
+    "/{coin}-usd/price", description="This method creates a tron wallet", tags=["Wallet"], response_class=JSONResponse
+)
+async def get_coin_price(coin: str):
+    if coin in list(COINS.keys()):
+        return JSONResponse(content={
+            "price": await Client.get_current_price(coin=COINS.get(coin)),
+            "coin": coin
+        })
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Coin "{coin}" was not found')
 
 # <<<----------------------------------->>> Wallet Info <<<---------------------------------------------------------->>>
 

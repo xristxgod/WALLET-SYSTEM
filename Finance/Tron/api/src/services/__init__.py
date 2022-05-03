@@ -8,7 +8,7 @@ from config import Config, decimals
 class NodeTron:
     # Provider config
     PROVIDER = AsyncHTTPProvider(Config.NODE_URL)
-    NETWORK: str = "shasta" if Config.NODE_NETWORK == "TEST" else "mainnet"
+    NETWORK: str = "shasta" if Config.NETWORK == "TESTNET" else "mainnet"
     # Converts
     fromSun = staticmethod(TronUtils.from_sun)
     toSun = staticmethod(TronUtils.to_sun)
