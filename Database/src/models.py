@@ -6,7 +6,10 @@ class UserModel(db.Model):
     username = db.Column(db.String(256), nullable=False)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
 
-class WalletMode():
+    wallets = db.relationship("WalletModel", backref='user', lazy=True)
+    wallet_transactions = db.relationship("WalletTransactionModel", backref='user', lazy=True)
+
+class WalletModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     network = db.Column(db.String(256), nullable=False)
     address = db.Column(db.String(256), nullable=False, unique=True)
@@ -17,7 +20,7 @@ class WalletMode():
     accounts = db.Column(db.JSON, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user_model.id"))
 
-class WalletTransactionModel():
+class WalletTransactionModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     network = db.Column(db.String(256), nullable=False)
     time = db.Column(db.Integer)
@@ -30,7 +33,7 @@ class WalletTransactionModel():
     status = db.Column(db.Boolean, nullable=False, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user_model.id"))
 
-class TokenModel():
+class TokenModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     network = db.Column(db.String(256), nullable=False)
