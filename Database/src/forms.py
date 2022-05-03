@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, SelectField, DecimalField
 from wtforms.validators import DataRequired
 
 # <<<==================================>>> Authorization forms <<<=============================================>>>
@@ -23,7 +23,7 @@ class RemoveForm(FlaskForm):
 class AddUserForm(FlaskForm):
     _id = StringField(label='Chat id: ', validators=[DataRequired()])
     username = StringField(label='Username: ', validators=[DataRequired()], description="Must start with `@'")
-    is_admin = BooleanField(label="Will he be an admin?")
+    is_admin = BooleanField(label="Will he be an admin?", validators=[DataRequired()])
     submit = SubmitField(label='Add')
 
 class UpdateUserForm(FlaskForm):
@@ -37,9 +37,10 @@ class AddTokenForm(FlaskForm):
     address = StringField(label='Smart contract address: ', validators=[DataRequired()])
     decimals = IntegerField(label='Decimals: ', validators=[DataRequired()], default=0)
     token_info = StringField(label='Token info: ', validators=[DataRequired()], default=None)
+    submit = SubmitField(label='Add')
 
 class UpdateTokenForm(FlaskForm):
-    pass
+    submit = SubmitField(label='Update')
 
 # <<<==================================>>> Wallet form <<<===========================================================>>>
 
@@ -51,14 +52,25 @@ class AddWalletForm(FlaskForm):
     passphrase = StringField(label='Wallet passphrase: ', validators=[DataRequired()])
     mnemonic_phrase = StringField(label='Wallet mnemonic phrase: ', validators=[DataRequired()])
     user_id = SelectField(label="The wallet belongs to the user: ", validators=[DataRequired()])
+    submit = SubmitField(label='Add')
 
 class UpdateWalletForm(FlaskForm):
-    pass
+    submit = SubmitField(label='Update')
 
 # <<<==================================>>> Wallet transaction form <<<===============================================>>>
 
 class AddWalletTransactionForm(FlaskForm):
-    pass
+    network = StringField(label='Network: ', validators=[DataRequired()])
+    time = SelectField(label="Select the transaction time: ", validators=[DataRequired()])
+    transaction_hash = StringField(label='Transaction hash: ', validators=[DataRequired()])
+    fee = DecimalField(label='Transaction fee: ', validators=[DataRequired()])
+    amount = DecimalField(label='Transaction amount: ', validators=[DataRequired()])
+    senders = StringField(label='Sender/s: ', validators=[DataRequired()], default=None)
+    recipients = StringField(label='Recipient/s: ', validators=[DataRequired()], default=None)
+    token = StringField(label='Token symbol: ', validators=[DataRequired()])
+    status = BooleanField(label="Status: ", validators=[DataRequired()])
+    user_id = SelectField(label="The wallet belongs to the user: ", validators=[DataRequired()])
+    submit = SubmitField(label='Add')
 
 class UpdateWalletTransactionForm(FlaskForm):
-    pass
+    submit = SubmitField(label='Update')
