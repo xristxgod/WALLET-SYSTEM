@@ -1,7 +1,6 @@
 import pyotp
 from flask_login import UserMixin
 
-from src.__init__ import login_manager
 from src.settings import db
 
 from config import Config

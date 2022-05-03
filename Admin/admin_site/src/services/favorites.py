@@ -16,7 +16,7 @@ class FavoritesUsers:
 
     def select_all_users(self) -> bool:
         try:
-            self.favorites_users = get_users_id()
+            self.favorites_users = "get_users_id()"
             return True
         except Exception as error:
             return False
