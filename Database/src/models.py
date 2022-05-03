@@ -41,3 +41,10 @@ class TokenModel(db.Model):
     address = db.Column(db.String(256), nullable=False, unique=True)
     decimals = db.Column(db.Integer)
     token_info = db.Column(db.JSON, nullable=True)
+
+TABLES = {
+        1: UserModel(),
+        2: WalletModel(),
+        3: WalletTransactionModel(),
+        4: TokenModel(),
+    }
