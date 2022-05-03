@@ -1,1 +1,0 @@
-docker-compose --file admin-site-docker-compose.yml stop
