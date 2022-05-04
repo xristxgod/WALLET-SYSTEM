@@ -36,7 +36,7 @@ class AddTokenForm(FlaskForm):
     token = StringField(label='Token symbol: ', validators=[DataRequired()])
     address = StringField(label='Smart contract address: ', validators=[DataRequired()])
     decimals = IntegerField(label='Decimals: ', validators=[DataRequired()], default=0)
-    token_info = StringField(label='Token info: ', validators=[DataRequired()], default=None)
+    token_info = StringField(label='Token info: ', validators=[DataRequired()], default="{}")
     submit = SubmitField(label='Add')
 
 # <<<==================================>>> Wallet form <<<===========================================================>>>

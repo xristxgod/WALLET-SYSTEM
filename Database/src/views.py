@@ -12,6 +12,7 @@ from src.models import is_password_correction, is_google_auth_code_correction
 from src.settings import db
 
 from src.services.helper import Helper
+from config import logger
 
 app = Blueprint("main", __name__)
 
@@ -77,21 +78,49 @@ def index_page():
         tokens=TokenModel.query.order_by("id"),
     )
 
+# @app.route("/show/<str:page>&id=<int:_id>")
+# @login_required
+# def show_data_page(page: str, _id: int):
+#     table: db.Model = Helper.get_table_by_page(page)
+#
+#     return redirect(url_for(f"main.{page}"))
+
 # <<<==================================>>> Token pages <<<============================================================>>>
 
 @app.route("/tokens", methods=['GET', 'POST'])
 def token_page():
     add_form = AddTokenForm()
     remove_form = RemoveForm()
-    upg_form = UpdateForm()
+    upd_form = UpdateForm()
     if request.method == "POST":
         if add_form.validate_on_submit():
-            added_token = request.form.get('added_token')
+            if request.form.get('added_token') is not None:
+                if add_form.token_info.data is not None:
+                    try:
+                        json.loads(add_form.token_info.data)
+                    except ValueError:
+                        flash('The "Token info" field must be JSON. Example: {"info": "...", "info2": "..."}', category='danger')
+                        return redirect(url_for("main.token_page"))
+                try:
+                    create_token = TokenModel(
+                        network=add_form.network.data,
+                        token=add_form.token.data,
+                        address=add_form.address.data,
+                        decimals=add_form.decimals.data,
+                        token_info=add_form.token_info.data
+                    )
+                    db.session.add(create_token)
+                    db.session.commit()
+                except Exception as error:
+                    db.session.rollback()
+                    logger.error(f"ERROR: {error}")
+                    flash("Something went wrong...")
+            return redirect(url_for("main.token_page"))
 
         if remove_form.validate_on_submit():
             remove_token = request.form.get("remove_token")
 
-        if upg_form.validate_on_submit():
+        if upd_form.validate_on_submit():
             update_token = request.form.get("update_token")
 
     return render_template(
@@ -99,5 +128,5 @@ def token_page():
         tokens=Helper.get_all_tokens(TokenModel.query.order_by("id")),
         add_form=add_form,
         remove_form=remove_form,
-        upg_form=upg_form
+        upg_form=upd_form
     )

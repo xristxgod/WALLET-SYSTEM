@@ -17,9 +17,11 @@
         {% for token in tokens %}
         {% include 'includes/token_models.html' %}
         <tr>
-            <td>{{ loop.index0 }}</td>
-            <td><a href="#">{{ token }}</a></td>
+            <td>{{ loop.index }}</td>
+            <td><b>{{ token }}</b></td>
             <td style="text-align:right">
+                <button class="btn btn-outline btn-primary" data-toggle="modal" data-target="#Modal-Get-{{ token }}">Show</button>
+                <button class="btn btn-outline btn-success" data-toggle="modal" data-target="#Modal-Update-{{ token }}">Update</button>
                 <button class="btn btn-outline btn-danger" data-toggle="modal" data-target="#Modal-RemoveConfirm-{{ token }}">Remove</button>
             </td>
         </tr>
