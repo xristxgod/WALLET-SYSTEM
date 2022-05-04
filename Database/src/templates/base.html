@@ -8,7 +8,7 @@
    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='styles/sidebars.css') }}">
    <link rel= "stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
    {% block head %}
-   <title>Wallet Admin</title>
+   <title> MyCryptoWallet </title>
    {% endblock %}
    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" ></script>
    <script src="//code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -34,9 +34,6 @@
    <div class="collapse navbar-collapse justify-content-end">
       <ul class="nav navbar-nav navbar-right">
          {% if current_user.is_authenticated %}
-         <li class="nav-item">
-            <a class="nav-link" style="color: lawngreen; font-weight: bold" href="#"></a>
-         </li>
          <li class="nav-item">
             <a class="nav-link" style="color: lawngreen; font-weight: bold" href="#">"Welcome, {{ current_user.username }}</a>
          </li>
@@ -71,13 +68,11 @@
          <div class="flex-shrink-0 p-3 bg-white col-md-2">
             {% if current_user.is_authenticated  %}
             <ul class="list-unstyled ps-0">
-               {% for button in buttons %}
                <li>
                   <a href="{{ button['url_path'] }}" class="btn align-items-center rounded">
-                     Table: {{ button['url_name'] }}
+                     Table: NameTable
                   </a>
                </li>
-               {% endfor %}
             </ul>
             {% endif %}
          </div>

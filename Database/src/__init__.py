@@ -17,6 +17,10 @@ def clear_trailing():
     if rp != "/" and rp.endswith("/"):
         return redirect(rp[:-1])
 
+@login_manager.user_loader
+def load_user(user_id):
+    return models.UserModel.query.get(int(user_id))
+
 def init_app(config=settings.Settings):
     global app
     app.config.from_object(config)
