@@ -1,12 +1,17 @@
 import json
 
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 
 from src.forms import LoginForm, GoogleAuthForm
 from src.forms import RemoveForm, AddTokenForm, UpdateForm
+
 from src.models import UserModel, WalletTransactionModel, WalletModel, TokenModel
 from src.models import is_password_correction, is_google_auth_code_correction
+
+from src.settings import db
+
+from src.services.helper import Helper
 
 app = Blueprint("main", __name__)
 
@@ -77,5 +82,22 @@ def index_page():
 @app.route("/tokens", methods=['GET', 'POST'])
 def token_page():
     add_form = AddTokenForm()
-    delete_form = RemoveForm()
+    remove_form = RemoveForm()
     upg_form = UpdateForm()
+    if request.method == "POST":
+        if add_form.validate_on_submit():
+            added_token = request.form.get('added_token')
+
+        if remove_form.validate_on_submit():
+            remove_token = request.form.get("remove_token")
+
+        if upg_form.validate_on_submit():
+            update_token = request.form.get("update_token")
+
+    return render_template(
+        "token.html",
+        tokens=Helper.get_all_tokens(TokenModel.query.order_by("id")),
+        add_form=add_form,
+        remove_form=remove_form,
+        upg_form=upg_form
+    )

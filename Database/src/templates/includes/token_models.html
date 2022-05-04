@@ -1,0 +1,103 @@
+<style>
+   .modal-content {
+   background-color: #ffffff;
+   text-color: #000000
+   }
+</style>
+<!-- Add -->
+<div class="modal fade" id="Modal-Add" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="ModalLabel">
+               <!-- -->
+               Add new Token
+            </h5>
+            <button type="button" class="close"
+               data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body">
+            <form method="POST">
+               {{ add_form.hidden_tag() }}
+
+               <br>
+               {{ add_form.network.label() }}
+               {{ add_form.network(class="form-control", placeholder="Network") }}
+               {{ add_form.token.label() }}
+               {{ add_form.token(class="form-control", placeholder="Token") }}
+               {{ add_form.address.label() }}
+               {{ add_form.address(class="form-control", placeholder="Smart contract address") }}
+               {{ add_form.decimals.label() }}
+               {{ add_form.decimals(class="form-control", placeholder="Decimals") }}
+               {{ add_form.token_info.label() }}
+               {{ add_form.token_info(class="form-control", placeholder="Token info: ") }}
+               <br>
+
+               <div class="modal-footer">
+                  <input id="added_token" name="added_token" type="hidden" value="{{ add_form.address.data }}">
+                  {{ add_form.submit(class="btn btn-success btn-block") }}
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+               </div>
+            </form>
+         </div>
+      </div>
+   </div>
+</div>
+<!-- Remove -->
+<div class="modal fade" id="Modal-RemoveConfirm-{{ token }}"
+   tabindex="-1"
+   aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="ModalLabel">
+               <!-- -->
+               {{ token }}
+            </h5>
+            <button type="button" class="close"
+               data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body">
+            <form method="POST">
+               {{ remove_form.hidden_tag() }}
+               <h4 class="text-center">
+                  Are you sure you want to remove token: {{ token }} ?
+               </h4>
+               <br>
+               <h6 class="text-center">
+                  By clicking Remove, you will remove this Token.
+               </h6>
+               <br>
+               <div class="modal-footer">
+                  <input id="remove_id" name="remove_id" type="hidden" value="{{ token }}">
+                  {{ remove_form.submit(class="btn btn btn-danger btn-block") }}
+                  <button type="button" class="btn btn-secondary"
+                     data-dismiss="modal">Close
+                  </button>
+               </div>
+            </form>
+         </div>
+      </div>
+   </div>
+</div>
+<!-- Update Confirm -->
+
+<!-- Get -->
+<div class="modal fade" id="Modal-Get-{{ token }}"
+   tabindex="-1"
+   aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="ModalLabel">
+               <!-- -->
+               {{ token }}
+            </h5>
+         </div>
+      </div>
+   </div>
+</div>

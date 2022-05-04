@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %} Tokens {% endblock %}
+{% block content %}
+
+<div class="row" style="margin-top:20px; margin-left:20px">
+    <h2>Tokens</h2>
+    <br>
+    <table class="table table-hover table-light">
+        <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Token name</th>
+            <th scope="col" style="text-align:right">Options</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for token in tokens %}
+        {% include 'includes/token_models.html' %}
+        <tr>
+            <td>{{ loop.index0 }}</td>
+            <td><a href="#">{{ token }}</a></td>
+            <td style="text-align:right">
+                <button class="btn btn-outline btn-danger" data-toggle="modal" data-target="#Modal-RemoveConfirm-{{ token }}">Remove</button>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% include 'includes/token_models.html' %}
+    <button class="btn btn-outline btn-success" data-toggle="modal" data-target="#Modal-Add">Add new Token</button>
+    <br>
+</div>
+
+{% endblock %}
