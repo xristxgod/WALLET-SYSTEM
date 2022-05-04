@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 
 from src.forms import LoginForm, GoogleAuthForm
-from src.models import UserModel, WalletTransactionModel
+from src.models import UserModel, WalletTransactionModel, WalletModel, TokenModel
 from src.models import is_password_correction, is_google_auth_code_correction
 
 app = Blueprint("main", __name__)
@@ -62,5 +62,11 @@ def index_page():
     return render_template(
         "home.html",
         users_count=UserModel.query.count(),
-        transactions_count=WalletTransactionModel.query.count()
+        users=UserModel.query.order_by("id"),
+        wallets_count=WalletModel.query.count(),
+        wallets=WalletModel.query.order_by("id"),
+        transactions_count=WalletTransactionModel.query.count(),
+        transactions=WalletTransactionModel.query.order_by("id"),
+        tokens_count=TokenModel.query.count(),
+        tokens=TokenModel.query.order_by("id"),
     )
