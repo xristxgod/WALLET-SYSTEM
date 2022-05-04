@@ -78,13 +78,6 @@ def index_page():
         tokens=TokenModel.query.order_by("id"),
     )
 
-# @app.route("/show/<str:page>&id=<int:_id>")
-# @login_required
-# def show_data_page(page: str, _id: int):
-#     table: db.Model = Helper.get_table_by_page(page)
-#
-#     return redirect(url_for(f"main.{page}"))
-
 # <<<==================================>>> Token pages <<<============================================================>>>
 
 @app.route("/tokens", methods=['GET', 'POST'])

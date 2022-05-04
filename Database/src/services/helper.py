@@ -15,7 +15,3 @@ class Helper:
     @staticmethod
     def get_all_tokens(tokens: typing.List[TokenModel]) -> typing.List[str]:
         return [f"{token.network}-{token.token}" for token in tokens]
-
-    @staticmethod
-    def get_table_by_page(table: str) -> typing.Optional[db.Model]:
-        return Helper.MODELS.get(table)
