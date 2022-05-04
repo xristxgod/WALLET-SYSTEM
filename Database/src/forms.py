@@ -13,10 +13,13 @@ class GoogleAuthForm(FlaskForm):
     code = StringField(label='Code from the GoogleAuthenticator app:', validators=[DataRequired()])
     submit = SubmitField(label='Sign in')
 
-# <<<==================================>>> Remove <<<================================================================>>>
+# <<<==================================>>> Remove And Update <<<=====================================================>>>
 
 class RemoveForm(FlaskForm):
     submit = SubmitField(label='Remove')
+
+class UpdateForm(FlaskForm):
+    submit = SubmitField(label='Update')
 
 # <<<==================================>>> User model form <<<=======================================================>>>
 
@@ -25,9 +28,6 @@ class AddUserForm(FlaskForm):
     username = StringField(label='Username: ', validators=[DataRequired()], description="Must start with `@'")
     is_admin = BooleanField(label="Will he be an admin?", validators=[DataRequired()])
     submit = SubmitField(label='Add')
-
-class UpdateUserForm(FlaskForm):
-    pass
 
 # <<<==================================>>> Token form <<<============================================================>>>
 
@@ -38,9 +38,6 @@ class AddTokenForm(FlaskForm):
     decimals = IntegerField(label='Decimals: ', validators=[DataRequired()], default=0)
     token_info = StringField(label='Token info: ', validators=[DataRequired()], default=None)
     submit = SubmitField(label='Add')
-
-class UpdateTokenForm(FlaskForm):
-    submit = SubmitField(label='Update')
 
 # <<<==================================>>> Wallet form <<<===========================================================>>>
 
@@ -53,9 +50,6 @@ class AddWalletForm(FlaskForm):
     mnemonic_phrase = StringField(label='Wallet mnemonic phrase: ', validators=[DataRequired()])
     user_id = SelectField(label="The wallet belongs to the user: ", validators=[DataRequired()])
     submit = SubmitField(label='Add')
-
-class UpdateWalletForm(FlaskForm):
-    submit = SubmitField(label='Update')
 
 # <<<==================================>>> Wallet transaction form <<<===============================================>>>
 
@@ -71,6 +65,3 @@ class AddWalletTransactionForm(FlaskForm):
     status = BooleanField(label="Status: ", validators=[DataRequired()])
     user_id = SelectField(label="The wallet belongs to the user: ", validators=[DataRequired()])
     submit = SubmitField(label='Add')
-
-class UpdateWalletTransactionForm(FlaskForm):
-    submit = SubmitField(label='Update')

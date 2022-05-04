@@ -4,6 +4,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 
 from src.forms import LoginForm, GoogleAuthForm
+from src.forms import RemoveForm, AddTokenForm, UpdateForm
 from src.models import UserModel, WalletTransactionModel, WalletModel, TokenModel
 from src.models import is_password_correction, is_google_auth_code_correction
 
@@ -70,3 +71,11 @@ def index_page():
         tokens_count=TokenModel.query.count(),
         tokens=TokenModel.query.order_by("id"),
     )
+
+# <<<==================================>>> Token pages <<<============================================================>>>
+
+@app.route("/tokens", methods=['GET', 'POST'])
+def token_page():
+    add_form = AddTokenForm()
+    delete_form = RemoveForm()
+    upg_form = UpdateForm()
