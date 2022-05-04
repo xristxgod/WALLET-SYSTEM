@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 
 from src.forms import LoginForm, GoogleAuthForm
-from src.models import UserModel
+from src.models import UserModel, WalletTransactionModel
 from src.models import is_password_correction, is_google_auth_code_correction
 
 app = Blueprint("main", __name__)
@@ -59,4 +59,8 @@ def logout_page():
 @app.route('/')
 @login_required
 def index_page():
-    pass
+    return render_template(
+        "home.html",
+        users_count=UserModel.query.count(),
+        transactions_count=WalletTransactionModel.query.count()
+    )
