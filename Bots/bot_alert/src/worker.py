@@ -1,4 +1,5 @@
 from src.schemas import BodyRegUser, BodyBalance, BodyInfo
+from src.schemas import BodyNews
 from src.sender import Sender
 from src.types import Symbol, TGToken
 from config import Config
@@ -63,3 +64,22 @@ class WorkerUser:
                 text=text,
                 token=WorkerUser.BOT_ALERT
             )
+
+class WorkerChecker:
+    BOT_CHECKER: TGToken = Config.BOT_CHECKER_TOKEN
+
+    @staticmethod
+    async def news_text(body: BodyNews, is_good: bool = False) -> bool:
+        """Sends a message to the bot with the system status"""
+        if is_good:
+            text = f"{Symbol.ADD} Good news:\n"
+        else:
+            text = f"{Symbol.DEC} Bad news:\n"
+
+        text += body.message
+        return await Sender.send_to_bot_by_admin(
+            text=text,
+            token=WorkerChecker.BOT_CHECKER
+        )
+
+

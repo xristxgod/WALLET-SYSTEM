@@ -38,3 +38,14 @@ class BodyInfo(BaseModel):
 class ResponseUserMethod(BaseModel):
     message: bool
 
+# <<<=================================>>> Checker endpoint <<<=======================================================>>>
+
+# <<< Body >>>
+
+class BodyNews(BaseModel):
+    message: TGMessage = Field(description="Message with bad information")
+
+# <<< Response >>>
+
+class ResponseCheckerMethod(BaseModel):
+    message: bool
