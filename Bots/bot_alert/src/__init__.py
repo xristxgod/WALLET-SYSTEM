@@ -19,6 +19,18 @@ class DB:
             if connection is not None:
                 await connection.close()
 
+    @staticmethod
+    async def get_all_users():
+        return [user[0] for user in (await DB.__select_method((
+            "SELECT id FROM user_model"
+        )))]
+
+    @staticmethod
+    async def get_all_admin():
+        return [user[0] for user in (await DB.__select_method((
+            "SELECT id FROM user_model WHERE is_admin=true"
+        )))]
+
 class MessageRepository:
 
     def __init__(self):
