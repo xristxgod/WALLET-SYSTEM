@@ -19,6 +19,9 @@ class UserModel(db.Model, UserMixin):
     wallets = db.relationship("WalletModel", backref='user', lazy=True)
     wallet_transactions = db.relationship("WalletTransactionModel", backref='user', lazy=True)
 
+    def __repr__(self):
+        return f"{self.id} - {self.username}"
+
 class WalletModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     network = db.Column(db.String(256), nullable=False)

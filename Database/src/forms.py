@@ -24,9 +24,9 @@ class UpdateForm(FlaskForm):
 # <<<==================================>>> User model form <<<=======================================================>>>
 
 class AddUserForm(FlaskForm):
-    _id = StringField(label='Chat id: ', validators=[DataRequired()])
+    chat_id = StringField(label='Chat id: ', validators=[DataRequired()])
     username = StringField(label='Username: ', validators=[DataRequired()], description="Must start with `@'")
-    is_admin = BooleanField(label="Will he be an admin?", validators=[DataRequired()])
+    is_admin = BooleanField(label="Will he be an admin: ", validators=[DataRequired()])
     submit = SubmitField(label='Add')
 
 # <<<==================================>>> Token form <<<============================================================>>>

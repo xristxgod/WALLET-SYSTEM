@@ -89,16 +89,19 @@ def user_page():
         if add_form.validate_on_submit():
             if request.form.get('added_user') is not None:
                 pass
+            return redirect(url_for("main.user_page"))
 
         if remove_form.validate_on_submit():
             remove_user = request.form.get("remove_user")
+            return redirect(url_for("main.user_page"))
 
         if upd_form.validate_on_submit():
             update_user = request.form.get("update_user")
+            return redirect(url_for("main.user_page"))
 
     return render_template(
-        "token.html",
-        users=Helper.get_all_users(UserModel.query.order_by("id")),
+        "users.html",
+        users=UserModel.query.order_by("id"),
         add_form=add_form,
         remove_form=remove_form,
         upg_form=upd_form
@@ -149,9 +152,11 @@ def token_page():
                     db.session.rollback()
                     logger.error(f"ERROR: {error}")
                     flash("Something went wrong...")
+            return redirect(url_for("main.token_page"))
 
         if upd_form.validate_on_submit():
             update_token = request.form.get("update_token")
+            return redirect(url_for("main.token_page"))
 
     return render_template(
         "token.html",
