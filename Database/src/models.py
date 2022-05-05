@@ -33,6 +33,9 @@ class WalletModel(db.Model):
     accounts = db.Column(db.JSON, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user_model.id"))
 
+    def __repr__(self):
+        return f"{self.user_id} - {self.network} - {self.address}"
+
 class WalletTransactionModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     network = db.Column(db.String(256), nullable=False)
@@ -46,11 +49,16 @@ class WalletTransactionModel(db.Model):
     status = db.Column(db.Boolean, nullable=False, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user_model.id"))
 
-class TokenModel(db.Model):
+    def __repr__(self):
+        return f"{self.network} - {self.transaction_hash} - {self.time}"
 
+class TokenModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     network = db.Column(db.String(256), nullable=False)
     token = db.Column(db.String(256), nullable=False)
     address = db.Column(db.String(256), nullable=False, unique=True)
     decimals = db.Column(db.Integer)
     token_info = db.Column(db.JSON, nullable=True)
+
+    def __repr__(self):
+        return f"{self.network}-{self.token}"
