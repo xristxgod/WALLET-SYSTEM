@@ -1,20 +1,62 @@
 import aiohttp
 
-from config import Config
+from src.__init__ import DB
+from src.types import TGToken, TGMessage, TGChatID
+from config import Config, logger
 
 class Sender:
-
-    BOT_ALERT = Config.BOT_ALERT_TOKEN
-    BOT_CHECKER = Config.BOT_CHECKER_TOKEN
+    """Send a message to the telegram bot"""
 
     @staticmethod
-    async def send_to_bot_by_admin(text: str) -> bool:
-        pass
+    async def send_to_bot_by_admin(text: TGMessage, token: TGToken) -> bool:
+        """
+        Send a message to the telegram bot for admin
+        :param text: Message text
+        :param token: Telegram bot token
+        """
+        try:
+            async with aiohttp.ClientSession() as session:
+                for chat_id in (await DB.get_all_admin()):
+                    async with session.get(
+                            f"https://api.telegram.org/bot{token}/sendMessage",
+                            params={
+                                "chat_id": chat_id,
+                                "text": text,
+                                "parse_mode": "html"
+                            }
+                    ) as response:
+                        logger.error(f"SEND ({chat_id}): {response.ok}")
+            logger.error(f'MESSAGE HAS BEEN SENT: {text}.')
+            return True
+        except Exception as error:
+            logger.error(f"ERROR: {error}")
+            return False
 
     @staticmethod
-    async def send_to_bot_by_chat_id(text: str, chat_id: int) -> bool:
-        pass
+    async def send_to_bot_by_chat_id(text: TGMessage, chat_id: TGChatID, token: TGToken) -> bool:
+        """
+        Send a message to the telegram bot for admin
+        :param text: Message text
+        :param chat_id: User ID for send
+        :param token: Telegram bot token
+        """
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(
+                        f"https://api.telegram.org/bot{token}/sendMessage",
+                        params={
+                            "chat_id": chat_id,
+                            "text": text,
+                            "parse_mode": "html"
+                        }
+                ) as response:
+                    logger.error(f"SEND ({chat_id}): {response.ok}")
+            logger.error(f'MESSAGE HAS BEEN SENT: {text}.')
+            return True
+        except Exception as error:
+            logger.error(f"ERROR: {error}")
+            return False
 
     @staticmethod
-    async def send_to_bot_by_all(text: str) -> bool:
+    async def send_to_bot_by_all(text: str, token: str) -> bool:
         pass

@@ -1,9 +1,12 @@
 from src.schemas import BodyRegUser, BodyBalance, BodyInfo
 from src.sender import Sender
-from src.types import Symbol
+from src.types import Symbol, TGToken
+from config import Config
 
 class WorkerUser:
     """This module forms the text for the message"""
+    BOT_ALERT: TGToken = Config.BOT_ALERT_TOKEN
+
     @staticmethod
     async def reg_user_text(body: BodyRegUser) -> bool:
         """Message at registration"""
@@ -15,7 +18,10 @@ class WorkerUser:
             f"ChatID: {body.chat_id}\n"
             f"Username: {body.username}"
         )
-        return await Sender.send_to_bot_by_admin(text=text)
+        return await Sender.send_to_bot_by_admin(
+            text=text,
+            token=WorkerUser.BOT_ALERT
+        )
 
     @staticmethod
     async def balance_text(body: BodyBalance, is_add: bool = False) -> bool:
@@ -28,8 +34,14 @@ class WorkerUser:
             f"ChatID: {body.chat_id}\n"
             f"Username: {body.username}"
         )
-        return (await Sender.send_to_bot_by_admin(text=text)) and \
-               (await Sender.send_to_bot_by_chat_id(text=text, chat_id=int(body.chat_id)))
+        return (await Sender.send_to_bot_by_admin(
+            text=text,
+            token=WorkerUser.BOT_ALERT
+        )) and (await Sender.send_to_bot_by_chat_id(
+            text=text,
+            chat_id=int(body.chat_id),
+            token=WorkerUser.BOT_ALERT
+        ))
 
     @staticmethod
     async def info_text(body: BodyInfo) -> bool:
@@ -40,7 +52,14 @@ class WorkerUser:
         )
         if body.chat_ids is not None:
             for chat_id in body.chat_ids:
-                await Sender.send_to_bot_by_chat_id(text=text, chat_id=int(chat_id))
+                await Sender.send_to_bot_by_chat_id(
+                    text=text,
+                    chat_id=int(chat_id),
+                    token=WorkerUser.BOT_ALERT
+                )
             return True
         else:
-            return await Sender.send_to_bot_by_all(text=text)
+            return await Sender.send_to_bot_by_all(
+                text=text,
+                token=WorkerUser.BOT_ALERT
+            )

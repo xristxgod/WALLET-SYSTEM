@@ -1,25 +1,26 @@
 from typing import Optional, List
 
 from pydantic import BaseModel, Field
+from src.types import TGMessage, TGChatID
 
 # <<<=================================>>> User endpoint <<<==========================================================>>>
 
 # <<< Body >>>
 
 class BodyRegUser(BaseModel):
-    chat_id: int = Field(description="ID of the new user")
+    chat_id: TGChatID = Field(description="ID of the new user")
     username: Optional[str] = Field(default=None, description="Username of the new user")
     is_admin: Optional[bool] = Field(default=False, description="Is the user an admin?")
 
 class BodyBalance(BaseModel):
-    chat_id: int = Field(description="ID of the user")
+    chat_id: TGChatID = Field(description="ID of the user")
     username: Optional[str] = Field(default=None, description="Username of the user")
     network: str = Field(description="The network where the deposit/debit occurred")
     amount: str = Field(description="The number of coins that have been replenished/debited")
 
 class BodyInfo(BaseModel):
-    message: str = Field(description="Message with information")
-    chat_ids: Optional[List[int]] = Field(default=None, description="Send a message to an individual user")
+    message: TGMessage = Field(description="Message with information")
+    chat_ids: Optional[List[TGChatID]] = Field(default=None, description="Send a message to an individual user")
     is_all: Optional[bool] = Field(default=False, description="Send a message to all users or just one")
 
     def __init__(self, **kwargs):
