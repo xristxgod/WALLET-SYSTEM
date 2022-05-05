@@ -38,7 +38,9 @@ class WorkerUser:
             f"{Symbol.INFO} Urgent information!\n"
             f"{body.message}"
         )
-        if body.chat_id is not None:
-            return await Sender.send_to_bot_by_chat_id(text=text, chat_id=int(body.chat_id))
+        if body.chat_ids is not None:
+            for chat_id in body.chat_ids:
+                await Sender.send_to_bot_by_chat_id(text=text, chat_id=int(chat_id))
+            return True
         else:
             return await Sender.send_to_bot_by_all(text=text)

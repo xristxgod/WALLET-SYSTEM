@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, Field
 
@@ -19,15 +19,18 @@ class BodyBalance(BaseModel):
 
 class BodyInfo(BaseModel):
     message: str = Field(description="Message with information")
-    chat_id: Optional[int] = Field(default=None, description="Send a message to an individual user")
+    chat_ids: Optional[List[int]] = Field(default=None, description="Send a message to an individual user")
     is_all: Optional[bool] = Field(default=False, description="Send a message to all users or just one")
 
     def __init__(self, **kwargs):
         super(BodyInfo, self).__init__(**kwargs)
-        if self.chat_id is not None and self.is_all is not None:
+        if self.chat_ids is not None and self.is_all is not None:
             self.is_all = False
-        if self.chat_id is None and self.is_all is None:
+        if self.chat_ids is None and self.is_all is None:
             self.is_all = True
+        if self.chat_ids is not None and \
+                (isinstance(self.chat_ids, str) and self.chat_ids.isdigit()) or isinstance(self.chat_ids, int):
+            self.chat_ids = [self.chat_ids]
 
 # <<< Response >>>
 
