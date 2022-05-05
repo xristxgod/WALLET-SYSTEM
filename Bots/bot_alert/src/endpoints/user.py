@@ -1,6 +1,9 @@
 from fastapi import APIRouter
 from src.schemas import BodyRegUser, BodyBalance, ResponseUserMethod
 
+from src.worker import WorkerUser
+from config import logger
+
 router = APIRouter(prefix="/user")
 
 @router.post(
@@ -8,7 +11,13 @@ router = APIRouter(prefix="/user")
     response_model=ResponseUserMethod, tags=["USER"]
 )
 async def reg_user(body: BodyRegUser):
-    pass
+    try:
+        return ResponseUserMethod(
+            message=(await WorkerUser.reg_user_text(body=body))
+        )
+    except Exception as error:
+        logger.error(f"ERROR: {error}")
+        return ResponseUserMethod(message=False)
 
 @router.post(
     "/add", description="Sends a message to the notification bot about what happened to the deposit balance!",
