@@ -2,9 +2,11 @@ from typing import List, Optional, Dict
 
 import asyncpg
 
+from src.types import TGChatID
 from config import Config
 
 class DB:
+    """This class is used to work with the database"""
     DATABASE_URL = Config.DATABASE_URL
 
     @staticmethod
@@ -20,14 +22,14 @@ class DB:
                 await connection.close()
 
     @staticmethod
-    async def get_all_users():
-        return [user[0] for user in (await DB.__select_method((
+    async def get_all_users() -> List[TGChatID]:
+        return [user["id"] for user in (await DB.__select_method((
             "SELECT id FROM user_model"
         )))]
 
     @staticmethod
-    async def get_all_admin():
-        return [user[0] for user in (await DB.__select_method((
+    async def get_all_admin() -> List[TGChatID]:
+        return [user["id"] for user in (await DB.__select_method((
             "SELECT id FROM user_model WHERE is_admin=true"
         )))]
 
