@@ -1,13 +1,13 @@
 from fastapi import FastAPI
 
-from src.endpoints import router
+from src.endpoints.__init__ import router
 
 app = FastAPI(
     title=f"BotAlert",
     description="Service for interacting with the Tron network.",
     version="1.0.0",
     docs_url="/bot/docs",
-    redoc_url="/bot/redoc"
+    redoc_url="/bot/redoc",
 )
 app.include_router(router)
 
