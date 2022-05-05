@@ -187,7 +187,7 @@ def transaction_page():
             return redirect(url_for("main.transaction_page"))
 
     return render_template(
-        "wallets.html",
+        "transactions.html",
         wallets=WalletTransactionModel.query.order_by("id"),
         add_form=add_form,
         remove_form=remove_form,
