@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from src.schemas import BodyRegUser, ResponseUserMethod
+from src.schemas import BodyRegUser, BodyBalance, ResponseUserMethod
 
 router = APIRouter(prefix="/user")
 
@@ -10,10 +10,16 @@ router = APIRouter(prefix="/user")
 def reg_user(body: BodyRegUser):
     pass
 
-@router.post("/add")
-def add_balance(body):
+@router.post(
+    "/add", description="Sends a message to the notification bot about what happened to the deposit balance!",
+    response_model=ResponseUserMethod, tags=["USER"]
+)
+def add_balance(body: BodyBalance):
     pass
 
-@router.post("/dec")
-def add_balance(body):
+@router.post(
+    "/dec", description="Sends a message to the notifier bot about what happened the balance debit!",
+    response_model=ResponseUserMethod, tags=["USER"]
+)
+def add_balance(body: BodyBalance):
     pass
