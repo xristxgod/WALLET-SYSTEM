@@ -113,6 +113,18 @@ def user_page():
 
         if remove_form.validate_on_submit():
             remove_user = request.form.get("remove_user")
+            print(remove_user)
+            if remove_user is not None:
+                chat_id, _ = remove_user.split(" - ")
+                try:
+                    UserModel.query.get(id=chat_id).delete()
+                    Helper.delete_all_wallets_by_user_id(user_id=chat_id)
+                    db.session.commit()
+                    flash("The user was removed from the system!", category='danger')
+                except Exception as error:
+                    db.session.rollback()
+                    logger.error(f"ERROR: {error}")
+                    flash("Something went wrong...", category='danger')
             return redirect(url_for("main.user_page"))
 
         if upd_form.validate_on_submit():

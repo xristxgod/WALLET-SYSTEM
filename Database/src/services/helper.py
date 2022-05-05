@@ -1,7 +1,10 @@
+import psycopg2
 from typing import List, Dict
 
 from src.models import TokenModel, WalletModel, WalletTransactionModel, UserModel
 from src.settings import db
+
+from config import Config, logger
 
 class Helper:
 
@@ -17,5 +20,21 @@ class Helper:
         return [f"{token.network}-{token.token}" for token in tokens]
 
     @staticmethod
-    def get_all_users(users: List[UserModel]) -> List[Dict]:
-        return [{"id": user.id, "username": user.username, "is_admin": user.is_admin} for user in users]
+    def delete_all_wallets_by_user_id(user_id: int) -> bool:
+        connection = None
+        try:
+            connection = psycopg2.connect(Config.DATABASE_URL)
+            cursor = connection.cursor()
+            cursor.execute((
+                f"DELETE FROM wallet_model WHERE user_id={user_id};"
+                f"DELETE FROM wallet_transaction_model WHERE user_id={user_id};"
+            ))
+            connection.commit()
+            return True
+        except Exception as error:
+            connection.rollback()
+            logger.error(f"ERROR: {error}")
+            return False
+        finally:
+            if connection is not None:
+                connection.close()
