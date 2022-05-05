@@ -42,7 +42,7 @@ class AddTokenForm(FlaskForm):
 # <<<==================================>>> Wallet form <<<===========================================================>>>
 
 class AddWalletForm(FlaskForm):
-    network = StringField(label='Network: ', validators=[DataRequired()])
+    network = SelectField(label='Network: ', validators=[DataRequired()])
     address = StringField(label='Wallet address: ', validators=[DataRequired()])
     private_key = StringField(label='Wallet private key: ', validators=[DataRequired()])
     public_key = StringField(label='Wallet public key: ', validators=[DataRequired()])
@@ -54,14 +54,14 @@ class AddWalletForm(FlaskForm):
 # <<<==================================>>> Wallet transaction form <<<===============================================>>>
 
 class AddWalletTransactionForm(FlaskForm):
-    network = StringField(label='Network: ', validators=[DataRequired()])
+    network = SelectField(label='Network: ', validators=[DataRequired()])
     time = SelectField(label="Select the transaction time: ", validators=[DataRequired()])
     transaction_hash = StringField(label='Transaction hash: ', validators=[DataRequired()])
     fee = DecimalField(label='Transaction fee: ', validators=[DataRequired()])
     amount = DecimalField(label='Transaction amount: ', validators=[DataRequired()])
     senders = StringField(label='Sender/s: ', validators=[DataRequired()], default=None)
     recipients = StringField(label='Recipient/s: ', validators=[DataRequired()], default=None)
-    token = StringField(label='Token symbol: ', validators=[DataRequired()])
+    token = SelectField(label='Token symbol: ', validators=[DataRequired()])
     status = BooleanField(label="Status: ", validators=[DataRequired()])
     user_id = SelectField(label="The wallet belongs to the user: ", validators=[DataRequired()])
     submit = SubmitField(label='Add')

@@ -1,19 +1,11 @@
 import psycopg2
-from typing import List, Dict
+from typing import List
 
-from src.models import TokenModel, WalletModel, WalletTransactionModel, UserModel
-from src.settings import db
+from src.models import TokenModel
 
 from config import Config, logger
 
 class Helper:
-
-    MODELS = {
-        "token_page": TokenModel,
-        "wallet_page": WalletModel,
-        "user_page": UserModel,
-        "transaction_page": WalletTransactionModel
-    }
 
     @staticmethod
     def get_all_tokens(tokens: List[TokenModel]) -> List[str]:

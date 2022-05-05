@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 
 from src.forms import LoginForm, GoogleAuthForm, RemoveForm, UpdateForm
-from src.forms import AddTokenForm, AddUserForm
+from src.forms import AddTokenForm, AddUserForm, AddWalletForm
 
 from src.models import UserModel, WalletTransactionModel, WalletModel, TokenModel
 from src.models import is_password_correction, is_google_auth_code_correction
@@ -113,7 +113,6 @@ def user_page():
 
         if remove_form.validate_on_submit():
             remove_user = request.form.get("remove_user")
-            print(remove_user)
             if remove_user is not None:
                 chat_id, _ = remove_user.split(" - ")
                 try:
@@ -134,6 +133,34 @@ def user_page():
     return render_template(
         "users.html",
         users=UserModel.query.order_by("id"),
+        add_form=add_form,
+        remove_form=remove_form,
+        upg_form=upd_form
+    )
+
+# <<<==================================>>> Wallet pages <<<==========================================================>>>
+
+@app.route("/wallers", methods=['GET', 'POST'])
+def wallet_page():
+    add_form = AddWalletForm()
+    remove_form = RemoveForm()
+    upd_form = UpdateForm()
+    if request.method == "POST":
+        if add_form.validate_on_submit():
+            if request.form.get('added_wallet') is not None:
+                pass
+            return redirect(url_for("main.wallet_page"))
+        if remove_form.validate_on_submit():
+            remove_user = request.form.get("remove_wallet")
+            return redirect(url_for("main.wallet_page"))
+
+        if upd_form.validate_on_submit():
+            update_wallet = request.form.get("update_wallet")
+            return redirect(url_for("main.wallet_page"))
+
+    return render_template(
+        "wallets.html",
+        wallets=WalletModel.query.order_by("id"),
         add_form=add_form,
         remove_form=remove_form,
         upg_form=upd_form
