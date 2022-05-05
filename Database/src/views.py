@@ -47,7 +47,7 @@ def checking_code_page(hash_info: str):
             login_user(user)
             return redirect(url_for('main.index_page'))
         else:
-            flash("The code didn't fit. Try again", "danger")
+            flash("The code didn't fit. Try again", category="danger")
             return redirect(url_for('main.checking_code_page', hash_info=hash_info, _external=True))
     return render_template(
         "checking_code.html",
@@ -80,7 +80,7 @@ def index_page():
 
 # <<<==================================>>> User pages <<<============================================================>>>
 
-@app.route("/users")
+@app.route("/users", methods=['GET', 'POST'])
 def user_page():
     add_form = AddUserForm()
     remove_form = RemoveForm()
@@ -88,7 +88,27 @@ def user_page():
     if request.method == "POST":
         if add_form.validate_on_submit():
             if request.form.get('added_user') is not None:
-                pass
+                try:
+                    username = add_form.username.data
+                    chat_id = add_form.chat_id.data
+                    if username.find("@") < 0:
+                        username = f"@{add_form.username.data}"
+                    if isinstance(chat_id, str) and not chat_id.isdigit():
+                        flash("The chat id must be an integer", category='danger')
+                        return redirect(url_for("main.user_page"))
+
+                    create_user = UserModel(
+                        id=int(chat_id),
+                        username=username,
+                        is_admin=bool(add_form.is_admin.data)
+                    )
+                    db.session.add(create_user)
+                    db.session.commit()
+                    flash(f"The user: {username} has been successfully added!", category="success")
+                except Exception as error:
+                    db.session.rollback()
+                    logger.error(f"ERROR: {error}")
+                    flash("Something went wrong...", category='danger')
             return redirect(url_for("main.user_page"))
 
         if remove_form.validate_on_submit():
@@ -133,11 +153,11 @@ def token_page():
                     )
                     db.session.add(create_token)
                     db.session.commit()
-                    flash("The token was successfully added!", category="success")
+                    flash(f"The token: '{add_form.network.data}-{add_form.token.data}' was successfully added!", category="success")
                 except Exception as error:
                     db.session.rollback()
                     logger.error(f"ERROR: {error}")
-                    flash("Something went wrong...")
+                    flash("Something went wrong...", category='danger')
             return redirect(url_for("main.token_page"))
 
         if remove_form.validate_on_submit():
@@ -151,7 +171,7 @@ def token_page():
                 except Exception as error:
                     db.session.rollback()
                     logger.error(f"ERROR: {error}")
-                    flash("Something went wrong...")
+                    flash("Something went wrong...", category='danger')
             return redirect(url_for("main.token_page"))
 
         if upd_form.validate_on_submit():
