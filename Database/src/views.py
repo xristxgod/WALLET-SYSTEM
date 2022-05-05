@@ -3,8 +3,8 @@ import json
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 
-from src.forms import LoginForm, GoogleAuthForm
-from src.forms import RemoveForm, AddTokenForm, UpdateForm
+from src.forms import LoginForm, GoogleAuthForm, RemoveForm, UpdateForm
+from src.forms import AddTokenForm, AddUserForm
 
 from src.models import UserModel, WalletTransactionModel, WalletModel, TokenModel
 from src.models import is_password_correction, is_google_auth_code_correction
@@ -78,7 +78,33 @@ def index_page():
         tokens=TokenModel.query.order_by("id"),
     )
 
-# <<<==================================>>> Token pages <<<============================================================>>>
+# <<<==================================>>> User pages <<<============================================================>>>
+
+@app.route("/users")
+def user_page():
+    add_form = AddUserForm()
+    remove_form = RemoveForm()
+    upd_form = UpdateForm()
+    if request.method == "POST":
+        if add_form.validate_on_submit():
+            if request.form.get('added_user') is not None:
+                pass
+
+        if remove_form.validate_on_submit():
+            remove_user = request.form.get("remove_user")
+
+        if upd_form.validate_on_submit():
+            update_user = request.form.get("update_user")
+
+    return render_template(
+        "token.html",
+        users=Helper.get_all_users(UserModel.query.order_by("id")),
+        add_form=add_form,
+        remove_form=remove_form,
+        upg_form=upd_form
+    )
+
+# <<<==================================>>> Token pages <<<===========================================================>>>
 
 @app.route("/tokens", methods=['GET', 'POST'])
 def token_page():
@@ -104,6 +130,7 @@ def token_page():
                     )
                     db.session.add(create_token)
                     db.session.commit()
+                    flash("The token was successfully added!", category="success")
                 except Exception as error:
                     db.session.rollback()
                     logger.error(f"ERROR: {error}")
@@ -112,6 +139,16 @@ def token_page():
 
         if remove_form.validate_on_submit():
             remove_token = request.form.get("remove_token")
+            if remove_token is not None:
+                network, token = remove_token.split("-")
+                try:
+                    TokenModel.query.filter_by(network=network, token=token).delete()
+                    db.session.commit()
+                    flash("The token has been removed from the system!", category='danger')
+                except Exception as error:
+                    db.session.rollback()
+                    logger.error(f"ERROR: {error}")
+                    flash("Something went wrong...")
 
         if upd_form.validate_on_submit():
             update_token = request.form.get("update_token")
