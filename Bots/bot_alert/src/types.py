@@ -5,3 +5,4 @@ class Symbol(object):
     DEC = emoji.emojize(":red_circle:")
     REG = emoji.emojize(":yellow_circle:")
     ADMIN = emoji.emojize(":globe_with_meridians:")
+    INFO = emoji.emojize(":rocket:")

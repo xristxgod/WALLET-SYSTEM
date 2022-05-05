@@ -1,5 +1,6 @@
 from fastapi import APIRouter
-from src.schemas import BodyRegUser, BodyBalance, ResponseUserMethod
+from src.schemas import BodyRegUser, BodyBalance, BodyInfo
+from src.schemas import ResponseUserMethod
 
 from src.worker import WorkerUser
 from config import logger
@@ -31,4 +32,11 @@ async def add_balance(body: BodyBalance):
     response_model=ResponseUserMethod, tags=["USER"]
 )
 async def add_balance(body: BodyBalance):
+    pass
+
+@router.post(
+    "/info", description="This router sends a message with information!",
+    response_model=ResponseUserMethod, tags=["USER"]
+)
+async def info_message(body: BodyInfo):
     pass

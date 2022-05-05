@@ -17,6 +17,17 @@ class BodyBalance(BaseModel):
     network: str = Field(description="The network where the deposit/debit occurred")
     amount: str = Field(description="The number of coins that have been replenished/debited")
 
+class BodyInfo(BaseModel):
+    message: str = Field(description="Message with information")
+    chat_id: Optional[int] = Field(default=None, description="Send a message to an individual user")
+    is_all: Optional[bool] = Field(default=False, description="Send a message to all users or just one")
+
+    def __init__(self, **kwargs):
+        super(BodyInfo, self).__init__(**kwargs)
+        if self.chat_id is not None and self.is_all is not None:
+            self.is_all = False
+        if self.chat_id is None and self.is_all is None:
+            self.is_all = True
 
 # <<< Response >>>
 
