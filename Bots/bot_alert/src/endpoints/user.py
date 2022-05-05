@@ -25,18 +25,36 @@ async def reg_user(body: BodyRegUser):
     response_model=ResponseUserMethod, tags=["USER"]
 )
 async def add_balance(body: BodyBalance):
-    pass
+    try:
+        return ResponseUserMethod(
+            message=(await WorkerUser.balance_text(body=body, is_add=True))
+        )
+    except Exception as error:
+        logger.error(f"ERROR: {error}")
+        return ResponseUserMethod(message=False)
 
 @router.post(
     "/dec", description="Sends a message to the notifier bot about what happened the balance debit!",
     response_model=ResponseUserMethod, tags=["USER"]
 )
 async def add_balance(body: BodyBalance):
-    pass
+    try:
+        return ResponseUserMethod(
+            message=(await WorkerUser.balance_text(body=body))
+        )
+    except Exception as error:
+        logger.error(f"ERROR: {error}")
+        return ResponseUserMethod(message=False)
 
 @router.post(
     "/info", description="This router sends a message with information!",
     response_model=ResponseUserMethod, tags=["USER"]
 )
 async def info_message(body: BodyInfo):
-    pass
+    try:
+        return ResponseUserMethod(
+            message=(await WorkerUser.info_text(body=body))
+        )
+    except Exception as error:
+        logger.error(f"ERROR: {error}")
+        return ResponseUserMethod(message=False)
