@@ -53,7 +53,7 @@ class AddWalletForm(FlaskForm):
 
 # <<<==================================>>> Wallet transaction form <<<===============================================>>>
 
-class AddWalletTransactionForm(FlaskForm):
+class AddTransactionForm(FlaskForm):
     network = SelectField(label='Network: ', validators=[DataRequired()])
     time = SelectField(label="Select the transaction time: ", validators=[DataRequired()])
     transaction_hash = StringField(label='Transaction hash: ', validators=[DataRequired()])
