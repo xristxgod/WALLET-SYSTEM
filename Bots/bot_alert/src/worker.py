@@ -19,6 +19,7 @@ class WorkerUser:
 
     @staticmethod
     async def balance_text(body: BodyBalance, is_add: bool = False) -> bool:
+        """Message at the deposit/debit"""
         if is_add:
             text = f"{Symbol.ADD} There was a replenishment: {body.amount} {body.network}\n"
         else:
@@ -32,6 +33,7 @@ class WorkerUser:
 
     @staticmethod
     async def info_text(body: BodyInfo) -> bool:
+        """Message at the information"""
         text = (
             f"{Symbol.INFO} Urgent information!\n"
             f"{body.message}"
