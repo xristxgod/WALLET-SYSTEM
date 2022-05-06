@@ -2,11 +2,11 @@ import emoji
 from typing import Union
 
 # Telegram token
-TGToken: str
+TGToken = str
 # Text message for telegram
-TGMessage: str
+TGMessage = str
 # User id for telegram bot
-TGChatID: Union[int, str]
+TGChatID = Union[int, str]
 
 class Symbol(object):
     ADD = emoji.emojize(":green_circle:")

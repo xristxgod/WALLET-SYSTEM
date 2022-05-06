@@ -16,7 +16,6 @@ app.include_router(router)
 async def get_api_status():
     return JSONResponse(content={"message": True})
 
-
 if __name__ == '__main__':
     import uvicorn
     uvicorn.run("app:app")
