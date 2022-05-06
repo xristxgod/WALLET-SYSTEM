@@ -22,4 +22,4 @@ class CoinsURL(object):
 
     @staticmethod
     def get_coins_url(coin: str) -> str:
-        pass
+        return CoinsURL.__dict__.get(coin.split("-")[0].upper())
