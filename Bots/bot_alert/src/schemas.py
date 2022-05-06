@@ -10,7 +10,7 @@ from src.types import TGMessage, TGChatID
 class BodyRegUser(BaseModel):
     chat_id: TGChatID = Field(description="ID of the new user")
     username: Optional[str] = Field(default=None, description="Username of the new user")
-    is_admin: Optional[bool] = Field(default=False, description="Is the user an admin?")
+    isAdmin: Optional[bool] = Field(default=False, description="Is the user an admin?")
 
 class BodyBalance(BaseModel):
     chat_id: TGChatID = Field(description="ID of the user")
@@ -20,18 +20,18 @@ class BodyBalance(BaseModel):
 
 class BodyInfo(BaseModel):
     message: TGMessage = Field(description="Message with information")
-    chat_ids: Optional[List[TGChatID]] = Field(default=None, description="Send a message to an individual user")
-    is_all: Optional[bool] = Field(default=False, description="Send a message to all users or just one")
+    chatIds: Optional[List[TGChatID]] = Field(default=None, description="Send a message to an individual user")
+    isAll: Optional[bool] = Field(default=False, description="Send a message to all users or just one")
 
     def __init__(self, **kwargs):
         super(BodyInfo, self).__init__(**kwargs)
-        if self.chat_ids is not None and self.is_all is not None:
-            self.is_all = False
-        if self.chat_ids is None and self.is_all is None:
-            self.is_all = True
-        if self.chat_ids is not None and \
-                (isinstance(self.chat_ids, str) and self.chat_ids.isdigit()) or isinstance(self.chat_ids, int):
-            self.chat_ids = [self.chat_ids]
+        if self.chatIds is not None and self.isAll is not None:
+            self.isAll = False
+        if self.chatIds is None and self.isAll is None:
+            self.isAll = True
+        if self.chatIds is not None and \
+                (isinstance(self.chatIds, str) and self.chatIds.isdigit()) or isinstance(self.chatIds, int):
+            self.chatIds = [self.chatIds]
 
 # <<< Response >>>
 
@@ -48,4 +48,21 @@ class BodyNews(BaseModel):
 # <<< Response >>>
 
 class ResponseCheckerMethod(BaseModel):
+    message: bool
+
+# <<<=================================>>> Transaction endpoint <<<===================================================>>>
+
+# <<< Body >>>
+
+class BodyTransaction(BaseModel):
+    chatId: int = Field(description="ID of the user")
+    transactionHash: str = Field(description="Transaction hash")
+    fromAddress: str = Field(description="Sender's wallet address")
+    toAddress: str = Field(description="Recipient's wallet address")
+    amount: str = Field(description="Amount")
+    network: str = Field(description="The network and the token '{network}-{token}' in which the transaction occurred.")
+
+# <<< Response >>>
+
+class ResponseTransactionMethod(BaseModel):
     message: bool

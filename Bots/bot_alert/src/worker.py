@@ -11,7 +11,7 @@ class WorkerUser:
     @staticmethod
     async def reg_user_text(body: BodyRegUser) -> bool:
         """Message at registration"""
-        if body.is_admin:
+        if body.isAdmin:
             text = f"{Symbol.ADMIN} New admin!\n"
         else:
             text = f"{Symbol.REG} New user!\n"
@@ -51,8 +51,8 @@ class WorkerUser:
             f"{Symbol.INFO} Urgent information!\n"
             f"{body.message}"
         )
-        if body.chat_ids is not None:
-            for chat_id in body.chat_ids:
+        if body.chatIds is not None:
+            for chat_id in body.chatIds:
                 await Sender.send_to_bot_by_chat_id(
                     text=text,
                     chat_id=int(chat_id),
@@ -82,4 +82,5 @@ class WorkerChecker:
             token=WorkerChecker.BOT_CHECKER
         )
 
-
+class WorkerTransaction:
+    pass

@@ -7,5 +7,5 @@ async def create_transaction():
     pass
 
 @router.post("/send")
-async def create_transaction():
+async def send_transaction():
     pass
