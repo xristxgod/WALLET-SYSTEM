@@ -36,4 +36,52 @@ class DB:
 class MessageRepository:
 
     def __init__(self):
-        self.messages_box: List = []
+        self.messages_box: Dict = {}
+
+    def get_message(self, chat_id: TGChatID, transaction_hash: str, network: str) -> Optional[Dict]:
+        if self.messages_box.get(chat_id) is not None:
+            for message in self.messages_box.get(chat_id):
+                if message["transaction_hash"] == transaction_hash and message["network"] == network:
+                    return message
+
+    def set_message(self, chat_id: TGChatID, **kwargs) -> bool:
+        """Set a message"""
+        if self.messages_box.get(chat_id) is not None:
+            for message in self.messages_box.get(chat_id):
+                message: Dict
+                if message["message_id"] == kwargs["message_id"] and message["network"] == kwargs["network"] \
+                        and message["transaction_hash"] == kwargs["transaction_hash"]:
+                    if message["status"] != kwargs["status"] and kwargs["status"]:
+                        return self.del_message(
+                            chat_id=chat_id,
+                            transaction_hash=kwargs["transaction_hash"],
+                            network=kwargs["network"]
+                        )
+                else:
+                    self.messages_box.get(chat_id).append({
+                        "transaction_hash": kwargs.get("transaction_hash"),
+                        "network": kwargs.get("network"),
+                        "status": kwargs.get("status"),
+                        "message_id": kwargs.get("message_id")
+                    })
+        else:
+            self.messages_box.update({
+                chat_id: [{
+                    "transaction_hash": kwargs.get("transaction_hash"),
+                    "network": kwargs.get("network"),
+                    "status": kwargs.get("status"),
+                    "message_id": kwargs.get("message_id")
+                }]
+            })
+
+    def del_message(self, chat_id: TGChatID, transaction_hash: str, network: str) -> bool:
+        """Delete a message"""
+        if self.messages_box.get(chat_id) is not None:
+            for message in self.messages_box.get(chat_id):
+                if message["transaction_hash"] == transaction_hash and message["network"] == network:
+                    del message
+                    return True
+            else:
+                return False
+        else:
+            return False

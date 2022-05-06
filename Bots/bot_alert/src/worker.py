@@ -1,8 +1,12 @@
+from src.__init__ import MessageRepository
 from src.schemas import BodyRegUser, BodyBalance, BodyInfo
 from src.schemas import BodyNews
+from src.schemas import BodyTransaction
 from src.sender import Sender
 from src.types import Symbol, TGToken
 from config import Config
+
+message_repository = MessageRepository()
 
 class WorkerUser:
     """This module forms the text for the message"""
@@ -83,4 +87,18 @@ class WorkerChecker:
         )
 
 class WorkerTransaction:
-    pass
+
+    @staticmethod
+    async def create_text(body: BodyTransaction) -> bool:
+        text = (
+            ""
+        )
+
+
+        message_repository.set_message(
+            chat_id=body.chatId,
+            transaction_hash=body.transactionHash,
+            network=body.network,
+            status=False,
+            message_id=""
+        )

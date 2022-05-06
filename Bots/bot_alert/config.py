@@ -8,3 +8,5 @@ class Config(object):
     BOT_CHECKER_TOKEN = os.getenv("BOT_CHECKER_TOKEN")
     BOT_ALERT_TOKEN = os.getenv("BOT_ALERT_TOKEN")
     BOT_MAIN_TOKEN = os.getenv("BOT_MAIN_TOKEN")
+
+    TRON_BLOCKCHAIN = os.getenv("TRON_BLOCKCHAIN", "https://shasta.tronscan.org/")

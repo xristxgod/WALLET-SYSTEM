@@ -1,6 +1,8 @@
 import emoji
 from typing import Union
 
+from config import Config
+
 # Telegram token
 TGToken = str
 # Text message for telegram
@@ -14,3 +16,10 @@ class Symbol(object):
     REG = emoji.emojize(":yellow_circle:")
     ADMIN = emoji.emojize(":globe_with_meridians:")
     INFO = emoji.emojize(":rocket:")
+
+class CoinsURL(object):
+    TRON = Config.TRON_BLOCKCHAIN
+
+    @staticmethod
+    def get_coins_url(coin: str) -> str:
+        pass
