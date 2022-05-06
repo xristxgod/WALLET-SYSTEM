@@ -137,3 +137,21 @@ class WorkerTransaction:
             transaction_hash=body.transactionHash,
             network=body.network
         ).get("message_id")
+        if message_id is None:
+            return await Sender.send_to_bot_by_chat_id(
+                chat_id=body.chatId,
+                token=WorkerTransaction.BOT_MAIN,
+                text=text
+            )
+        else:
+            message_repository.del_message(
+                chat_id=body.chatId,
+                transaction_hash=body.transactionHash,
+                network=body.network
+            )
+            return await Sender.update_message_by_message_id(
+                text=text,
+                token=token,
+                chat_id=body.chatId,
+                message_id=message_id
+            )
