@@ -4,12 +4,13 @@ from typing import Optional, Dict, List
 
 import aio_pika
 
+from src.__init__ import DB
 from config import Config, logger
 
 class Parser:
 
     @staticmethod
-    async def processing_transaction(txs_data: List[Dict], network: str, token: str):
+    async def processing_transaction(txs_data: List[Dict], network: str, token: str, user_id: int) -> List[Dict]:
         tx_list = []
         for tx_data in txs_data:
             tx_list.append({
@@ -22,17 +23,20 @@ class Parser:
                 "recipients": tx_data.get("recipients"),
                 "token": token,
                 "status": True,
+                "user_id": user_id
             })
+        return tx_list
 
     @staticmethod
     async def processing_message(data: List[Dict]):
         network, token = data[0].get("network").split("-")
         transaction_info: Dict = data[1]
         from_address = transaction_info.get("address")
-        transaction = await Parser.processing_transaction(
+        transaction: List[Dict] = await Parser.processing_transaction(
             txs_data=transaction_info.get("transactions"),
             token=token,
-            network=network
+            network=network,
+            user_id=(await DB.get_user_id_by_wallet_address(address=from_address, network=network))
         )
 
 

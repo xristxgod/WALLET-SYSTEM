@@ -28,3 +28,7 @@ class DB:
         finally:
             if connection is not None:
                 await connection.close()
+
+    @staticmethod
+    async def get_user_id_by_wallet_address(address: str, network: str) -> int:
+        return [data[0] for data in (await DB.__select_method(f"SELECT user_id FROM wallet_model WHERE address='{address}' AND network='{network.upper()}';"))][0]
