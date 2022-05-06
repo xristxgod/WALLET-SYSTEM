@@ -9,17 +9,31 @@ from config import Config, logger
 class Parser:
 
     @staticmethod
-    async def processing_transaction(txs_data: List[Dict]):
+    async def processing_transaction(txs_data: List[Dict], network: str, token: str):
         tx_list = []
         for tx_data in txs_data:
-            pass
+            tx_list.append({
+                "network": network,
+                "time": tx_data.get("time"),
+                "transaction_hash": tx_data.get("transactionHash"),
+                "fee": tx_data.get("fee"),
+                "amount": tx_data.get("amount"),
+                "senders": tx_data.get("senders"),
+                "recipients": tx_data.get("recipients"),
+                "token": token,
+                "status": True,
+            })
 
     @staticmethod
     async def processing_message(data: List[Dict]):
         network, token = data[0].get("network").split("-")
         transaction_info: Dict = data[1]
         from_address = transaction_info.get("address")
-        transaction = await Parser.processing_transaction(txs_data=transaction_info.get("transactions"))
+        transaction = await Parser.processing_transaction(
+            txs_data=transaction_info.get("transactions"),
+            token=token,
+            network=network
+        )
 
 
 async def processing_message(message):
