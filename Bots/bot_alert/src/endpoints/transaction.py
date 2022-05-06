@@ -20,6 +20,15 @@ async def create_transaction(body: BodyTransaction):
         logger.error(f"ERROR: {error}")
         return ResponseTransactionMethod(message=False)
 
-@router.post("/send")
-async def send_transaction():
-    pass
+@router.post(
+    "/send", description="Sends and saves a message about the sending of a transaction",
+    response_model=ResponseTransactionMethod, tags=["TRANSACTION"]
+)
+async def send_transaction(body: BodyTransaction):
+    try:
+        return ResponseTransactionMethod(
+            message=(await WorkerTransaction.send_text(body=body))
+        )
+    except Exception as error:
+        logger.error(f"ERROR: {error}")
+        return ResponseTransactionMethod(message=False)

@@ -97,13 +97,12 @@ class WorkerTransaction:
         network, token = body.network.split('-')
         url = CoinsURL.get_blockchain_url_by_network(network) + f"/#/transaction/{body.transactionHash}"
         text = (
-            f"{Symbol.DEC} The transaction on {network} network has been created!\n"
-            f"The sender/s: {body.fromAddress}\n"
-            f"The Recipient/s: {body.toAddress}\n"
-            f"For the amount of: {body.amount} {body.network}\n"
-            f"Commission: {body.network} {CoinsURL.get_native_by_network(network)}\n"
-            f"<<<=============>>> Transaction in the blockchain <<<=============>>>\n"
-            f"URL: {url}"
+            f"{Symbol.DEC} The transaction on <b>{network}</b> network has been created!\n"
+            f"The sender/s: <b>{body.fromAddress}</b>\n"
+            f"The Recipient/s: <b>{body.toAddress}</b>\n"
+            f"For the amount of: <b>{body.amount} {body.network}</b>\n"
+            f"Commission: <b>{body.fee} {CoinsURL.get_native_by_network(network)}</b>\n"
+            f"                                          <b><a href='{url}'>Check transaction:</a></b>\n"
         )
         message = await Sender.send_to_bot_by_chat_id_response(
             chat_id=body.chatId,
@@ -114,7 +113,27 @@ class WorkerTransaction:
             chat_id=body.chatId,
             transaction_hash=body.transactionHash,
             network=body.network,
-            status=False,
+            status=body.status,
             message_id=Utils.get_message_id(message=message)
         )
         return True
+
+    @staticmethod
+    async def send_text(body: BodyTransaction) -> bool:
+        """Transaction sending message"""
+        network, token = body.network.split('-')
+        url = CoinsURL.get_blockchain_url_by_network(network) + f"/#/transaction/{body.transactionHash}"
+        text = (
+            f"{Symbol.ADD} The transaction on <b>{network}</b> network has been sent!\n"
+            f"The sender/s: <b>{body.fromAddress}</b>\n"
+            f"The Recipient/s: <b>{body.toAddress}</b>\n"
+            f"For the amount of: <b>{body.amount} {body.network}</b>\n"
+            f"Commission: <b>{body.fee} {CoinsURL.get_native_by_network(network)}</b>\n"
+            f"                                          <b><a href='{url}'>Check transaction:</a></b>\n"
+        )
+
+        message_id = message_repository.get_message(
+            chat_id=body.chatId,
+            transaction_hash=body.transactionHash,
+            network=body.network
+        ).get("message_id")

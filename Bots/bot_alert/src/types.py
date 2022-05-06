@@ -7,6 +7,8 @@ from config import Config
 TGToken = str
 # Text message for telegram
 TGMessage = str
+# Id message for telegram
+TGMessageID = int
 # User id for telegram bot
 TGChatID = Union[int, str]
 
