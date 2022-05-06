@@ -32,13 +32,16 @@ class WorkerUser:
     @staticmethod
     async def balance_text(body: BodyBalance, is_add: bool = False) -> bool:
         """Message at the deposit/debit"""
+        network, token = body.network.split('-')
         if is_add:
             text = f"{Symbol.ADD} There was a replenishment: {body.amount} {body.network}\n"
         else:
             text = f"{Symbol.DEC} Funds were debited: {body.amount} {body.network}\n"
+        url = CoinsURL.get_blockchain_url_by_network(network) + f'/#/transaction/{body.transactionHash}'
         text += (
             f"ChatID: {body.chat_id}\n"
-            f"Username: {body.username}"
+            f"Username: {body.username}",
+            f"<b><a href='{url}'>Check transaction:</a></b>\n"
         )
         return (await Sender.send_to_bot_by_admin(
             text=text,

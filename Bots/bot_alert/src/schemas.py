@@ -17,6 +17,7 @@ class BodyBalance(BaseModel):
     username: Optional[str] = Field(default=None, description="Username of the user")
     network: str = Field(description="The network where the deposit/debit occurred")
     amount: str = Field(description="The number of coins that have been replenished/debited")
+    transactionHash: str = Field(description="Transaction hash")
 
 class BodyInfo(BaseModel):
     message: TGMessage = Field(description="Message with information")
