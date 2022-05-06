@@ -3,13 +3,14 @@ from src.schemas import BodyRegUser, BodyBalance, BodyInfo
 from src.schemas import BodyNews
 from src.schemas import BodyTransaction
 from src.sender import Sender
-from src.types import Symbol, TGToken
+from src.utils import Utils
+from src.types import Symbol, CoinsURL, TGToken
 from config import Config
 
 message_repository = MessageRepository()
 
 class WorkerUser:
-    """This module forms the text for the message"""
+    """This class forms the text for the message"""
     BOT_ALERT: TGToken = Config.BOT_ALERT_TOKEN
 
     @staticmethod
@@ -87,18 +88,33 @@ class WorkerChecker:
         )
 
 class WorkerTransaction:
+    """This class generates transaction messages."""
+    BOT_MAIN: TGToken = Config.BOT_MAIN_TOKEN
 
     @staticmethod
     async def create_text(body: BodyTransaction) -> bool:
+        """Transaction creation message"""
+        network, token = body.network.split('-')
+        url = CoinsURL.get_blockchain_url_by_network(network) + f"/#/transaction/{body.transactionHash}"
         text = (
-            ""
+            f"{Symbol.DEC} The transaction on {network} network has been created!\n"
+            f"The sender/s: {body.fromAddress}\n"
+            f"The Recipient/s: {body.toAddress}\n"
+            f"For the amount of: {body.amount} {body.network}\n"
+            f"Commission: {body.network} {CoinsURL.get_native_by_network(network)}\n"
+            f"<<<=============>>> Transaction in the blockchain <<<=============>>>\n"
+            f"URL: {url}"
         )
-
-
+        message = await Sender.send_to_bot_by_chat_id_response(
+            chat_id=body.chatId,
+            token=WorkerTransaction.BOT_MAIN,
+            text=text
+        )
         message_repository.set_message(
             chat_id=body.chatId,
             transaction_hash=body.transactionHash,
             network=body.network,
             status=False,
-            message_id=""
+            message_id=Utils.get_message_id(message=message)
         )
+        return True

@@ -60,6 +60,7 @@ class BodyTransaction(BaseModel):
     fromAddress: str = Field(description="Sender's wallet address")
     toAddress: str = Field(description="Recipient's wallet address")
     amount: str = Field(description="Amount")
+    fee: str = Field(description="Fee")
     network: str = Field(description="The network and the token '{network}-{token}' in which the transaction occurred.")
 
 # <<< Response >>>

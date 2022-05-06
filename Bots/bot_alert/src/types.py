@@ -18,8 +18,12 @@ class Symbol(object):
     INFO = emoji.emojize(":rocket:")
 
 class CoinsURL(object):
-    TRON = Config.TRON_BLOCKCHAIN
+    TRON = {"url": Config.TRON_BLOCKCHAIN, "native": "TRX"}
 
     @staticmethod
-    def get_coins_url(coin: str) -> str:
-        return CoinsURL.__dict__.get(coin.split("-")[0].upper())
+    def get_blockchain_url_by_network(network: str) -> str:
+        return CoinsURL.__dict__.get(network)["url"]
+
+    @staticmethod
+    def get_native_by_network(network: str) -> str:
+        return CoinsURL.__dict__.get(network.upper())["native"]
