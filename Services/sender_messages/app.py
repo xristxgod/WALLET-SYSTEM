@@ -2,8 +2,12 @@ import asyncio
 
 from src.parser import run
 
-def main():
-    asyncio.run(run())
+async def main(loop):
+    await asyncio.gather(*[
+        run(loop=loop)
+    ])
 
 if __name__ == '__main__':
-    main()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main(loop))
+    loop.close()
