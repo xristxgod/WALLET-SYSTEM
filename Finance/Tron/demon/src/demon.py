@@ -185,9 +185,9 @@ class TransactionDemon:
             else "trx"
         )
         if token is not None and token != "trx":
-            tx_network = f"TRON_{token.upper()}"
+            tx_network = f"TRON-{token.upper()}"
         else:
-            tx_network = "TRON_TRX"
+            tx_network = "TRON-TRX"
         # We pack the transaction in a gift box.
         package_for_sending = [
             {
