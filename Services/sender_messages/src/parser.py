@@ -7,7 +7,20 @@ import aio_pika
 from config import Config, logger
 
 class Parser:
-    pass
+
+    @staticmethod
+    async def processing_transaction(txs_data: List[Dict]):
+        tx_list = []
+        for tx_data in txs_data:
+            pass
+
+    @staticmethod
+    async def processing_message(data: List[Dict]):
+        network, token = data[0].get("network").split("-")
+        transaction_info: Dict = data[1]
+        from_address = transaction_info.get("address")
+        transaction = await Parser.processing_transaction(txs_data=transaction_info.get("transactions"))
+
 
 async def processing_message(message):
     """
@@ -15,8 +28,9 @@ async def processing_message(message):
     :param message: Message from queue
     """
     async with message.process():
-        msg: Dict = json.loads(message.body)
+        msg: List[Dict] = json.loads(message.body)
         logger.error(f"MESSAGE: {msg}")
+    await Parser.processing_message(data=msg)
 
 async def run(loop):
     while True:

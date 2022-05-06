@@ -1,6 +1,6 @@
 [
   {
-    "network": "tron",
+    "network": "{NETWORK}-{TOKEN}",
     "block": 38213658
   },
   {
