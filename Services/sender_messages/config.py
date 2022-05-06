@@ -8,7 +8,7 @@ decimals.prec = 8
 logger = logging.getLogger(__name__)
 
 class Config(object):
-    BOT_ALERT_TOKEN = os.getenv("BOT_ALERT_TOKEN")
+    BOT_ALERT_API_URL = os.getenv("BOT_ALERT_API_URL")
 
     DATABASE_URL = os.getenv("DATABASE_URL")
 

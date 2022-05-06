@@ -44,7 +44,10 @@ class ResponseUserMethod(BaseModel):
 # <<< Body >>>
 
 class BodyNews(BaseModel):
-    message: TGMessage = Field(description="Message with bad information")
+    message: TGMessage = Field(description="Message with bad/good information")
+
+class BodyInfoChecker(BaseModel):
+    message: TGMessage = Field(description="Message with information")
 
 # <<< Response >>>
 

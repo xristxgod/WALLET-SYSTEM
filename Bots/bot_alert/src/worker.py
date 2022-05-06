@@ -90,6 +90,13 @@ class WorkerChecker:
             token=WorkerChecker.BOT_CHECKER
         )
 
+    @staticmethod
+    async def info_text(body: BodyNews) -> bool:
+        return await Sender.send_to_bot_by_admin(
+            text=f"{Symbol.ADD} {body.message}",
+            token=WorkerChecker.BOT_CHECKER
+        )
+
 class WorkerTransaction:
     """This class generates transaction messages."""
     BOT_MAIN: TGToken = Config.BOT_MAIN_TOKEN

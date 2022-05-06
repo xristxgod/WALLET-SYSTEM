@@ -1,6 +1,11 @@
 import json
 from typing import Optional, Dict, List
 
-def main():
+import aio_pika
+
+class Parser:
+    pass
+
+async def run():
     pass
 
