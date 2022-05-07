@@ -4,7 +4,7 @@ from typing import Optional, Dict, List
 
 import aio_pika
 
-from src.__init__ import DB
+from src.__init__ import DB, RabbitMQ
 from src.utils import Utils
 from src.sender import Sender
 from config import Config, logger
@@ -89,7 +89,7 @@ class Parser:
             for tx_data in transactions_for_send.get("forApiTransactionSend"):
                 await Sender.send_to_transaction_method(**tx_data)
 
-async def processing_message(message) -> None:
+async def processing_message(message: aio_pika.Message) -> None:
     """
     Decrypt the message from the queue and send it for forwarding.
     :param message: Message from queue
@@ -101,7 +101,8 @@ async def processing_message(message) -> None:
         await Parser.processing_message(data=msg)
     except Exception as error:
         # Resend method
-        pass
+        logger.error("ERROR: error")
+        await RabbitMQ.resend_message(message=message)
 
 async def run(loop):
     """Infinitely included script"""
