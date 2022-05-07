@@ -65,6 +65,7 @@ class Parser:
                     "fee": tx_data.get("fee"),
                     "network": f"{network.upper()}-{token.upper()}",
                     "status": True,
+                    "method": "send"
                 })
         return returned_data
 
@@ -85,8 +86,8 @@ class Parser:
             for tx_data in transactions_for_send.get("forApiBalanceAddOrDec"):
                 await Sender.send_to_users_method(**tx_data)
         if len(transactions_for_send.get("forApiTransactionSend")) > 0:
-            pass
-
+            for tx_data in transactions_for_send.get("forApiTransactionSend"):
+                await Sender.send_to_transaction_method(**tx_data)
 
 async def processing_message(message) -> None:
     """
