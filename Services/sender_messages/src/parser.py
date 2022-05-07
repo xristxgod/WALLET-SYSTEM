@@ -129,6 +129,7 @@ async def run(loop) -> Optional:
         except Exception as error:
             logger.error(f"ERROR: {error}")
             await asyncio.sleep(10)
+            await send_all_from_folder_not_send()
             continue
 
 # <<<================================>>> Resend script <<<===========================================================>>>
