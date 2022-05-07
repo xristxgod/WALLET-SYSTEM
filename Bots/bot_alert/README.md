@@ -12,4 +12,4 @@ Bot alert
 uvicorn app:app --host 0.0.0.0 --port 7000
 ```
 Documentation page:
-![bot_api](https://user-images.githubusercontent.com/84931791/167110055-7f069f4c-d19e-42f4-8b5f-c7e683088b5b.png)
+![bot_api](https://user-images.githubusercontent.com/84931791/167252557-6cfe6126-0d44-4e6e-ba55-b5dd059c71d1.png)
