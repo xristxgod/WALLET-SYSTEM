@@ -16,11 +16,12 @@ from src.services.schemas import (
 from src.types import TAddress, TransactionHash, Coins
 from config import logger, COINS
 
-router = APIRouter()
+router = APIRouter(prefix="/api")
 
 # <<<----------------------------------->>> Coins <<<---------------------------------------------------------------->>>
 @router.get(
-    "/{coin}-usd/price", description="This method creates a tron wallet", tags=["Wallet"], response_class=JSONResponse
+    "/{coin}&usd/price", description="This method creates a tron wallet",
+    tags=["WALLET"], response_class=JSONResponse
 )
 async def get_coin_price(coin: str):
     if coin in list(COINS.keys()):
@@ -34,12 +35,12 @@ async def get_coin_price(coin: str):
 # <<<----------------------------------->>> Wallet Info <<<---------------------------------------------------------->>>
 
 @router.post(
-    "/{network}/create-wallet", response_model=ResponseCreateWallet,
-    description="This method creates a tron wallet", tags=["Wallet"]
+    "/{network}/create/wallet", response_model=ResponseCreateWallet,
+    description="This method creates a tron wallet", tags=["WALLET"]
 )
 async def create_wallet(body: BodyCreateWallet, network: Optional[str] = "tron"):
     try:
-        logger.error(f"Calling 'v1/{network}/create-wallet'")
+        logger.error(f"Calling '/{network}/create/wallet'")
         if Coins.is_native(coin=network) or Coins.is_token(coin=network):
             return wallet.create_wallet(body=body)
         else:
@@ -48,12 +49,12 @@ async def create_wallet(body: BodyCreateWallet, network: Optional[str] = "tron")
         return {"error": str(error)}
 
 @router.get(
-    "/{network}/get-balance/{address}", description="Show balance on wallet address native/token",
-    response_model=ResponseGetBalance, tags=["Wallet"]
+    "/{network}/balance/{address}", description="Show balance on wallet address native/token",
+    response_model=ResponseGetBalance, tags=["WALLET"]
 )
 async def get_balance(address: TAddress, network: Optional[str] = "tron"):
     try:
-        logger.error(f"Calling '{network}/get-balance/{address}'")
+        logger.error(f"Calling '{network}/balance/{address}'")
         if Coins.is_native(coin=network):
             return await wallet.get_balance(address=address)
         elif Coins.is_token(coin=network):
@@ -66,12 +67,12 @@ async def get_balance(address: TAddress, network: Optional[str] = "tron"):
 # <<<----------------------------------->>> Fee <<<------------------------------------------------------------------>>>
 
 @router.get(
-    "/{network}/get-optimal-fee/{fromAddress}&{toAddress}", description="Get a fixed transaction fee USDT",
-    response_model=ResponseGetOptimalFee, tags=["Transaction"]
+    "/{network}/fee/{fromAddress}&{toAddress}", description="Get a fixed transaction fee USDT",
+    response_model=ResponseGetOptimalFee, tags=["TRANSACTION"]
 )
 async def get_optimal_fee(fromAddress: TAddress, toAddress: TAddress, network: Optional[str] = "tron"):
     try:
-        logger.error(f"Calling '/{network}/get-fee/{fromAddress}&{toAddress}'")
+        logger.error(f"Calling '/{network}/fee/{fromAddress}&{toAddress}'")
         if Coins.is_native(coin=network):
             return await wallet.get_optimal_fee(from_address=fromAddress, to_address=toAddress, token="TRX")
         elif Coins.is_token(coin=network):
@@ -86,8 +87,8 @@ async def get_optimal_fee(fromAddress: TAddress, toAddress: TAddress, network: O
 # <<<----------------------------------->>> Transaction Info <<<----------------------------------------------------->>>
 
 @router.get(
-    "/{network}/get-transaction-by-txid/{trxHash}", description="Get transaction by transaction hash",
-    response_model=ResponseSignAndSendTransaction, tags=["Transaction Information"]
+    "/{network}/transaction/{trxHash}", description="Get transaction by transaction hash",
+    response_model=ResponseSignAndSendTransaction, tags=["TRANSACTION"]
 )
 async def get_transaction_by_tx_id(trxHash: TransactionHash, network: Optional[str] = "tron"):
     try:
@@ -102,8 +103,8 @@ async def get_transaction_by_tx_id(trxHash: TransactionHash, network: Optional[s
         return JSONResponse(content={"error": str(error)})
 
 @router.get(
-    "/{network}/get-all-transactions-by-address/{address}", description="Get transaction by transaction hash",
-    response_model=ResponseAllTransaction, tags=["Transaction Information"]
+    "/{network}/transactions/{address}", description="Get transaction by transaction hash",
+    response_model=ResponseAllTransaction, tags=["TRANSACTION"]
 )
 async def get_all_transactions_by_address(address: TAddress, network: str):
     try:
@@ -121,8 +122,8 @@ async def get_all_transactions_by_address(address: TAddress, network: str):
 # <<<----------------------------------->>> Create transaction <<<--------------------------------------------------->>>
 
 @router.post(
-    "/{network}/create-transaction", response_model=ResponseCreateTransaction,
-    tags=["Transaction"], description="Create transaction with sending from any address to any another",
+    "/{network}/create/transaction", response_model=ResponseCreateTransaction,
+    tags=["TRANSACTION"], description="Create transaction with sending from any address to any another",
 )
 async def create_transaction(body: BodyCreateTransaction, network: Optional[str] = "tron"):
     try:
@@ -139,8 +140,8 @@ async def create_transaction(body: BodyCreateTransaction, network: Optional[str]
 # <<<----------------------------------->>> Sing and Send transactions <<<------------------------------------------->>>
 
 @router.post(
-    "/{network}/sign-send-transaction", description="Sign and Send a transaction",
-    response_model=ResponseSignAndSendTransaction, tags=["Transaction"]
+    "/{network}/send/transaction", description="Sign and Send a transaction",
+    response_model=ResponseSignAndSendTransaction, tags=["TRANSACTION"]
 )
 async def sign_and_send_transaction(body: BodySignAndSendTransaction, network: str):
     try:

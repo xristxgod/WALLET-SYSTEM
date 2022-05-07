@@ -64,14 +64,16 @@ class DemonStatus:
     """ Tron demon status """
     PROVIDER = AsyncHTTPProvider(Config.NODE_URL)
     NETWORK: str = "shasta" if Config.NETWORK == "TESTNET" else "mainnet"
-    TRON_DEMON_BLOCK_URL = "/tron/demon-block"
+    TRON_DEMON_BLOCK_URL = Config.CHECKER_NODE_BLOCK + "/tron/demon/block"
+
+    @staticmethod
+    def _get_headers() -> typing.Optional:
+        pass
 
     @staticmethod
     async def get_demon_block() -> int:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                Config.CHECKER_NODE_BLOCK + DemonStatus.TRON_DEMON_BLOCK_URL
-            ) as response:
+        async with aiohttp.ClientSession(headers=DemonStatus._get_headers()) as session:
+            async with session.get(DemonStatus.TRON_DEMON_BLOCK_URL) as response:
                 if not response.ok:
                     logger.error(f'GET RESPONSE ERROR: {response.status}')
                     raise Exception("Block is not found")
@@ -101,13 +103,13 @@ router = APIRouter()
 
 # <<<======================================>>> Api status <<<========================================================>>>
 
-@router.get("/", description="Find out the status of the API", response_class=JSONResponse, tags=["System"])
+@router.get("/", description="Find out the status of the API", response_class=JSONResponse, tags=["SYSTEM"])
 async def get_api_status():
     return JSONResponse(content={"message": True})
 
 # <<<======================================>>> Node status <<<=======================================================>>>
 
-@router.get("/is-node-alive", description="Find out the status of the Tron Node", response_class=JSONResponse, tags=["System"])
+@router.get("api/health/check/node", description="Find out the status of the Tron Node", response_class=JSONResponse, tags=["SYSTEM"])
 async def get_node_status():
     try:
         if Config.NETWORK == "MAINNET":
@@ -118,7 +120,7 @@ async def get_node_status():
 
 # <<<======================================>>> Demon status <<<======================================================>>>
 
-@router.get("/is-demon-alive", description="Find out the status of the Tron Demon", response_class=JSONResponse, tags=["System"])
+@router.get("api/health/check/demon", description="Find out the status of the Tron Demon", response_class=JSONResponse, tags=["SYSTEM"])
 async def get_demon_status():
     try:
         return JSONResponse(content={"message": await DemonStatus.get_demon_status()})
