@@ -11,8 +11,6 @@ app = FastAPI(
     title=f"BotAlert",
     description="Service for interacting with the Bot alert!",
     version="1.0.0",
-    docs_url="/bot/docs",
-    redoc_url="/bot/redoc",
 )
 app.include_router(router)
 
