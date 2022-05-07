@@ -36,6 +36,10 @@ class Parser:
 
     @staticmethod
     async def processing_message(data: List[Dict]):
+        """
+        Unpacking a message
+        :param data: Data from the message
+        """
         network, token = data[0].get("network").split("-")
         transaction_info: Dict = data[1]
         from_address = transaction_info.get("address")
@@ -58,6 +62,7 @@ async def processing_message(message):
     await Parser.processing_message(data=msg)
 
 async def run(loop):
+    """Infinitely included script"""
     while True:
         try:
             connection = None
