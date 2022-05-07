@@ -1,13 +1,15 @@
-import asyncio
+import os
 import json
+import asyncio
 from typing import Optional, Dict, List
 
 import aio_pika
+import aiofiles
 
 from src.__init__ import DB, RabbitMQ
 from src.utils import Utils
 from src.sender import Sender
-from config import Config, logger
+from config import NOT_SEND, Config, logger
 
 class Parser:
     """This class is used to unpack the transaction and send it to the bot"""
@@ -89,7 +91,7 @@ class Parser:
             for tx_data in transactions_for_send.get("forApiTransactionSend"):
                 await Sender.send_to_transaction_method(**tx_data)
 
-async def processing_message(message: aio_pika.Message) -> None:
+async def processing_message(message: aio_pika.Message) -> Optional:
     """
     Decrypt the message from the queue and send it for forwarding.
     :param message: Message from queue
@@ -104,7 +106,7 @@ async def processing_message(message: aio_pika.Message) -> None:
         logger.error("ERROR: error")
         await RabbitMQ.resend_message(message=message)
 
-async def run(loop):
+async def run(loop) -> Optional:
     """Infinitely included script"""
     while True:
         try:
@@ -128,5 +130,22 @@ async def run(loop):
             logger.error(f"ERROR: {error}")
             await asyncio.sleep(10)
             continue
+
+# <<<================================>>> Resend script <<<===========================================================>>>
+
+async def send_all_from_folder_not_send() -> Optional:
+    """Send those transits that were not sent due to any errors"""
+    files = os.listdir(NOT_SEND)
+    for file_name in files:
+        try:
+            path = os.path.join(NOT_SEND, file_name)
+            async with aiofiles.open(path, "r") as file:
+                values = await file.read()
+            await RabbitMQ.resend_message(values=aio_pika.Message(body=f"{values}".encode()))
+            os.remove(path)
+        except Exception as error:
+            logger.error(f"ERROR: {error}")
+            continue
+
 
 

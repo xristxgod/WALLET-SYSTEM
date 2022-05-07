@@ -87,7 +87,7 @@ class DB:
 class RabbitMQ:
 
     @staticmethod
-    async def resend_message(message: aio_pika.Message) -> bool:
+    async def resend_message(message) -> bool:
         connection = None
         try:
             connection = await aio_pika.connect_robust(Config.RABBITMQ_URL)
