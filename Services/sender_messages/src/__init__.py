@@ -3,7 +3,8 @@ from typing import Union, Optional, List, Tuple, Dict
 import aio_pika
 import asyncpg
 
-from config import Config
+from src.utils import Utils
+from config import Config, logger
 
 class DB:
     @staticmethod
@@ -97,7 +98,8 @@ class RabbitMQ:
                 routing_key=Config.RABBITMQ_QUEUE_FOR_SENDER
             )
         except Exception as error:
-            pass
+            logger.error(f"ERROR: {error}")
+            await Utils.write_to_file(value=message)
         finally:
             if connection is not None and not connection.is_closed:
                 await connection.close()
