@@ -1,4 +1,6 @@
 from typing import Union, Optional, List, Tuple, Dict
+
+import aio_pika
 import asyncpg
 
 from config import Config
@@ -80,6 +82,25 @@ class DB:
             data=(user_id,)
         )
         return data[0] if data == 1 else None
+
+class RabbitMQ:
+
+    @staticmethod
+    async def resend_message(message: aio_pika.Message) -> bool:
+        connection = None
+        try:
+            connection = await aio_pika.connect_robust(Config.RABBITMQ_URL)
+            channel = await connection.channel()
+            await channel.declare_queue(Config.RABBITMQ_QUEUE_FOR_SENDER, durable=True)
+            await channel.default_exchange.publish(
+                message=message,
+                routing_key=Config.RABBITMQ_QUEUE_FOR_SENDER
+            )
+        except Exception as error:
+            pass
+        finally:
+            if connection is not None and not connection.is_closed:
+                await connection.close()
 
 class SenderMethod:
     """Send a message to the bot alert api"""
