@@ -107,8 +107,8 @@ class RabbitMQ:
 class SenderMethod:
     """Send a message to the bot alert api"""
     API_URL = Config.BOT_ALERT_API_URL
-    USERS_METHOD = API_URL + "/bot/api/user/<method>"
-    TRANSACTION_METHOD = API_URL + "/bot/api/transaction/<method>"
+    USERS_METHOD = API_URL + "/api/user/<method>"
+    TRANSACTION_METHOD = API_URL + "/api/transaction/<method>"
 
     @staticmethod
     def _get_url(api: str, method: str = None):
