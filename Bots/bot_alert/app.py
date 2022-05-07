@@ -18,7 +18,7 @@ app.include_router(router)
 async def get_api_status():
     return JSONResponse(content={"message": True})
 
-@app.get("/is-sender-alive", description="Find out the status of the API", response_class=JSONResponse, tags=["SYSTEM"])
+@app.get("/api/health/check/sender", description="Find out the status of the API", response_class=JSONResponse, tags=["SYSTEM"])
 async def get_sender_status():
     connection: Optional[BlockingConnection] = None
     try:
