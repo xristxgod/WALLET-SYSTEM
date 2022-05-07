@@ -72,3 +72,11 @@ class DB:
             ),
             data=(status, tx_hash, network, user_id)
         )
+
+    @staticmethod
+    async def get_username_by_user_id(user_id: int) -> Optional[str]:
+        data = await DB.__select_method(
+            sql="SELECT username FROM user_model WHERE id = $1",
+            data=(user_id,)
+        )
+        return data[0] if data == 1 else None

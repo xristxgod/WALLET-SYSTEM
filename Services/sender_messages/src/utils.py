@@ -9,3 +9,10 @@ class Utils:
                 return True
         else:
             return False
+
+    @staticmethod
+    def get_addresses_for_send(addresses_data: List) -> str:
+        text = ""
+        for address in addresses_data:
+            text += f"{address} | "
+        return text[0:-3]

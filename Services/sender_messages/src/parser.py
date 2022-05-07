@@ -11,9 +11,7 @@ from config import Config, logger
 class Parser:
     """This class is used to unpack the transaction and send it to the bot"""
     @staticmethod
-    async def processing_transaction(
-            txs_data: List[Dict], network: str, token: str, user_id: int, address: str
-    ) -> List[Dict]:
+    async def processing_transaction(txs_data: List[Dict], network: str, token: str, user_id: int, address: str) -> Dict:
         """
         Packaging of the transaction
         :param txs_data: Transactions data
@@ -21,9 +19,9 @@ class Parser:
         :param token: Token
         :param user_id: User id
         """
-        tx_list = {
-            "is_add": [],
-            "is_upd": []
+        returned_data = {
+            "forApiBalanceAddOrDec": [],
+            "forApiTransactionSend": []
         }
         for tx_data in txs_data:
             if await DB.get_transaction_status(tx_hash=tx_data.get("transactionHash"), network=network) is not None:
@@ -47,9 +45,27 @@ class Parser:
             if Utils.is_address(address=address, data=tx_data.get("senders")):
                 is_sender = True
 
+            returned_data["forApiBalanceAddOrDec"].append({
+                "chat_id": user_id,
+                "username": await DB.get_username_by_user_id(user_id=user_id),
+                "network": f"{network.upper()}-{token.upper()}",
+                "amount": tx_data.get("amount"),
+                "transactionHash": tx_data.get("transactionHash"),
+                "method": "dec" if is_sender else "add"
+            })
 
-
-
+            if not is_new:
+                returned_data["forApiTransactionSend"].append({
+                    "chat_id": user_id,
+                    "transactionHash": tx_data.get("transactionHash"),
+                    "fromAddress": address,
+                    "toAddress": Utils.get_addresses_for_send(addresses_data=tx_data.get("recipients")),
+                    "amount": tx_data.get("amount"),
+                    "fee": tx_data.get("fee"),
+                    "network": f"{network.upper()}-{token.upper()}",
+                    "status": True,
+                })
+        return returned_data
 
     @staticmethod
     async def processing_message(data: List[Dict]):
