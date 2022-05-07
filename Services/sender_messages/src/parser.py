@@ -82,8 +82,8 @@ class Parser:
             user_id=(await DB.get_user_id_by_wallet_address(address=from_address, network=network))
         )
         if len(transactions_for_send.get("forApiBalanceAddOrDec")) > 0:
-            for tx in transactions_for_send.get("forApiBalanceAddOrDec"):
-                pass
+            for tx_data in transactions_for_send.get("forApiBalanceAddOrDec"):
+                await Sender.send_to_users_method(**tx_data)
         if len(transactions_for_send.get("forApiTransactionSend")) > 0:
             pass
 
@@ -93,10 +93,14 @@ async def processing_message(message) -> None:
     Decrypt the message from the queue and send it for forwarding.
     :param message: Message from queue
     """
-    async with message.process():
-        msg: List[Dict] = json.loads(message.body)
-        logger.error(f"MESSAGE: {msg}")
-    await Parser.processing_message(data=msg)
+    try:
+        async with message.process():
+            msg: List[Dict] = json.loads(message.body)
+            logger.error(f"MESSAGE: {msg}")
+        await Parser.processing_message(data=msg)
+    except Exception as error:
+        # Resend method
+        pass
 
 async def run(loop):
     """Infinitely included script"""

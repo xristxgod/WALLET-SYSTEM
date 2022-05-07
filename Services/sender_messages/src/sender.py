@@ -6,7 +6,7 @@ from config import logger
 class Sender(SenderMethod):
 
     @staticmethod
-    def send_to_users_method(method: str = "add", **kwargs) -> bool:
+    async def send_to_users_method(method: str = "add", **kwargs) -> bool:
         """Send to bot alert by API | ADD/DEC balance"""
         try:
             async with aiohttp.ClientSession(headers=Sender._get_headers()) as session:
@@ -27,7 +27,7 @@ class Sender(SenderMethod):
             return False
 
     @staticmethod
-    def send_to_transaction_method(method: str = "send", **kwargs) -> bool:
+    async def send_to_transaction_method(method: str = "send", **kwargs) -> bool:
         """Send to bot alert by API | ADD/DEC balance"""
         try:
             async with aiohttp.ClientSession(headers=Sender._get_headers()) as session:
