@@ -1,7 +1,6 @@
 from typing import Union, Optional, List, Tuple, Dict
 import asyncpg
 
-from src.utils import Utils
 from config import Config
 
 class DB:
@@ -33,14 +32,43 @@ class DB:
     @staticmethod
     async def get_user_id_by_wallet_address(address: str, network: str) -> Optional[int]:
         data = await DB.__select_method(
-                sql="SELECT user_id FROM wallet_model WHERE address = $1 AND network = $2;",
-                data=(address, network.upper()))
+            sql="SELECT user_id FROM wallet_model WHERE address = $1 AND network = $2;",
+            data=(address, network.upper()))
         return data[0] if data == 1 else None
 
     @staticmethod
     async def get_transaction_status(tx_hash: str, network: str) -> Optional[bool]:
         data = await DB.__select_method(
-                sql="SELECT status FROM wallet_transaction_model WHERE transaction_hash = $1 AND network = $2;",
-                data=(tx_hash, network.upper())
+            sql="SELECT status FROM wallet_transaction_model WHERE transaction_hash = $1 AND network = $2;",
+            data=(tx_hash, network.upper())
         )
         return data[0] if data == 1 else None
+
+    @staticmethod
+    async def add_new_transaction(**data) -> bool:
+        """Add a new transaction"""
+        return await DB.__insert_method(
+            sql=(
+                "INSERT INTO wallet_transaction_model "
+                "(network, time, transaction_hash, fee, amount, senders, recipients, token, status, user_id)"
+                "VALUES"
+                "($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);"
+            ),
+            data=(
+                data.get("network"), data.get("time"), data.get("transaction_hash"), data.get("fee"),
+                data.get("amount"), data.get("senders"), data.get("recipients"), data.get("token"),
+                data.get("status"), data.get("user_id")
+            )
+        )
+
+    @staticmethod
+    async def update_transaction(tx_hash: str, network: str, user_id: int, status: bool = True) -> bool:
+        """Update the transaction status"""
+        return await DB.__insert_method(
+            sql=(
+                "UPDATE wallet_transaction_model "
+                "SET status = $1 "
+                "WHERE transaction_hash = $2 AND network = $3 AND user_id = $4;"
+            ),
+            data=(status, tx_hash, network, user_id)
+        )

@@ -5,12 +5,15 @@ from typing import Optional, Dict, List
 import aio_pika
 
 from src.__init__ import DB
+from src.utils import Utils
 from config import Config, logger
 
 class Parser:
     """This class is used to unpack the transaction and send it to the bot"""
     @staticmethod
-    async def processing_transaction(txs_data: List[Dict], network: str, token: str, user_id: int) -> List[Dict]:
+    async def processing_transaction(
+            txs_data: List[Dict], network: str, token: str, user_id: int, address: str
+    ) -> List[Dict]:
         """
         Packaging of the transaction
         :param txs_data: Transactions data
@@ -18,21 +21,35 @@ class Parser:
         :param token: Token
         :param user_id: User id
         """
-        tx_list = []
+        tx_list = {
+            "is_add": [],
+            "is_upd": []
+        }
         for tx_data in txs_data:
-            tx_list.append({
-                "network": network,
-                "time": tx_data.get("time"),
-                "transaction_hash": tx_data.get("transactionHash"),
-                "fee": tx_data.get("fee"),
-                "amount": tx_data.get("amount"),
-                "senders": tx_data.get("senders"),
-                "recipients": tx_data.get("recipients"),
-                "token": token,
-                "status": True,
-                "user_id": user_id
-            })
-        return tx_list
+            if await DB.get_transaction_status(tx_hash=tx_data.get("transactionHash"), network=network) is not None:
+                # If the transaction was found in the database
+                result = await DB.update_transaction(
+                    tx_hash=tx_data.get("transactionHash"), network=network, user_id=user_id, status=True
+                )
+                is_new = False
+            else:
+                # If the transaction was new and was not found in the database
+                result = await DB.add_new_transaction(
+                    network=network, time=tx_data.get("time"), transaction_hash=tx_data.get("transactionHash"),
+                    fee=tx_data.get("fee"), amount=tx_data.get("amount"), senders=tx_data.get("senders"),
+                    recipients=tx_data.get("recipients"), token=token, status=True, user_id=user_id
+                )
+                is_new = True
+            if not result:
+                raise Exception("The transaction was not recorded in the database!")
+
+            is_sender = False
+            if Utils.is_address(address=address, data=tx_data.get("senders")):
+                is_sender = True
+
+
+
+
 
     @staticmethod
     async def processing_message(data: List[Dict]):
