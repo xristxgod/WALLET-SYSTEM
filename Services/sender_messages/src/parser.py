@@ -8,9 +8,16 @@ from src.__init__ import DB
 from config import Config, logger
 
 class Parser:
-
+    """This class is used to unpack the transaction and send it to the bot"""
     @staticmethod
     async def processing_transaction(txs_data: List[Dict], network: str, token: str, user_id: int) -> List[Dict]:
+        """
+        Packaging of the transaction
+        :param txs_data: Transactions data
+        :param network: Node Network
+        :param token: Token
+        :param user_id: User id
+        """
         tx_list = []
         for tx_data in txs_data:
             tx_list.append({
