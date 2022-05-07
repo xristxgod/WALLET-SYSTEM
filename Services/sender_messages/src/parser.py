@@ -68,7 +68,7 @@ class Parser:
         return returned_data
 
     @staticmethod
-    async def processing_message(data: List[Dict]):
+    async def processing_message(data: List[Dict]) -> None:
         """
         Unpacking a message
         :param data: Data from the message
@@ -76,15 +76,17 @@ class Parser:
         network, token = data[0].get("network").split("-")
         transaction_info: Dict = data[1]
         from_address = transaction_info.get("address")
-        transaction: List[Dict] = await Parser.processing_transaction(
-            txs_data=transaction_info.get("transactions"),
-            token=token,
-            network=network,
+        transactions_for_send: Dict = await Parser.processing_transaction(
+            txs_data=transaction_info.get("transactions"), token=token, network=network, address=from_address,
             user_id=(await DB.get_user_id_by_wallet_address(address=from_address, network=network))
         )
+        if len(transactions_for_send.get("forApiBalanceAddOrDec")) > 0:
+            pass
+        if len(transactions_for_send.get("forApiTransactionSend")) > 0:
+            pass
 
 
-async def processing_message(message):
+async def processing_message(message) -> None:
     """
     Decrypt the message from the queue and send it for forwarding.
     :param message: Message from queue
