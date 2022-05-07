@@ -6,6 +6,7 @@ import aio_pika
 
 from src.__init__ import DB
 from src.utils import Utils
+from src.sender import Sender
 from config import Config, logger
 
 class Parser:
@@ -81,7 +82,8 @@ class Parser:
             user_id=(await DB.get_user_id_by_wallet_address(address=from_address, network=network))
         )
         if len(transactions_for_send.get("forApiBalanceAddOrDec")) > 0:
-            pass
+            for tx in transactions_for_send.get("forApiBalanceAddOrDec"):
+                pass
         if len(transactions_for_send.get("forApiTransactionSend")) > 0:
             pass
 
