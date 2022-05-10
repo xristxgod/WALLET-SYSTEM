@@ -3,6 +3,7 @@ from typing import Dict, List, Tuple
 from config import Config
 
 CRYPTOAddress = str
+CRYPTOPrivateKey = str
 
 class CryptoEndpointType(object):
     _CREATE_WALLET = "<domain>/api/<network>/create/wallet"
@@ -64,7 +65,7 @@ class CryptoEndpointType(object):
         """
         :type network: NETWORK_TOKEN = TRON_USDT, TRON_TRX
         """
-        return CryptoEndpointType._CREATE_TRANSACTION.replace(
+        return "POST", CryptoEndpointType._CREATE_TRANSACTION.replace(
             "<domain>", CryptoEndpointType._NETWORKS.get(network.split("_")[0])
         ).replace(
             "<network>", network.split("_")[1].lower()

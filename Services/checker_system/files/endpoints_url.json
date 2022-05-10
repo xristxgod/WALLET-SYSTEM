@@ -8,6 +8,10 @@
     "title": "Database Api CoinToCoin module"
   },
   {
+    "url": "{DOMAIN_DATABASE_INTERFACE}/api/health/check/database/isWork",
+    "title": "Database db status"
+  },
+  {
     "url": "{DOMAIN_TRON_API}",
     "title": "TRON API"
   },
