@@ -1,0 +1,26 @@
+[
+  {
+    "url": "{DOMAIN_DATABASE_INTERFACE}/api/health/check/isWork",
+    "title": "Database"
+  },
+  {
+    "url": "{DOMAIN_TRON_API}",
+    "title": "TRON API"
+  },
+  {
+    "url": "{DOMAIN_TRON_API}/api/health/check/node",
+    "title": "TRON NODE"
+  },
+  {
+    "url": "{DOMAIN_TRON_API}/api/health/check/demon",
+    "title": "TRON DEMON"
+  },
+  {
+    "url": "{DOMAIN_BOT_ALERT}",
+    "title": "BOT ALERT API"
+  },
+  {
+    "url": "{DOMAIN_BOT_ALERT}/api/health/check/sender",
+    "title": "SENDER SCRIPT"
+  }
+]
