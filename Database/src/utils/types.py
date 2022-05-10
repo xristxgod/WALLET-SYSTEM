@@ -1,7 +1,10 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
 from config import Config
 
+TGChatID = Union[int, bytes]
+
+CRYPTONetwork = str
 CRYPTOAddress = str
 CRYPTOPrivateKey = str
 

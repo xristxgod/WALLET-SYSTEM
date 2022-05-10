@@ -3,15 +3,23 @@ from typing import Union, List, Dict, Optional
 from pydantic import BaseModel, Field
 
 from src.models import WalletModel
-from src.utils.types import CRYPTOAddress
+from src.utils.types import CRYPTOAddress, TGChatID, CRYPTONetwork
+
+# <<<===================================>>> Wallet <<<===============================================================>>>
+# BODY
+
+class BodyCreateWallet(BaseModel):
+    chat_id: TGChatID = Field("")
+    network: CRYPTONetwork = Field("")
+
+# RESPONSE
 
 # <<<===================================>>> Transactions <<<=========================================================>>>
-
 # BODY
 
 class BodyTransaction(BaseModel):
-    chat_id: Union[int, bytes] = Field("")
-    network: str = Field("")
+    chat_id: TGChatID = Field("")
+    network: CRYPTONetwork = Field("")
     inputs: Optional[List[CRYPTOAddress]] = Field("")
     outputs: List[Dict[CRYPTOAddress, str]] = Field("")
 

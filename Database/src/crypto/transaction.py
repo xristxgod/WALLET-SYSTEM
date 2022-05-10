@@ -1,10 +1,8 @@
-from typing import List
-
 from src.models import WalletTransactionModel, WalletModel
 from src.settings import db
 
 from src.api.schemas import BodyTransaction, ResponseCreateTransaction, ResponseSendTransaction
-from src.utils.types import CryptoEndpointType, CRYPTOPrivateKey
+from src.utils.types import CryptoEndpointType, CRYPTOPrivateKey, CRYPTONetwork, TGChatID
 from src.crypto.client import Client
 
 from config import logger
@@ -43,7 +41,9 @@ class Transaction:
         return result.get("createTxHex")
 
     @staticmethod
-    def _sign_send_transaction(create_tx_hash: str, private_keys: CRYPTOPrivateKey, network: str, chat_id: int) -> bool:
+    def _sign_send_transaction(
+            create_tx_hash: str, private_keys: CRYPTOPrivateKey, network: CRYPTONetwork, chat_id: TGChatID
+    ) -> bool:
         method, url = CryptoEndpointType.get_send_transaction(network=network)
         data = {
             "createTxHex": create_tx_hash,
@@ -90,4 +90,3 @@ class Transaction:
                 chat_id=body.chat_id
             )
         )
-
