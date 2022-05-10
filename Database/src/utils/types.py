@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from config import Config
 
@@ -43,18 +43,18 @@ class CryptoEndpointType(object):
         )
 
     @staticmethod
-    def get_optimal_fee_url(network: str, inputs: List[Dict[CRYPTOAddress, str]], outputs: List[Dict[CRYPTOAddress, str]]) -> str:
+    def get_optimal_fee_url(network: str, inputs: List[CRYPTOAddress], outputs: List[Dict[CRYPTOAddress, str]]) -> Tuple:
         """
         :type network: NETWORK_TOKEN = TRON_USDT, TRON_TRX
         :type inputs: [{ADDRESS,AMOUNT}] = [{"address": "TMq8sLT864CUjy2owCocftJZSDP6qmzeDy", "amount": "12.33"}]
         :type outputs: [{ADDRESS,AMOUNT}] = [{"address": "TPH76FSoh54JsNeR6sgohMN2NLKaobJCL6", "amount": "12.33"}]
         """
-        return CryptoEndpointType._OPTIMAL_FEE.replace(
+        return "GET", CryptoEndpointType._OPTIMAL_FEE.replace(
             "<domain>", CryptoEndpointType._NETWORKS.get(network.split("_")[0])
         ).replace(
             "<network>", network.split("_")[1].lower()
         ).replace(
-            "<inputs>", "".join([f"{_input['address']}$" for _input in inputs])[:-1]
+            "<inputs>", "".join([f"{_input}$" for _input in inputs])[:-1]
         ).replace(
             "<outputs>", "".join([f"{_output['address']}$" for _output in outputs])[:-1]
         )
