@@ -25,8 +25,9 @@ def create_wallet(body: BodyCreateWallet) -> ResponseCreateWallet:
 
 @app.route("/check/balance", methods=['POST'])
 def check_balance(body: BodyCheckBalance) -> Union[ResponseCheckBalance, json]:
+    """Check crypto wallet balance"""
     try:
-        pass
+        return Wallet.check_balance(body=body)
     except Exception as error:
         logger.error(f"ERROR: {error}")
         return jsonify({"message": f"{error}"})
@@ -50,4 +51,3 @@ def send_transaction(body: BodyTransaction) -> Union[ResponseSendTransaction, js
     except Exception as error:
         logger.error(f"ERROR: {error}")
         return ResponseSendTransaction(message=f"{error}")
-

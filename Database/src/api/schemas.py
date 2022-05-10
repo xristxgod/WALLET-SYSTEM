@@ -18,11 +18,14 @@ class BodyCheckBalance(BaseModel):
     chatID: TGChatID = Field("")
     network: CRYPTONetwork = Field("")
     address: Optional[CRYPTOAddress] = Field("")
+    convert: Optional[List[str]]
 
     def __init__(self, **kwargs):
         super(BodyCheckBalance, self).__init__(**kwargs)
         if self.address is None:
             self.address = WalletModel.query.filter_by(user_id=self.chatID, network=self.network.split("_")[0]).first()
+        if self.convert is not None and isinstance(self.convert, str):
+            self.convert = [self.convert]
 
 # RESPONSE
 
@@ -32,16 +35,12 @@ class ResponseCreateWallet(BaseModel):
 class ResponseCheckBalance(BaseModel):
     balance: str = Field("")
     network: CRYPTONetwork = Field("")
-
-    balanceUSD: Optional[str] = Field("")
-    balanceRUB: Optional[str] = Field("")
+    convert: Optional[List[Dict]] = Field("")
 
     def __init__(self, **kwargs):
         super(ResponseCheckBalance, self).__init__(**kwargs)
-        if self.balanceUSD is None:
-            del self.balanceUSD
-        if self.balanceRUB is None:
-            del self.balanceRUB
+        if self.convert is None:
+            del self.convert
 
 # <<<===================================>>> Transactions <<<=========================================================>>>
 # BODY

@@ -18,6 +18,10 @@ class CoinToCoin:
             return False
 
     @staticmethod
+    def get_correct_token(coin: str) -> str:
+        """Returns the correct token for the price request."""
+
+    @staticmethod
     def get_current_price(coin: str, to_coin: str = "usd") -> Optional[decimal.Decimal]:
         try:
             params = f"ids={coin}&vs_currencies={to_coin}"
