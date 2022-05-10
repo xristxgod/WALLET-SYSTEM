@@ -7,6 +7,7 @@ TGChatID = Union[int, bytes]
 CRYPTONetwork = str
 CRYPTOAddress = str
 CRYPTOPrivateKey = str
+CRYPTOMnemonicWords = str
 
 class CryptoEndpointType(object):
     _CREATE_WALLET = "<domain>/api/<network>/create/wallet"

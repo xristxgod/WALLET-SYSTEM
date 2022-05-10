@@ -30,7 +30,7 @@ class Transaction:
                 recipients=body_transaction.get("recipients"),
                 token=body_transaction.get("token"),
                 status=False,
-                user_id=body.chat_id
+                user_id=body.chatID
             )
             db.session.add(tx_create)
             db.session.commit()
@@ -73,7 +73,7 @@ class Transaction:
         return ResponseCreateTransaction(
             fee=fee,
             bodyTransaction={
-                "chat_id": body.chat_id,
+                "chat_id": body.chatID,
                 "network": body.network,
                 "inputs": body.inputs,
                 "outputs": body.outputs,
@@ -85,8 +85,8 @@ class Transaction:
         return ResponseSendTransaction(
             message=Transaction._sign_send_transaction(
                 create_tx_hash=Transaction._create_transaction(body=body),
-                private_keys=WalletModel.query.filter_by(user_id=body.chat_id, network=body.network.split("_")[0]).all(),
+                private_keys=WalletModel.query.filter_by(user_id=body.chatID, network=body.network.split("_")[0]).all(),
                 network=body.network,
-                chat_id=body.chat_id
+                chat_id=body.chatID
             )
         )
