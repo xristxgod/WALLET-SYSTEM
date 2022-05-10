@@ -36,13 +36,15 @@ class BodyGenerateAddress(BaseModel):
 
 class BodyCreateTransaction(BaseModel):
     """Create a transaction TRX or Tokens TRC20"""
-    fromAddress: TAddress = Field(description="Sender's address")
+    fromAddress: List[TAddress] = Field(description="Sender's address")
     outputs: List[Dict] = Field(description="Sender's address")
 
     def __init__(self, **kwargs):
         super(BodyCreateTransaction, self).__init__(**kwargs)
         if isinstance(self.outputs, str):
             self.outputs = json.loads(self.outputs)
+        if isinstance(self.fromAddress, list):
+            self.fromAddres = self.fromAddress[0]
 
 class BodySignAndSendTransaction(BaseModel):
     """Sign and send transaction"""
