@@ -18,20 +18,6 @@ from config import logger, COINS
 
 router = APIRouter(prefix="/api")
 
-# <<<----------------------------------->>> Coins <<<---------------------------------------------------------------->>>
-@router.get(
-    "/{coin}&usd/price", description="This method creates a tron wallet",
-    tags=["WALLET"], response_class=JSONResponse
-)
-async def get_coin_price(coin: str):
-    if coin in list(COINS.keys()):
-        return JSONResponse(content={
-            "price": await Client.get_current_price(coin=COINS.get(coin)),
-            "coin": coin
-        })
-    else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Coin "{coin}" was not found')
-
 # <<<----------------------------------->>> Wallet Info <<<---------------------------------------------------------->>>
 
 @router.post(
