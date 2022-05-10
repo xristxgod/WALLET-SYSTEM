@@ -14,4 +14,4 @@ uvicorn app:app --host 0.0.0.0 --port 6000
 
 --------
 Documentation page:
-![tron_api_main_page](https://user-images.githubusercontent.com/84931791/164236723-cc24d19d-87fb-4ce3-9ef3-971a16e52c8c.png)
+![Безымянный](https://user-images.githubusercontent.com/84931791/167252850-c8ed4528-7a2c-4fb6-8bf2-29ac6f60067e.png)
