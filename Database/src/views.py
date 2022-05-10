@@ -78,6 +78,13 @@ def index_page():
         tokens=TokenModel.query.order_by("id"),
     )
 
+# <<<==================================>>> Apis page <<<=============================================================>>>
+
+@app.route("/api")
+@login_required
+def apis_page():
+    pass
+
 # <<<==================================>>> User pages <<<============================================================>>>
 
 @app.route("/users", methods=['GET', 'POST'])
