@@ -10,20 +10,6 @@ from src.crypto.client import Client
 from config import logger
 
 class Transaction:
-    @staticmethod
-    def create_transaction(body: BodyTransaction) -> ResponseCreateTransaction:
-        """Get optimal fee for transaction"""
-        method, url = CryptoEndpointType.get_optimal_fee_url(network=body.network, inputs=body.inputs, outputs=body.outputs)
-        fee = Client.request(method, url).get("fee")
-        return ResponseCreateTransaction(
-            fee=fee,
-            bodyTransaction={
-                "chat_id": body.chat_id,
-                "network": body.network,
-                "inputs": body.inputs,
-                "outputs": body.outputs,
-            }
-        )
 
     @staticmethod
     def _create_transaction(body: BodyTransaction) -> str:
@@ -57,7 +43,7 @@ class Transaction:
         return result.get("createTxHex")
 
     @staticmethod
-    def _sign_send_transaction(create_tx_hash: str, private_keys: CRYPTOPrivateKey, network: str, chat_id: int):
+    def _sign_send_transaction(create_tx_hash: str, private_keys: CRYPTOPrivateKey, network: str, chat_id: int) -> bool:
         method, url = CryptoEndpointType.get_send_transaction(network=network)
         data = {
             "createTxHex": create_tx_hash,
@@ -65,20 +51,43 @@ class Transaction:
         }
         result = Client.request(method=method, url=url, **data)
         try:
-            transaction = WalletTransactionModel.query.filter_by(
+            transaction: WalletTransactionModel = WalletTransactionModel.query.filter_by(
                 transaction_hash=result.get("transactionHash"),
                 user_id=chat_id,
                 network=network.split("_")[0].upper()
             ).first()
+            transaction.status = True
+            db.session.commit()
         except Exception as error:
             db.session.rollback()
             logger.error(f"ERROR: {error}")
-            raise error
+            return False
+        return True
 
+    @staticmethod
+    def create_transaction(body: BodyTransaction) -> ResponseCreateTransaction:
+        """Get optimal fee for transaction"""
+        method, url = CryptoEndpointType.get_optimal_fee_url(network=body.network, inputs=body.inputs,
+                                                             outputs=body.outputs)
+        fee = Client.request(method, url).get("fee")
+        return ResponseCreateTransaction(
+            fee=fee,
+            bodyTransaction={
+                "chat_id": body.chat_id,
+                "network": body.network,
+                "inputs": body.inputs,
+                "outputs": body.outputs,
+            }
+        )
 
     @staticmethod
     def send_transaction(body: BodyTransaction) -> ResponseSendTransaction:
-        create_tx_hash = Transaction._create_transaction(body=body)
-        private_keys: List = WalletModel.query.filter_by(user_id=body.chat_id, network=body.network.split("_")[0]).all()
-
+        return ResponseSendTransaction(
+            message=Transaction._sign_send_transaction(
+                create_tx_hash=Transaction._create_transaction(body=body),
+                private_keys=WalletModel.query.filter_by(user_id=body.chat_id, network=body.network.split("_")[0]).all(),
+                network=body.network,
+                chat_id=body.chat_id
+            )
+        )
 
