@@ -56,11 +56,6 @@ class BodySignAndSendTransaction(BaseModel):
 
 # <<<----------------------------------->>> Response <<<------------------------------------------------------------->>>
 
-class ResponseGetCoin(BaseModel):
-    price: str = Field(description="Currency price per currency (default is usd)")
-    coin: str = Field(description="The currency whose exchange rate we are looking at")
-
-
 class ResponseCreateWallet(BaseModel):
     """Response for create wallet"""
     passphrase: str = Field(description="Secret word for account recovery")
