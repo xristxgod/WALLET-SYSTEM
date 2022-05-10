@@ -14,7 +14,15 @@ class BodyCreateTransaction(BaseModel):
     inputs: List[CRYPTOAddress] = Field("")
     outputs: List[Dict[CRYPTOAddress, str]] = Field("")
 
+class BodySendTransaction(BaseModel):
+    pass
+
 # RESPONSE
 
 class ResponseCreateTransaction(BaseModel):
-    pass
+    fee: str = Field("")
+    bodyTransaction: Dict = Field("")
+
+class ResponseSendTransaction(BaseModel):
+    fee: str = Field("")
+    bodyTransaction: Dict = Field("")
