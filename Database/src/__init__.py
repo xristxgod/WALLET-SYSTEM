@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 
 from src import settings, models, views
-from src.api import endpoints, system
+from src.api.endpoints import system_endpoints, finance_endpoins
 
 app = Flask(__name__)
 migrate = Migrate(app, settings.db)
@@ -28,8 +28,8 @@ def init_app(config=settings.Settings):
     # View
     app.register_blueprint(views.app)
     # Api blueprint
-    app.register_blueprint(endpoints.app)
-    app.register_blueprint(system.app)
+    app.register_blueprint(system_endpoints.app)
+    app.register_blueprint(finance_endpoins.app)
     app.before_request(clear_trailing)
     settings.db.init_app(app)
     app.logger.setLevel(logging.INFO)
