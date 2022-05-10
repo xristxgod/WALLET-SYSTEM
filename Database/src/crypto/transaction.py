@@ -1,11 +1,9 @@
 from src.models import WalletTransactionModel, WalletModel
 from src.settings import db
-
 from src.api.schemas import BodyTransaction
 from src.api.schemas import ResponseCreateTransaction, ResponseSendTransaction
 from src.utils.types import CryptoEndpointType, CRYPTOPrivateKey, CRYPTONetwork, TGChatID
 from src.crypto.client import Client
-
 from config import logger
 
 class Transaction:
