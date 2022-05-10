@@ -19,7 +19,7 @@ class Wallet:
         method, url = CryptoEndpointType.get_create_wallet_url(network=body.network)
         data = {
             "passphrase": body.passphrase,
-            "mnemonicWords": body.mnemonic_words,
+            "mnemonicWords": body.mnemonicWords,
         }
         result = Client.request(method, url, **data)
         try:

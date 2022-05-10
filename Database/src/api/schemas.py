@@ -5,6 +5,19 @@ from pydantic import BaseModel, Field
 from src.models import WalletModel
 from src.utils.types import CRYPTOAddress, CRYPTONetwork, CRYPTOMnemonicWords, TGChatID
 
+# <<<===================================>>> Coin to Coin <<<===============================================================>>>
+# BODY
+
+class BodyCoinToCoin(BaseModel):
+    coin: str = Field("")
+    toCoin: Optional[str] = Field("")
+
+# RESPONSE
+class ResponseCoinToCoin(BaseModel):
+    coin: str = Field("")
+    toCoin: str = Field("")
+    price: str = Field("")
+
 # <<<===================================>>> Wallet <<<===============================================================>>>
 # BODY
 
@@ -12,7 +25,7 @@ class BodyCreateWallet(BaseModel):
     chatID: TGChatID = Field("")
     network: CRYPTONetwork = Field("")
     passphrase: Optional[str] = Field("")
-    mnemonic_words: Optional[CRYPTOMnemonicWords] = Field("")
+    mnemonicWords: Optional[CRYPTOMnemonicWords] = Field("")
 
 class BodyCheckBalance(BaseModel):
     chatID: TGChatID = Field("")
