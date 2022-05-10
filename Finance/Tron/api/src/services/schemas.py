@@ -12,17 +12,17 @@ from src.types import TPrivateKey, TPublicKey, TAddress
 class BodyCreateWallet(BaseModel):
     """Body for create wallet"""
     passphrase: Optional[str] = Field(default=None, description="Secret word for account recovery")
-    mnemonic_words: Optional[str] = Field(default=None, description="Mnemonic phrase")
+    mnemonicWords: Optional[str] = Field(default=None, description="Mnemonic phrase")
 
     def __init__(self, **kwargs):
         super(BodyCreateWallet, self).__init__(**kwargs)
         if self.passphrase is None or self.passphrase == "string":
             self.passphrase = generate_passphrase(length=32)
-        if self.mnemonic_words is None or self.mnemonic_words == "string":
-            self.mnemonic_words = generate_mnemonic(language="english", strength=128)
+        if self.mnemonicWords is None or self.mnemonicWords == "string":
+            self.mnemonicWords = generate_mnemonic(language="english", strength=128)
 
 class BodyGenerateAddress(BaseModel):
-    mnemonic_words: str = Field(description="Mnemonic phrase")
+    mnemonicWords: str = Field(description="Mnemonic phrase")
     passphrase: Optional[str] = Field(default=None, description="Secret word for account recovery")
     account: Optional[int]
     index: Optional[int]
@@ -61,7 +61,7 @@ class BodySignAndSendTransaction(BaseModel):
 class ResponseCreateWallet(BaseModel):
     """Response for create wallet"""
     passphrase: str = Field(description="Secret word for account recovery")
-    mnemonic_words: str = Field(description="Mnemonic phrase")
+    mnemonicWords: str = Field(description="Mnemonic phrase")
     privateKey: TPrivateKey = Field(description="Private key for account")
     publicKey: TPublicKey = Field(description="Public key for account")
     address: TAddress = Field(description="Wallet address")
