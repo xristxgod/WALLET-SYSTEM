@@ -10,7 +10,7 @@ TPublicKey = typing.Union[str, bytes]       # Public key for account
 class Coins:
 
     TRX = ["trx", "tron", "native"]
-    TOKEN_USDT = "usdt"
+    TOKEN_USDT = ["usdt"]
 
     @staticmethod
     def is_native(coin: str) -> bool:
