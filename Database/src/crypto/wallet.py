@@ -1,6 +1,6 @@
 from src.settings import db
 from src.models import WalletModel
-from src.api.schemas import BodyCreateWallet
+from src.api.schemas import BodyCreateWallet, ResponseCreateWallet
 from src.utils.types import CryptoEndpointType
 from src.crypto.client import Client
 from config import logger
@@ -8,7 +8,7 @@ from config import logger
 class Wallet:
 
     @staticmethod
-    def create_wallet(body: BodyCreateWallet) -> bool:
+    def create_wallet(body: BodyCreateWallet) -> ResponseCreateWallet:
         method, url = CryptoEndpointType.get_create_wallet_url(network=body.network)
         data = {
             "passphrase": body.passphrase,
@@ -25,8 +25,10 @@ class Wallet:
                 mnemonic_phrase=result.get("mnemonicWords"),
                 user_id=body.chatID,
             )
+            db.session.add(create_wallet)
             db.session.commit()
         except Exception as error:
             db.session.rollback()
             logger.error(f"ERROR: {error}")
             raise error
+        return ResponseCreateWallet(message=True)

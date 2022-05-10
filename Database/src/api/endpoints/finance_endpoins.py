@@ -3,8 +3,8 @@ from typing import Union
 
 from flask import Blueprint, jsonify
 
-from src.api.schemas import BodyTransaction, BodyCreateWallet
-from src.api.schemas import ResponseCreateTransaction, ResponseSendTransaction
+from src.api.schemas import BodyTransaction, BodyCreateWallet, BodyCheckBalance
+from src.api.schemas import ResponseCreateTransaction, ResponseSendTransaction, ResponseCreateWallet, ResponseCheckBalance
 from src.crypto.transaction import Transaction
 from src.crypto.wallet import Wallet
 
@@ -15,10 +15,18 @@ app = Blueprint("api_finance", __name__, url_prefix="/api")
 # <<<======================================>>> Wallet <<<============================================================>>>
 
 @app.route("/create/wallet", methods=['POST'])
-def create_wallet(body: BodyCreateWallet) -> json:
+def create_wallet(body: BodyCreateWallet) -> ResponseCreateWallet:
     """Create crypto wallet"""
     try:
-        return jsonify({"message": Wallet.create_wallet(body=body)})
+        return Wallet.create_wallet(body=body)
+    except Exception as error:
+        logger.error(f"ERROR: {error}")
+        return ResponseCreateWallet(message=f"{error}")
+
+@app.route("/check/balance", methods=['POST'])
+def check_balance(body: BodyCheckBalance) -> Union[ResponseCheckBalance, json]:
+    try:
+        pass
     except Exception as error:
         logger.error(f"ERROR: {error}")
         return jsonify({"message": f"{error}"})
@@ -41,5 +49,5 @@ def send_transaction(body: BodyTransaction) -> Union[ResponseSendTransaction, js
         return Transaction.send_transaction(body=body)
     except Exception as error:
         logger.error(f"ERROR: {error}")
-        return ResponseSendTransaction(message=False)
+        return ResponseSendTransaction(message=f"{error}")
 
