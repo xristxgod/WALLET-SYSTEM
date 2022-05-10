@@ -28,7 +28,7 @@ class TronMethods(NodeTron):
         hdwallet.from_mnemonic(mnemonic=body.mnemonicWords, language="english", passphrase=body.passphrase)
         return ResponseCreateWallet(
             passphrase=body.passphrase,
-            mnemonic_words=body.mnemonic_words,
+            mnemonicWords=body.mnemonic_words,
             privateKey=hdwallet.private_key(),
             publicKey=hdwallet.public_key(),
             address=hdwallet.address()
@@ -38,13 +38,13 @@ class TronMethods(NodeTron):
     def generate_acc_by_mnemonic(body: BodyGenerateAddress) -> ResponseCreateWallet:
         """Generate a tron wallet by mnemonic"""
         hdwallet: BIP44HDWallet = BIP44HDWallet(cryptocurrency=TronMainnet)
-        hdwallet.from_mnemonic(mnemonic=body.mnemonic_words, language="english", passphrase=body.passphrase)
+        hdwallet.from_mnemonic(mnemonic=body.mnemonicWords, language="english", passphrase=body.passphrase)
         hdwallet.clean_derivation()
         derivation = BIP44Derivation(cryptocurrency=TronMainnet, account=body.account, change=False, address=body.index)
         hdwallet.from_path(path=derivation)
         return ResponseCreateWallet(
             passphrase=body.passphrase,
-            mnemonic_words=body.mnemonic_words,
+            mnemonicWords=body.mnemonicWords,
             privateKey=hdwallet.private_key(),
             publicKey=hdwallet.public_key(),
             address=hdwallet.address()
