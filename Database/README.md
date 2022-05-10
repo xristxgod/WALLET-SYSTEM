@@ -28,3 +28,6 @@ Interface for working with the database!
 > # Or through the bash script
 > bash upgrade_db.sh
 > ```
+
+API DOCS
+-------
