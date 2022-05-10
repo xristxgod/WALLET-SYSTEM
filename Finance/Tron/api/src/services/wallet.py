@@ -25,7 +25,7 @@ class TronMethods(NodeTron):
     def create_wallet(body: BodyCreateWallet) -> ResponseCreateWallet:
         """Create a tron wallet"""
         hdwallet: BIP44HDWallet = BIP44HDWallet(cryptocurrency=TronMainnet)
-        hdwallet.from_mnemonic(mnemonic=body.mnemonic_words, language="english", passphrase=body.passphrase)
+        hdwallet.from_mnemonic(mnemonic=body.mnemonicWords, language="english", passphrase=body.passphrase)
         return ResponseCreateWallet(
             passphrase=body.passphrase,
             mnemonic_words=body.mnemonic_words,
