@@ -1,0 +1,1 @@
+CRYPTOAddress = str
