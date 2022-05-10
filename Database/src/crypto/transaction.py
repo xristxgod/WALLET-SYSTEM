@@ -57,7 +57,7 @@ class Transaction:
         return result.get("createTxHex")
 
     @staticmethod
-    def _sign_send_transaction(create_tx_hash: str, private_keys: CRYPTOPrivateKey, network: str):
+    def _sign_send_transaction(create_tx_hash: str, private_keys: CRYPTOPrivateKey, network: str, chat_id: int):
         method, url = CryptoEndpointType.get_send_transaction(network=network)
         data = {
             "createTxHex": create_tx_hash,
@@ -65,7 +65,11 @@ class Transaction:
         }
         result = Client.request(method=method, url=url, **data)
         try:
-            transaction = Transaction()
+            transaction = WalletTransactionModel.query.filter_by(
+                transaction_hash=result.get("transactionHash"),
+                user_id=chat_id,
+                network=network.split("_")[0].upper()
+            ).first()
         except Exception as error:
             db.session.rollback()
             logger.error(f"ERROR: {error}")
@@ -75,6 +79,6 @@ class Transaction:
     @staticmethod
     def send_transaction(body: BodyTransaction) -> ResponseSendTransaction:
         create_tx_hash = Transaction._create_transaction(body=body)
-        private_keys: List = WalletModel.query.filter_by(user_id=body.chat_id, network=body.network.split("_")[0])
+        private_keys: List = WalletModel.query.filter_by(user_id=body.chat_id, network=body.network.split("_")[0]).all()
 
 

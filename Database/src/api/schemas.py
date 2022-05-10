@@ -18,7 +18,7 @@ class BodyTransaction(BaseModel):
     def __init__(self, **kwargs):
         super(BodyTransaction, self).__init__(**kwargs)
         if self.inputs is None:
-            self.inputs = [WalletModel.query.filter_by(user_id=self.chat_id)]
+            self.inputs = [WalletModel.query.filter_by(user_id=self.chat_id).all()]
         if isinstance(self.chat_id, bytes) or isinstance(self.chat_id, str):
             self.chat_id = int(self.chat_id, 0) if self.chat_id[:2] == "0x" else int("0x"+self.chat_id, 0)
 
