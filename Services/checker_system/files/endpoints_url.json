@@ -4,6 +4,10 @@
     "title": "Database"
   },
   {
+    "url": "{DOMAIN_DATABASE_INTERFACE}/api/health/check/CoinToCoin/isWork",
+    "title": "Database Api CoinToCoin module"
+  },
+  {
     "url": "{DOMAIN_TRON_API}",
     "title": "TRON API"
   },
