@@ -1,1 +1,0 @@
-docker-compose --file database-interface-docker-compose.yml stop
