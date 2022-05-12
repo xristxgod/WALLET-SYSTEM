@@ -8,4 +8,4 @@ class UserModelAdmin(admin.ModelAdmin):
     list_editable = ("id", "username", "is_admin")
     list_filter = ("id", "username", "is_admin")
 
-admin.site.reqister(UserModel, UserModelAdmin)
+admin.site.register(UserModel, UserModelAdmin)
