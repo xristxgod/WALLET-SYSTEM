@@ -5,3 +5,4 @@ setuptools==57.4.0
 sqlparse==0.4.2
 tzdata==2022.1
 psycopg2
+djangorestframework==3.11.0
