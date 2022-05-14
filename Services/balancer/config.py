@@ -14,7 +14,9 @@ class Config(object):
     RABBITMQ_QUEUE_FOR_BALANCER = environ.get("RABBITMQ_QUEUE_FOR_BALANCER")
 
     REDIS_URL = environ.get("REDIS_URL")
-    
+
     BOT_ALERT_API_URL = environ.get("BOT_ALERT_API_URL")
+
+    TRON_NODE_API_URL = environ.get("TRON_NODE_URL")
 
 
