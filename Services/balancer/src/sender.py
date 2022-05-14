@@ -7,6 +7,7 @@ class SenderCrypto:
     API_URLs: Dict = {"TRON": Config.TRON_NODE_API_URL}
     CREATE_TRANSACTION_URL = "/api/<network>/create/transaction"
     SEND_TRANSACTION_URL = "/api/<network>/send/transaction"
+    GET_OPTIMAL_FEE_URL = "/api/<network>/fee/<fromAddress>&<toAddress>"
 
     @staticmethod
     def __get_correct_path(url: str, **kwargs):
@@ -43,6 +44,30 @@ class SenderCrypto:
             ),
             createTxHex=kwargs.get("createTxHex"),
             privateKeys=kwargs.get("privateKeys")
+        )
+
+    @staticmethod
+    async def get_optimal_fee(network: str, **kwargs) -> Optional[Dict]:
+        """Get optimal fee"""
+        from_, to_ = "", ""
+        for _input in kwargs.get("inputs"):
+            from_ = _input + "+"
+        for _output in kwargs.get("outputs"):
+            to_ = _output + "+"
+
+        if to_[-1] == "+":
+            to_ = to_[:-1]
+        if from_[-1] == "+":
+            from_ = from_[:-1]
+
+        return await Client.get_request(
+            url=SenderCrypto._get_correct_url(
+                api_url=SenderCrypto.API_URLs.get(network),
+                url=SenderCrypto.GET_OPTIMAL_FEE_URL,
+                network=kwargs.get("token"),
+                fromAddress=from_,
+                toAddress=to_
+            )
         )
 
 class SenderBot:
