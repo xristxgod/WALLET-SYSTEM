@@ -21,7 +21,7 @@ class WorkerUser:
         else:
             text = f"{Symbol.REG} New user!\n"
         text += (
-            f"ChatID: {body.chat_id}\n"
+            f"ChatID: {body.chatID}\n"
             f"Username: {body.username}"
         )
         return await Sender.send_to_bot_by_admin(
@@ -39,7 +39,7 @@ class WorkerUser:
             text = f"{Symbol.DEC} Funds were debited: {body.amount} {body.network}\n"
         url = CoinsURL.get_blockchain_url_by_network(network) + f'/#/transaction/{body.transactionHash}'
         text += (
-            f"ChatID: {body.chat_id}\n"
+            f"ChatID: {body.chatID}\n"
             f"Username: {body.username}",
             f"<b><a href='{url}'>Check transaction:</a></b>\n"
         )
@@ -48,7 +48,7 @@ class WorkerUser:
             token=WorkerUser.BOT_ALERT
         )) and (await Sender.send_to_bot_by_chat_id(
             text=text,
-            chat_id=int(body.chat_id),
+            chat_id=int(body.chatID),
             token=WorkerUser.BOT_ALERT
         ))
 
@@ -59,8 +59,8 @@ class WorkerUser:
             f"{Symbol.INFO} Urgent information!\n"
             f"{body.message}"
         )
-        if body.chatIds is not None:
-            for chat_id in body.chatIds:
+        if body.chatIDs is not None:
+            for chat_id in body.chatIDs:
                 await Sender.send_to_bot_by_chat_id(
                     text=text,
                     chat_id=int(chat_id),
@@ -115,18 +115,54 @@ class WorkerTransaction:
             f"                                          <b><a href='{url}'>Check transaction:</a></b>\n"
         )
         message = await Sender.send_to_bot_by_chat_id_response(
-            chat_id=body.chatId,
+            chat_id=body.chatID,
             token=WorkerTransaction.BOT_MAIN,
             text=text
         )
         message_repository.set_message(
-            chat_id=body.chatId,
+            chat_id=body.chatID,
             transaction_hash=body.transactionHash,
             network=body.network,
             status=body.status,
             message_id=Utils.get_message_id(message=message)
         )
         return True
+
+    @staticmethod
+    async def update_text(body: BodyTransaction) -> bool:
+        network, token = body.network.split('-')
+        url = CoinsURL.get_blockchain_url_by_network(network) + f"/#/transaction/{body.transactionHash}"
+        if body.status == 1:
+            text = f"{Symbol.DEC} The transaction on <b>{network}</b> network is waiting to be sent!\n"
+        else:
+            text = (
+                f"{Symbol.DEC} The transaction on <b>{network}</b> network is ERROR!\n"
+                f"Error Information: {body.errorMessage}\n"
+            )
+        text += (
+            f"The sender/s: <b>{body.fromAddress}</b>\n"
+            f"The Recipient/s: <b>{body.toAddress}</b>\n"
+            f"For the amount of: <b>{body.amount} {body.network}</b>\n"
+            f"Commission: <b>{body.fee} {CoinsURL.get_native_by_network(network)}</b>\n"
+            f"                                          <b><a href='{url}'>Check transaction:</a></b>\n"
+        )
+        message_id = message_repository.get_message(
+            chat_id=body.chatID,
+            transaction_hash=body.transactionHash,
+            network=body.network
+        ).get("message_id")
+        if message_id is None:
+            return await Sender.send_to_bot_by_chat_id(
+                chat_id=body.chatID,
+                token=WorkerTransaction.BOT_MAIN,
+                text=text
+            )
+        return await Sender.update_message_by_message_id(
+            text=text,
+            token=token,
+            chat_id=body.chatID,
+            message_id=message_id
+        )
 
     @staticmethod
     async def send_text(body: BodyTransaction) -> bool:
@@ -141,27 +177,25 @@ class WorkerTransaction:
             f"Commission: <b>{body.fee} {CoinsURL.get_native_by_network(network)}</b>\n"
             f"                                          <b><a href='{url}'>Check transaction:</a></b>\n"
         )
-
         message_id = message_repository.get_message(
-            chat_id=body.chatId,
+            chat_id=body.chatID,
             transaction_hash=body.transactionHash,
             network=body.network
         ).get("message_id")
         if message_id is None:
             return await Sender.send_to_bot_by_chat_id(
-                chat_id=body.chatId,
+                chat_id=body.chatID,
                 token=WorkerTransaction.BOT_MAIN,
                 text=text
             )
-        else:
-            message_repository.del_message(
-                chat_id=body.chatId,
-                transaction_hash=body.transactionHash,
-                network=body.network
-            )
-            return await Sender.update_message_by_message_id(
-                text=text,
-                token=token,
-                chat_id=body.chatId,
-                message_id=message_id
-            )
+        message_repository.del_message(
+            chat_id=body.chatID,
+            transaction_hash=body.transactionHash,
+            network=body.network
+        )
+        return await Sender.update_message_by_message_id(
+            text=text,
+            token=token,
+            chat_id=body.chatID,
+            message_id=message_id
+        )

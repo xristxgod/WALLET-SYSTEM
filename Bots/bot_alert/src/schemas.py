@@ -8,12 +8,12 @@ from src.types import TGMessage, TGChatID
 # <<< Body >>>
 
 class BodyRegUser(BaseModel):
-    chat_id: TGChatID = Field(description="ID of the new user")
+    chatID: TGChatID = Field(description="ID of the new user")
     username: Optional[str] = Field(default=None, description="Username of the new user")
     isAdmin: Optional[bool] = Field(default=False, description="Is the user an admin?")
 
 class BodyBalance(BaseModel):
-    chat_id: TGChatID = Field(description="ID of the user")
+    chatID: TGChatID = Field(description="ID of the user")
     username: Optional[str] = Field(default=None, description="Username of the user")
     network: str = Field(description="The network where the deposit/debit occurred")
     amount: str = Field(description="The number of coins that have been replenished/debited")
@@ -21,18 +21,18 @@ class BodyBalance(BaseModel):
 
 class BodyInfo(BaseModel):
     message: TGMessage = Field(description="Message with information")
-    chatIds: Optional[List[TGChatID]] = Field(default=None, description="Send a message to an individual user")
+    chatIDs: Optional[List[TGChatID]] = Field(default=None, description="Send a message to an individual user")
     isAll: Optional[bool] = Field(default=False, description="Send a message to all users or just one")
 
     def __init__(self, **kwargs):
         super(BodyInfo, self).__init__(**kwargs)
-        if self.chatIds is not None and self.isAll is not None:
+        if self.chatIDs is not None and self.isAll is not None:
             self.isAll = False
-        if self.chatIds is None and self.isAll is None:
+        if self.chatIDs is None and self.isAll is None:
             self.isAll = True
-        if self.chatIds is not None and \
-                (isinstance(self.chatIds, str) and self.chatIds.isdigit()) or isinstance(self.chatIds, int):
-            self.chatIds = [self.chatIds]
+        if self.chatIDs is not None and \
+                (isinstance(self.chatIDs, str) and self.chatIDs.isdigit()) or isinstance(self.chatIDs, int):
+            self.chatIDs = [self.chatIDs]
 
 # <<< Response >>>
 
@@ -59,14 +59,19 @@ class ResponseCheckerMethod(BaseModel):
 # <<< Body >>>
 
 class BodyTransaction(BaseModel):
-    chatId: int = Field(description="ID of the user")
+    chatID: int = Field(description="ID of the user")
     transactionHash: str = Field(description="Transaction hash")
     fromAddress: str = Field(description="Sender's wallet address")
     toAddress: str = Field(description="Recipient's wallet address")
     amount: str = Field(description="Amount")
     fee: str = Field(description="Fee")
     network: str = Field(description="The network and the token '{network}-{token}' in which the transaction occurred.")
-    status: bool = Field(default=False)
+    status: int = Field(description=(
+        "There are 4 types of transaction statuses. 0 - created in api, "
+        "1 - created in balancer, 2 - successfully sent, 3 - an error occurred."
+    ), default=0)
+
+    errorMessage: Optional[str] = Field(description="Serves only for the status with error 3.", default="")
 
 # <<< Response >>>
 
