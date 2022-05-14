@@ -1,3 +1,5 @@
+import asyncio
+from datetime import datetime, timedelta
 from typing import Union, Optional, List, Tuple, Dict
 
 import aio_pika
@@ -5,6 +7,8 @@ import asyncpg
 
 from src.utils import Utils
 from config import Config, logger
+
+lock = asyncio.Lock()
 
 class DB:
     @staticmethod
@@ -118,3 +122,29 @@ class SenderMethod:
     def _get_headers() -> Optional[Dict]:
         """There should be an AUTH API and other things that are needed for the head."""
         pass
+
+class Observer:
+    def __init__(self):
+        self._addresses = {}
+        # self._addresses = {"WALLET_ADDRESS": data}
+
+    def __new__(cls):
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(Observer, cls).__new__(cls)
+        return cls.instance
+
+    async def can_go(self, address: str, data: List[Dict]) -> (bool, int):
+        async with lock:
+            if address not in self._addresses.keys():
+                self._addresses.update({address: [datetime.now(), data]})
+                return True, 0
+            seconds = (datetime.now() - self._addresses[address][0]).seconds
+            if seconds > 60:
+                self._addresses.update({address: [datetime.now(), data]})
+                return True, 0
+            else:
+                self._addresses.update({address: [self._addresses[address][0] + timedelta(seconds=60 - seconds), data]})
+                return False, 60 - seconds
+
+
+observer = Observer()
