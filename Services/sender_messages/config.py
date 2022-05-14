@@ -19,3 +19,5 @@ class Config(object):
 
     RABBITMQ_URL = os.getenv("RABBITMQ_URL")
     RABBITMQ_QUEUE_FOR_SENDER = os.getenv("RABBITMQ_QUEUE_FOR_SENDER")
+
+    REDIS_URL = os.getenv("REDIS_URL")
