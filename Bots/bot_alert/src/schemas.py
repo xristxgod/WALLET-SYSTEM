@@ -66,7 +66,7 @@ class BodyTransaction(BaseModel):
     amount: str = Field(description="Amount")
     fee: str = Field(description="Fee")
     network: str = Field(description="The network and the token '{network}-{token}' in which the transaction occurred.")
-    status: bool = Field(default=False)
+    status: int = Field(default=0)
 
 # <<< Response >>>
 

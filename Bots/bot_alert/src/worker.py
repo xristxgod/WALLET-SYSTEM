@@ -129,6 +129,10 @@ class WorkerTransaction:
         return True
 
     @staticmethod
+    async def update_text(body: BodyTransaction) -> bool:
+        pass
+
+    @staticmethod
     async def send_text(body: BodyTransaction) -> bool:
         """Transaction sending message"""
         network, token = body.network.split('-')
