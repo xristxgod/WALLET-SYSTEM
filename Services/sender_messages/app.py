@@ -1,8 +1,9 @@
 import asyncio
+import typing
 
-from src.parser import run
+from src.runer import run
 
-async def main(loop):
+async def main(loop: typing.Any):
     await asyncio.gather(*[
         run(loop=loop)
     ])
