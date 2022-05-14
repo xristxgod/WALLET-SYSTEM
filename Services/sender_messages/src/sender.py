@@ -13,7 +13,7 @@ class Sender(SenderMethod):
                 async with session.get(
                         Sender._get_url(Sender.USERS_METHOD, method=method),
                         params={
-                            "chat_id": kwargs.get("chat_id"),
+                            "chatID": kwargs.get("chat_id"),
                             "username": kwargs.get("username"),
                             "network": kwargs.get("network"),
                             "amount": kwargs.get("amount"),

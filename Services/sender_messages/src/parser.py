@@ -49,7 +49,7 @@ class Parser:
                 is_sender = True
 
             returned_data["forApiBalanceAddOrDec"].append({
-                "chat_id": user_id,
+                "chatID": user_id,
                 "username": await DB.get_username_by_user_id(user_id=user_id),
                 "network": f"{network.upper()}-{token.upper()}",
                 "amount": tx_data.get("amount"),
@@ -59,7 +59,7 @@ class Parser:
 
             if not is_new:
                 returned_data["forApiTransactionSend"].append({
-                    "chat_id": user_id,
+                    "chatID": user_id,
                     "transactionHash": tx_data.get("transactionHash"),
                     "fromAddress": address,
                     "toAddress": Utils.get_addresses_for_send(addresses_data=tx_data.get("recipients")),
