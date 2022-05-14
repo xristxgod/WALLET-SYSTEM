@@ -65,7 +65,7 @@ class DB:
         )
 
     @staticmethod
-    async def update_transaction(tx_hash: str, network: str, user_id: int, status: bool = True) -> bool:
+    async def update_transaction(tx_hash: str, network: str, user_id: int, status: int = 2) -> bool:
         """Update the transaction status"""
         return await DB.__insert_method(
             sql=(

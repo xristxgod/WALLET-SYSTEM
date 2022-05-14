@@ -30,7 +30,7 @@ class Parser:
             if await DB.get_transaction_status(tx_hash=tx_data.get("transactionHash"), network=network) is not None:
                 # If the transaction was found in the database
                 result = await DB.update_transaction(
-                    tx_hash=tx_data.get("transactionHash"), network=network, user_id=user_id, status=True
+                    tx_hash=tx_data.get("transactionHash"), network=network, user_id=user_id, status=2
                 )
                 is_new = False
             else:
@@ -38,7 +38,7 @@ class Parser:
                 result = await DB.add_new_transaction(
                     network=network, time=tx_data.get("time"), transaction_hash=tx_data.get("transactionHash"),
                     fee=tx_data.get("fee"), amount=tx_data.get("amount"), senders=tx_data.get("senders"),
-                    recipients=tx_data.get("recipients"), token=token, status=True, user_id=user_id
+                    recipients=tx_data.get("recipients"), token=token, status=2, user_id=user_id
                 )
                 is_new = True
             if not result:
