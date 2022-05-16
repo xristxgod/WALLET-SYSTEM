@@ -1,6 +1,7 @@
 from typing import Optional, Dict, List
 
 from src.external.client import Client
+from src.types import FULL_NETWORK
 from config import Config
 
 class SenderToCryptoNode:
@@ -23,7 +24,7 @@ class SenderToCryptoNode:
     # <<<=============================================>>> SENDER <<<=================================================>>>
 
     @staticmethod
-    async def create_transaction(network: str, **kwargs) -> Optional[Dict]:
+    async def create_transaction(network: FULL_NETWORK, **kwargs) -> Optional[Dict]:
         """Create transaction"""
         return await Client.post_request(
             url=SenderToCryptoNode._get_correct_url(
@@ -36,7 +37,7 @@ class SenderToCryptoNode:
         )
 
     @staticmethod
-    async def send_transaction(network: str, **kwargs) -> Optional[Dict]:
+    async def send_transaction(network: FULL_NETWORK, **kwargs) -> Optional[Dict]:
         """Send transaction"""
         return await Client.post_request(
             url=SenderToCryptoNode._get_correct_url(
@@ -49,7 +50,7 @@ class SenderToCryptoNode:
         )
 
     @staticmethod
-    async def get_optimal_fee(network: str, **kwargs) -> Optional[Dict]:
+    async def get_optimal_fee(network: FULL_NETWORK, **kwargs) -> Optional[Dict]:
         """Get optimal fee"""
         from_, to_ = "", ""
         for _input in kwargs.get("inputs"):
@@ -93,7 +94,7 @@ class SenderToBotAlert:
     # <<<=============================================>>> SENDER <<<=================================================>>>
 
     @staticmethod
-    async def update_transaction(chat_id: int, network: str, status: int = 1, **tx_data) -> bool:
+    async def update_transaction(chat_id: int, network: FULL_NETWORK, status: int = 1, **tx_data) -> bool:
         return bool((await Client.put_request(
             url=SenderToBotAlert.API_URL + SenderToBotAlert.UPDATE_TRANSACTION,
             chatID=chat_id,
