@@ -76,7 +76,7 @@ class WorkerUser:
         else:
             return await Sender.send_to_bot_by_all(
                 text=text,
-                token=WorkerUser.BOT_ALERT
+                token=token
             )
 
 class WorkerChecker:
