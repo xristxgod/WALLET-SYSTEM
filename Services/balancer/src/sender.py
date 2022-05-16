@@ -3,7 +3,7 @@ from typing import Optional, Dict
 from src.external.client import Client
 from config import Config
 
-class SenderCrypto:
+class SenderToCryptoNode:
     API_URLs: Dict = {"TRON": Config.TRON_NODE_API_URL}
     CREATE_TRANSACTION_URL = "/api/<network>/create/transaction"
     SEND_TRANSACTION_URL = "/api/<network>/send/transaction"
@@ -70,5 +70,5 @@ class SenderCrypto:
             )
         )
 
-class SenderBot:
+class SenderToBotAlert:
     pass
