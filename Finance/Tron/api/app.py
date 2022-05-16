@@ -7,8 +7,8 @@ app = FastAPI(
     title=f"TronNetwork '{Config.NETWORK}'",
     description="Service for interacting with the Tron network.",
     version="1.0.0",
-    docs_url="/tron/docs",
-    redoc_url="/tron/redoc"
+    docs_url="/docs",
+    redoc_url="/redoc"
 )
 app.include_router(endpoints.router)
 app.include_router(system.router)
