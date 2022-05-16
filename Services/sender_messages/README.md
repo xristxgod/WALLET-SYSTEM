@@ -1,4 +1,4 @@
-Sender bot
+Sender:
 ======
 
 > This bot is used to forward various messages from RabbitMQ to telegram bot (bot_alert)
