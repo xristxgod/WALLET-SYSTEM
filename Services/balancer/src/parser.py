@@ -4,6 +4,9 @@ from src.services.crypto import CryptForUser
 
 class Parser:
 
+    @staticmethod
+    async def start_sending(user: CryptForUser):
+        pass
 
     @staticmethod
     async def processing_message(data: Dict):
@@ -12,3 +15,6 @@ class Parser:
             token=data["token"],
             inputs=["inputs"]
         )
+        user.CHAT_ID = data.get("chatID")
+        user.BASE_FEE = data.get("fee")
+

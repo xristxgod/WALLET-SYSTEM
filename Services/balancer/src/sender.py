@@ -1,7 +1,7 @@
 from typing import Optional, Dict, List
 
 from src.external.client import Client
-from src.types import FULL_NETWORK, CRYPTO_ADDRESS, NETWORK
+from src.types import FULL_NETWORK, CRYPTO_ADDRESS, NETWORK, TG_CHAT_ID
 from config import Config
 
 class SenderToCryptoNode:
@@ -106,7 +106,7 @@ class SenderToBotAlert:
     # <<<=============================================>>> SENDER <<<=================================================>>>
 
     @staticmethod
-    async def update_transaction(chat_id: int, network: FULL_NETWORK, status: int = 1, **tx_data) -> bool:
+    async def update_transaction(chat_id: TG_CHAT_ID, network: FULL_NETWORK, status: int = 1, **tx_data) -> bool:
         return bool((await Client.put_request(
             url=SenderToBotAlert.API_URL + SenderToBotAlert.UPDATE_TRANSACTION,
             chatID=chat_id,

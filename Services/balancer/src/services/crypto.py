@@ -1,11 +1,13 @@
 import decimal
 from typing import Optional, Dict, List
 
-from src.types import CRYPTO_ADDRESS, NETWORK
+from src.types import CRYPTO_ADDRESS, NETWORK, TG_CHAT_ID
 from src.sender import SenderToCryptoNode
 from config import decimals
 
 class CryptForUser:
+    CHAT_ID: Optional[TG_CHAT_ID]
+    BASE_FEE = Optional[str]
 
     def __init__(self, inputs: List[CRYPTO_ADDRESS], network: NETWORK, token: str):
         self.__inputs = inputs
