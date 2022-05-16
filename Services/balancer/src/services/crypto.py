@@ -68,6 +68,10 @@ class CryptForUser:
         return to, "%.8f" % amount, f"{self.network.upper()} {self.token.upper()}"
 
     @property
+    def full_network(self) -> str:
+        return f"{self.network.upper()}_{self.token.upper()}"
+
+    @property
     def native(self) -> str:
         return self.__NATIVE.get(self.network.upper()).lower()
 

@@ -5,7 +5,7 @@ from typing import Optional, Union, List, Tuple, Dict
 import asyncpg
 import aio_pika
 
-from src.types import NETWORK
+from src.types import NETWORK, TG_CHAT_ID
 from src.utils import Utils
 from config import Config, logger
 
@@ -28,7 +28,7 @@ class DB:
                 await connection.close()
 
     @staticmethod
-    async def update_transaction(chat_id: int, network: NETWORK, status: int = 2, last_status: str = 1, **data) -> bool:
+    async def update_transaction(chat_id: TG_CHAT_ID, network: NETWORK, status: int, last_status: int, **data) -> bool:
         return await DB.__insert_method(
             sql=(
                 "UPDATE transaction_model "
@@ -36,6 +36,23 @@ class DB:
                 "WHERE user_id = $3 AND network = $4 AND status = $5;"
             ),
             data=(status, data.get("transaction_hash"), chat_id, network, last_status)
+        )
+
+    @staticmethod
+    async def add_new_transaction(network: NETWORK, chat_id: TG_CHAT_ID, status: int = 1, **data) -> bool:
+        """Add a new transaction"""
+        return await DB.__insert_method(
+            sql=(
+                "INSERT INTO transaction_model "
+                "(network, time, transaction_hash, fee, amount, senders, recipients, token, status, user_id)"
+                "VALUES"
+                "($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);"
+            ),
+            data=(
+                network, data.get("time"), data.get("transaction_hash"), data.get("fee"),
+                data.get("amount"), data.get("senders"), data.get("recipients"), data.get("token"),
+                status, chat_id
+            )
         )
 
 class RabbitMQ:

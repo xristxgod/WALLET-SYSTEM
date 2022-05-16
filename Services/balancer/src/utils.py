@@ -30,3 +30,10 @@ class Utils:
         if balance_native < fee or balance_native - fee < 10:
             return False
         return True
+
+    @staticmethod
+    def get_amount(outputs: List[Dict]) -> str:
+        amount: decimal.Decimal = decimals.create_decimal(0.0)
+        for output in outputs:
+            amount += decimals.create_decimal(output.get("amount"))
+        return "%.8f" % amount
