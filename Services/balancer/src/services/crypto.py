@@ -14,7 +14,7 @@ class CryptForUser:
     }
 
     def __init__(self, inputs: List[CRYPTO_ADDRESS], network: NETWORK, token: str):
-        self.__inputs = inputs
+        self.inputs = inputs
         self.network = network
         self.token = token
 
@@ -22,7 +22,7 @@ class CryptForUser:
         return decimals.create_decimal(
             (
                 await SenderToCryptoNode.get_optimal_fee(
-                    inputs=self.__inputs, outputs=outputs,
+                    inputs=self.inputs, outputs=outputs,
                     network=self.network, token=self.token
                 )
             ).get("fee")
@@ -30,7 +30,7 @@ class CryptForUser:
 
     async def get_balances(self, token: Optional[str] = None) -> Dict[CRYPTO_ADDRESS, decimal.Decimal]:
         balances = {}
-        for address in self.__inputs:
+        for address in self.inputs:
             balance = await SenderToCryptoNode.get_balance(
                 network=self.network,
                 token=self.token if token is None else token,
@@ -43,7 +43,7 @@ class CryptForUser:
 
     async def create_transaction(self, outputs: List[Dict]) -> Optional[Dict]:
         return await SenderToCryptoNode.create_transaction(
-            inputs=self.__inputs,
+            inputs=self.inputs,
             outputs=outputs,
             network=self.network,
             token=self.token

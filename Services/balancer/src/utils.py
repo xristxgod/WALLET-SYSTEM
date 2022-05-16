@@ -1,7 +1,7 @@
 import os
 import uuid
 import decimal
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Tuple
 
 import aiofiles
 
@@ -37,3 +37,15 @@ class Utils:
         for output in outputs:
             amount += decimals.create_decimal(output.get("amount"))
         return "%.8f" % amount
+
+    @staticmethod
+    def error_message(user: str, fee: Dict[str, decimal.Decimal], data: Tuple, title: str = None) -> str:
+        if title is None:
+            title = "When creating a transaction, something went wrong!\n"
+        return (
+            f"{title}"
+            f"From: {user}\n"
+            f"To: {data[0]}\n"
+            f"For the amount of: {data[1]} {data[2]}\n"
+            f"Fee: {fee.values()} {fee.keys()}"
+        )

@@ -1,5 +1,5 @@
 import json
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Union
 
 import aio_pika
 
@@ -15,16 +15,14 @@ class Parser:
     async def is_enough(user: CryptForUser, outputs: List[Dict]) -> Optional[str]:
         for _, balance in (await user.get_balances()).items():
             if not Utils.is_have_amount(outputs=outputs, balance=balance):
-                to, amount, network = user.get_outputs(outputs=outputs)
                 logger.error(
                     f"The user: {user.CHAT_ID} does not have enough funds on the balance to send the transaction!"
                 )
-                return (
-                    "There is not enough balance to send the transaction!\n"
-                    f"From: {user}\n"
-                    f"To: {to}\n"
-                    f"For the amount of: {amount} {network}\n"
-                    f"Fee: {user.BASE_FEE} {user.native}"
+                return Utils.error_message(
+                    user=str(user),
+                    fee={user.native: user.BASE_FEE},
+                    data=user.get_outputs(outputs=outputs),
+                    title=f"There is not enough balance {user.token.upper()} to send the transaction!\n"
                 )
         logger.info(f"The user: {user.CHAT_ID} has enough funds on the balance to send the transaction!")
         for _, balance_native in (await user.get_balances(token=user.native)).items():
@@ -33,32 +31,24 @@ class Parser:
                     last_fee=user.BASE_FEE,
                     balance_native=balance_native
             ):
-                to, amount, network = user.get_outputs(outputs=outputs)
                 logger.error(f"The user: {user.CHAT_ID} does not have enough funds on the balance to pay the commission!")
-                return (
-                    f"There is not enough {user.native.upper()} on your wallet to pay the commission!\n"
-                    f"From: {user}\n"
-                    f"To: {to}\n"
-                    f"For the amount of: {amount} {network}\n"
-                    f"Fee: {user.BASE_FEE} {user.native}"
+                return Utils.error_message(
+                    user=str(user),
+                    fee={user.native: user.BASE_FEE},
+                    data=user.get_outputs(outputs=outputs),
+                    title=f"There is not enough {user.native.upper()} on your wallet to pay the commission!\n"
                 )
         logger.info(f"The user: {user.CHAT_ID} has enough funds on the balance to send the transaction!")
 
     @staticmethod
-    async def start_sending(user: CryptForUser, outputs: List[Dict]) -> Optional:
-        is_enough: Optional[str] = await Parser.is_enough(user=user, outputs=outputs)
-        if is_enough is not None:
-            return is_enough
+    async def create_transaction(user: CryptForUser, outputs: List[Dict]) -> Union[Dict[str], str]:
         create_tx = await user.create_transaction(outputs=outputs)
         if create_tx is None:
-            to, amount, network = user.get_outputs(outputs=outputs)
             logger.error(f"When creating a transaction for the user: {user.CHAT_ID} something went wrong!")
-            return (
-                "When creating a transaction, something went wrong!\n"
-                f"From: {user}\n"
-                f"To: {to}\n"
-                f"For the amount of: {amount} {network}\n"
-                f"Fee: {user.BASE_FEE} {user.native}"
+            return Utils.error_message(
+                user=str(user),
+                fee={user.native: user.BASE_FEE},
+                data=user.get_outputs(outputs=outputs),
             )
         logger.info(f"Transactions for the user: {user.CHAT_ID} has been created!")
         transaction_body: Dict = create_tx.get("bodyTransaction")
@@ -79,17 +69,43 @@ class Parser:
                 senders=transaction_body.get("senders"), recipients=transaction_body.get("recipients")
             )
         if not is_transaction:
-            to, amount, network = user.get_outputs(outputs=outputs)
             logger.error(f"Transaction: {transaction_body.get('transactionHash')} was not added to the database!")
-            return (
-                "When creating a transaction, something went wrong!\n"
-                f"From: {user}\n"
-                f"To: {to}\n"
-                f"For the amount of: {amount} {network}\n"
-                f"Fee: {user.BASE_FEE} {user.native}"
+            return Utils.error_message(
+                user=str(user),
+                fee={user.native: user.BASE_FEE},
+                data=user.get_outputs(outputs=outputs),
             )
         else:
             logger.info(f"Transaction: {transaction_body.get('transactionHash')} has been added to the database!")
+        message_status = await SenderToBotAlert.update_transaction(
+            chat_id=user.CHAT_ID,
+            status=1,
+            network=user.full_network,
+            transactionHash=transaction_body.get("transactionHash"),
+            fromAddress=user.inputs,
+            toAddress=outputs,
+            amount=transaction_body.get("amount"),
+            fee=transaction_body.get("fee"),
+        )
+        if not message_status:
+            logger.info(f"Transaction: {transaction_body.get('transactionHash')} was not sent to the bot!")
+            return Utils.error_message(
+                user=str(user),
+                fee={user.native: user.BASE_FEE},
+                data=user.get_outputs(outputs=outputs),
+            )
+        else:
+            logger.info(f"Transaction: {transaction_body.get('transactionHash')} has been sent to the bot!")
+        return {"createTxHex": transaction_body.get("createTxHex")}
+
+    @staticmethod
+    async def start_sending(user: CryptForUser, outputs: List[Dict]) -> Optional:
+        is_enough: Optional[str] = await Parser.is_enough(user=user, outputs=outputs)
+        if is_enough is not None:
+            return is_enough
+        create_tx_hex = await Parser.create_transaction(user=user, outputs=outputs)
+
+
 
     @staticmethod
     async def processing_message(data: Dict):
