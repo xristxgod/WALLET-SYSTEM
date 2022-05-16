@@ -5,10 +5,10 @@ from src.schemas import ResponseTransactionMethod
 from src.worker import WorkerTransaction
 from config import logger
 
-router = APIRouter(prefix="/transaction")
+router = APIRouter(prefix="")
 
 @router.post(
-    "/create", description="Sends and saves a message about the creation of a transaction",
+    "/create/transaction", description="Sends and saves a message about the creation of a transaction",
     response_model=ResponseTransactionMethod, tags=["TRANSACTION"]
 )
 async def create_transaction(body: BodyTransaction):
@@ -22,7 +22,7 @@ async def create_transaction(body: BodyTransaction):
         return ResponseTransactionMethod(message=False)
 
 @router.put(
-    "/create", description="Update a message about the creation of a transaction",
+    "/create/transaction", description="Update a message about the creation of a transaction",
     response_model=ResponseTransactionMethod, tags=["TRANSACTION"]
 )
 async def update_transaction(body: BodyTransaction):
@@ -36,7 +36,7 @@ async def update_transaction(body: BodyTransaction):
         return ResponseTransactionMethod(message=False)
 
 @router.post(
-    "/send", description="Sends and saves a message about the sending of a transaction",
+    "/send/transaction", description="Sends and saves a message about the sending of a transaction",
     response_model=ResponseTransactionMethod, tags=["TRANSACTION"]
 )
 async def send_transaction(body: BodyTransaction):
