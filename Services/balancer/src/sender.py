@@ -71,4 +71,19 @@ class SenderToCryptoNode:
         )
 
 class SenderToBotAlert:
-    pass
+    API_URL: str = Config.BOT_ALERT_API_URL
+    UPDATE_TRANSACTION = "/api/create/transaction"
+
+    @staticmethod
+    async def update_transaction(chat_id: int, network: str, status: int = 1, **tx_data) -> bool:
+        return bool((await Client.put_request(
+            url=SenderToBotAlert.API_URL + SenderToBotAlert.UPDATE_TRANSACTION,
+            chatID=chat_id,
+            transactionHash=tx_data.get("transaction_hash"),
+            fromAddress=tx_data.get("inputs"),
+            toAddress=tx_data.get("outputs"),
+            amount=tx_data.get("amount"),
+            fee=tx_data.get("fee"),
+            network=network,
+            status=status
+        )).get("message"))
