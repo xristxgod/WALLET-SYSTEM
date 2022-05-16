@@ -5,7 +5,7 @@ from src.types import CRYPTO_ADDRESS, NETWORK
 from src.sender import SenderToCryptoNode
 from config import decimals
 
-class CryptoNode:
+class CryptForUser:
 
     def __init__(self, inputs: List[CRYPTO_ADDRESS], network: NETWORK, token: str):
         self.__inputs = inputs
