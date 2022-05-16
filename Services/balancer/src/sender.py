@@ -121,5 +121,10 @@ class SenderToBotAlert:
         )).get("message"))
 
     @staticmethod
-    async def send_info_to_user(chat_id: TG_CHAT_ID, info: str, is_error: bool = True):
-        pass
+    async def send_info_to_user(chat_id: TG_CHAT_ID, info: str, to_main: bool = False) -> bool:
+        await Client.post_request(
+            url=SenderToBotAlert.API_URL + SenderToBotAlert.INFO_USER,
+            chatID=chat_id,
+            message=info,
+            toMain=to_main
+        )
