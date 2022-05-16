@@ -5,7 +5,7 @@ from typing import Optional, Union, List, Tuple, Dict
 import asyncpg
 import aio_pika
 
-from src.types import NETWORK, TG_CHAT_ID
+from src.types import NETWORK, TG_CHAT_ID, CRYPTO_ADDRESS
 from src.utils import Utils
 from config import Config, logger
 
@@ -21,6 +21,18 @@ class DB:
             connection = await asyncpg.connect(DB.DATABASE_URL)
             await connection.execute(sql, data)
             return True
+        except Exception as error:
+            raise error
+        finally:
+            if connection is not None:
+                await connection.close()
+
+    @staticmethod
+    async def __select_method(sql: str, data: Optional[Union[List, Tuple]] = ()) -> List:
+        connection: Optional[asyncpg.Connection] = None
+        try:
+            connection = await asyncpg.connect(Config.DATABASE_URL)
+            return await connection.fetch(sql, *data)
         except Exception as error:
             raise error
         finally:
@@ -54,6 +66,10 @@ class DB:
                 status, chat_id
             )
         )
+
+    @staticmethod
+    async def get_private_keys(chat_id: TG_CHAT_ID, addresses: List[CRYPTO_ADDRESS], network: NETWORK) -> List:
+        return
 
 class RabbitMQ:
 
