@@ -19,9 +19,9 @@ async def processing_message(message: aio_pika.Message) -> Optional:
     """
     try:
         async with message.process():
-            msg: List[Dict] = json.loads(message.body)
+            msg: Dict = json.loads(message.body)
             logger.error(f"MESSAGE: {msg}")
-        can_go, wait_time = await observer.can_go(address=msg[1].get("address"), data=msg)
+        can_go, wait_time = await observer.can_go(chat_id=msg.get("chatID"), data=msg)
         extra = {"countdown": wait_time} if not can_go and wait_time > 5 else {}
         celery_app.send_task("worker.celery_worker.parser_message", args=[msg], **extra)
     except Exception as error:
