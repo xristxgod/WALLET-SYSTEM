@@ -1,6 +1,7 @@
 from typing import Optional, Dict, List
 
 from src.utils import Utils
+from src.sender import SenderToBotAlert
 from src.services.crypto import CryptForUser
 from config import decimals, logger
 
@@ -11,6 +12,9 @@ class Parser:
         for _, balance in (await user.get_balances()).items():
             if not Utils.is_have_amount(outputs=outputs, balance=balance):
                 to, amount, network = user.get_outputs(outputs=outputs)
+                logger.error(
+                    f"The user: {user.CHAT_ID} does not have enough funds on the balance to send the transaction!"
+                )
                 return (
                     "There is not enough balance to send the transaction!\n"
                     f"From: {user}\n"
@@ -18,6 +22,7 @@ class Parser:
                     f"For the amount of: {amount} {network}\n"
                     f"Fee: {user.BASE_FEE} {user.native}"
                 )
+        logger.info(f"The user: {user.CHAT_ID} has enough funds on the balance to send the transaction!")
         for _, balance_native in (await user.get_balances(token=user.native)).items():
             if not Utils.is_have_fee(
                     fee=(await user.get_optimal_fee(outputs=outputs)),
@@ -25,6 +30,7 @@ class Parser:
                     balance_native=balance_native
             ):
                 to, amount, network = user.get_outputs(outputs=outputs)
+                logger.error(f"The user: {user.CHAT_ID} does not have enough funds on the balance to pay the commission!")
                 return (
                     f"There is not enough {user.native.upper()} on your wallet to pay the commission!\n"
                     f"From: {user}\n"
@@ -32,6 +38,7 @@ class Parser:
                     f"For the amount of: {amount} {network}\n"
                     f"Fee: {user.BASE_FEE} {user.native}"
                 )
+        logger.info(f"The user: {user.CHAT_ID} has enough funds on the balance to send the transaction!")
 
     @staticmethod
     async def start_sending(user: CryptForUser, outputs: List[Dict]) -> Optional:
@@ -40,8 +47,13 @@ class Parser:
             return is_enough
         create_tx = await user.create_transaction(outputs=outputs)
         if create_tx is None:
+            to, amount, network = user.get_outputs(outputs=outputs)
             return (
-                ""
+                "When creating a transaction, something went wrong!\n"
+                f"From: {user}\n"
+                f"To: {to}\n"
+                f"For the amount of: {amount} {network}\n"
+                f"Fee: {user.BASE_FEE} {user.native}"
             )
 
     @staticmethod
@@ -56,7 +68,7 @@ class Parser:
             user.BASE_FEE = decimals.create_decimal(data.get("fee"))
             status = await Parser.start_sending(user=user, outputs=data.get("outputs"))
             if status is not None:
-                pass
+                await SenderToBotAlert.send_info_to_user(chat_id=data.get("chatID"), info=status, to_main=True)
         except Exception as error:
-            logger.error("ERROR: error")
+            logger.error(f"ERROR: {error}")
             pass
