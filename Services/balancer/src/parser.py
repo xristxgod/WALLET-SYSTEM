@@ -58,7 +58,8 @@ class Parser:
                 network=user.network,
                 status=1,
                 last_status=0,
-                transaction_hash=transaction_body.get("transactionHash")
+                transaction_hash=transaction_body.get("transactionHash"),
+                fee=create_tx.get("fee")
             )
         except Exception as error:
             logger.error(f"ERROR: {error}")

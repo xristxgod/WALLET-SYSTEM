@@ -44,10 +44,10 @@ class DB:
         return await DB.__insert_method(
             sql=(
                 "UPDATE transaction_model "
-                "SET status = $1 AND transaction_hash = $2 "
-                "WHERE user_id = $3 AND network = $4 AND status = $5;"
+                "SET status = $1 AND transaction_hash = $2 AND fee = $3"
+                "WHERE user_id = $4 AND network = $5 AND status = $6;"
             ),
-            data=(status, data.get("transaction_hash"), chat_id, network, last_status)
+            data=(status, data.get("transaction_hash"), data.get("fee"), chat_id, network, last_status)
         )
 
     @staticmethod
