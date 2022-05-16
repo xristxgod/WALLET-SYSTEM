@@ -24,12 +24,12 @@ class CryptForUser:
             ).get("fee")
         )
 
-    async def get_balances(self, token: Optional[str] = None):
+    async def get_balances(self, token: Optional[str] = None) -> Dict[CRYPTO_ADDRESS, decimal.Decimal]:
         balances = {}
         for address in self.__inputs:
             balance = await SenderToCryptoNode.get_balance(
                 network=self.network,
-                token=self.token,
+                token=self.token if token is None else token,
                 address=address
             )
             balances.update({

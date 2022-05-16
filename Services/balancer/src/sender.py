@@ -88,6 +88,7 @@ class SenderToCryptoNode:
 class SenderToBotAlert:
     API_URL: str = Config.BOT_ALERT_API_URL
     UPDATE_TRANSACTION = "/api/create/transaction"
+    INFO_USER = "/api/user/info"
 
     @staticmethod
     def _get_inputs(inputs: List[CRYPTO_ADDRESS]) -> str:
@@ -118,3 +119,7 @@ class SenderToBotAlert:
             network=network,
             status=status
         )).get("message"))
+
+    @staticmethod
+    async def send_info_to_user(chat_id: TG_CHAT_ID, info: str, is_error: bool = True):
+        pass
