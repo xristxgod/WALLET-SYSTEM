@@ -18,41 +18,6 @@ TOKENS = [
 ]
 
 class DB:
-    """
-    <<<--------------------------------------------------->>>
-    table = token_model
-        id: Integer Primary Key
-        network: String(256) NOT NULL 
-        token: String(256) NOT NULL
-        address: String(256) NOT NULL
-        decimals: String(256) NOT NULL UNIQUE = TRUE
-        token_info: JSON NOT NULL
-    <<<--------------------------------------------------->>>
-    tabel = wallet
-        id: Integer Primary Key
-        network: String(256) NOT NULL 
-        address: String(256) NOT NULL UNIQUE = TRUE
-        private_key: String(256) NOT NULL UNIQUE = TRUE
-        public_key: String(256) NOT NULL UNIQUE = TRUE
-        passphrase: String(256) NOT NULL UNIQUE = TRUE
-        mnemonic_phrase: String(256) NOT NULL UNIQUE = TRUE
-        accounts: JSON NOT NULL
-        user_id: Integer Foreign Key To user_model
-    <<<--------------------------------------------------->>>
-    table = wallet_transaction
-        id: Integer Primary Key
-        network: String(256) NOT NULL 
-        time: INTEGER NOT NULL
-        transaction_hash: String(256) NOT NULL UNIQUE = TRUE
-        fee: DECIMAL NOT NULL
-        amount: DECIMAL NOT NULL
-        senders: JSON NOT NULL
-        recipients: JSON NOT NULL
-        token: String(256) NOT NULL
-        status: BOOL NOT NULL DEFAULT = FALSE
-        user_id: Integer Foreign Key To user_model
-    <<<--------------------------------------------------->>>
-    """
     @staticmethod
     async def __select_method(sql):
         connection: Optional[asyncpg.Connection] = None
@@ -67,19 +32,19 @@ class DB:
 
     @staticmethod
     async def get_addresses() -> List:
-        data = await DB.__select_method(sql="SELECT address FROM tron_wallet")
+        data = await DB.__select_method(sql="SELECT address FROM wallet_model WHERE network = 'TRON';")
         return [address[0] for address in data]
 
     @staticmethod
     async def get_all_transactions_hash() -> List:
-        data = await DB.__select_method(sql="SELECT transaction_hash FROM tron_transaction WHERE status=0")
+        data = await DB.__select_method(sql="SELECT transaction_hash FROM transaction_model WHERE status=0")
         return [tx_hash[0] for tx_hash in data]
 
     @staticmethod
     async def get_transaction_hash(transaction_hash: str) -> Dict:
         return dict(
             await DB.__select_method(
-                sql=f"SELECT * FROM tron_transaction WHERE status=0 and transaction_id='{transaction_hash}';"
+                sql=f"SELECT * FROM transaction_model WHERE status=1 and transaction_id='{transaction_hash}';"
             )
         )
 
