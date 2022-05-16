@@ -112,7 +112,7 @@ class SenderMethod:
     """Send a message to the bot alert api"""
     API_URL = Config.BOT_ALERT_API_URL
     USERS_METHOD = API_URL + "/api/user/<method>"
-    TRANSACTION_METHOD = API_URL + "/api/transaction/<method>"
+    TRANSACTION_METHOD = API_URL + "/api/<method>/transaction"
 
     @staticmethod
     def _get_url(api: str, method: str = None):
