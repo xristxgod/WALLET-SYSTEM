@@ -1,7 +1,7 @@
 from typing import Optional, Dict, List
 
 from src.external.client import Client
-from src.types import FULL_NETWORK
+from src.types import FULL_NETWORK, CRYPTO_ADDRESS
 from config import Config
 
 class SenderToCryptoNode:
@@ -24,39 +24,13 @@ class SenderToCryptoNode:
     # <<<=============================================>>> SENDER <<<=================================================>>>
 
     @staticmethod
-    async def create_transaction(network: FULL_NETWORK, **kwargs) -> Optional[Dict]:
-        """Create transaction"""
-        return await Client.post_request(
-            url=SenderToCryptoNode._get_correct_url(
-                api_url=SenderToCryptoNode.API_URLs.get(network),
-                url=SenderToCryptoNode.CREATE_TRANSACTION_URL,
-                network=kwargs.get("token").lower()
-            ),
-            fromAddress=kwargs.get("inputs"),
-            outputs=kwargs.get("outputs")
-        )
-
-    @staticmethod
-    async def send_transaction(network: FULL_NETWORK, **kwargs) -> Optional[Dict]:
-        """Send transaction"""
-        return await Client.post_request(
-            url=SenderToCryptoNode._get_correct_url(
-                api_url=SenderToCryptoNode.API_URLs.get(network),
-                url=SenderToCryptoNode.SEND_TRANSACTION_URL,
-                network=kwargs.get("token").lower()
-            ),
-            createTxHex=kwargs.get("createTxHex"),
-            privateKeys=kwargs.get("privateKeys")
-        )
-
-    @staticmethod
     async def get_optimal_fee(network: FULL_NETWORK, **kwargs) -> Optional[Dict]:
         """Get optimal fee"""
         from_, to_ = "", ""
         for _input in kwargs.get("inputs"):
             from_ = _input + "+"
         for _output in kwargs.get("outputs"):
-            to_ = _output + "+"
+            to_ = _output['address'] + "+"
 
         if to_[-1] == "+":
             to_ = to_[:-1]
@@ -73,12 +47,38 @@ class SenderToCryptoNode:
             )
         )
 
+    @staticmethod
+    async def create_transaction(network: FULL_NETWORK, **kwargs) -> Optional[Dict]:
+        """Create transaction"""
+        return await Client.post_request(
+            url=SenderToCryptoNode._get_correct_url(
+                api_url=SenderToCryptoNode.API_URLs.get(network),
+                url=SenderToCryptoNode.CREATE_TRANSACTION_URL,
+                network=kwargs.get("token").lower()
+            ),
+            fromAddress=kwargs.get("inputs"),
+            outputs=kwargs.get("outputs")
+        )
+
+    @staticmethod
+    async def send_transaction(network: FULL_NETWORK, **kwargs) -> Optional:
+        """Send transaction"""
+        await Client.post_request(
+            url=SenderToCryptoNode._get_correct_url(
+                api_url=SenderToCryptoNode.API_URLs.get(network),
+                url=SenderToCryptoNode.SEND_TRANSACTION_URL,
+                network=kwargs.get("token").lower()
+            ),
+            createTxHex=kwargs.get("createTxHex"),
+            privateKeys=kwargs.get("privateKeys")
+        )
+
 class SenderToBotAlert:
     API_URL: str = Config.BOT_ALERT_API_URL
     UPDATE_TRANSACTION = "/api/create/transaction"
 
     @staticmethod
-    def _get_inputs(inputs: List[str]) -> str:
+    def _get_inputs(inputs: List[CRYPTO_ADDRESS]) -> str:
         from_address = ""
         for _input in inputs:
             from_address += f"{_input} | "
