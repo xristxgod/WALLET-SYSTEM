@@ -3,7 +3,6 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse
 
-from src.services.client import Client
 from src.services.wallet import wallet
 from src.services.transactions import transaction_parser
 from src.services.schemas import (
@@ -14,7 +13,7 @@ from src.services.schemas import (
     ResponseCreateTransaction
 )
 from src.types import TAddress, TransactionHash, Coins
-from config import logger, COINS
+from config import logger
 
 router = APIRouter(prefix="/api")
 
