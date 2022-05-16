@@ -18,15 +18,15 @@ class SenderToCryptoNode:
 
     @staticmethod
     def _get_correct_url(api_url: str, url: str, **kwargs):
-        return api_url + SenderCrypto.__get_correct_path(url=url, **kwargs)
+        return api_url + SenderToCryptoNode.__get_correct_path(url=url, **kwargs)
 
     @staticmethod
     async def create_transaction(network: str, **kwargs) -> Optional[Dict]:
         """Create transaction"""
         return await Client.post_request(
-            url=SenderCrypto._get_correct_url(
-                api_url=SenderCrypto.API_URLs.get(network),
-                url=SenderCrypto.CREATE_TRANSACTION_URL,
+            url=SenderToCryptoNode._get_correct_url(
+                api_url=SenderToCryptoNode.API_URLs.get(network),
+                url=SenderToCryptoNode.CREATE_TRANSACTION_URL,
                 network=kwargs.get("token").lower()
             ),
             fromAddress=kwargs.get("inputs"),
@@ -37,9 +37,9 @@ class SenderToCryptoNode:
     async def send_transaction(network: str, **kwargs) -> Optional[Dict]:
         """Send transaction"""
         return await Client.post_request(
-            url=SenderCrypto._get_correct_url(
-                api_url=SenderCrypto.API_URLs.get(network),
-                url=SenderCrypto.SEND_TRANSACTION_URL,
+            url=SenderToCryptoNode._get_correct_url(
+                api_url=SenderToCryptoNode.API_URLs.get(network),
+                url=SenderToCryptoNode.SEND_TRANSACTION_URL,
                 network=kwargs.get("token").lower()
             ),
             createTxHex=kwargs.get("createTxHex"),
@@ -61,9 +61,9 @@ class SenderToCryptoNode:
             from_ = from_[:-1]
 
         return await Client.get_request(
-            url=SenderCrypto._get_correct_url(
-                api_url=SenderCrypto.API_URLs.get(network),
-                url=SenderCrypto.GET_OPTIMAL_FEE_URL,
+            url=SenderToCryptoNode._get_correct_url(
+                api_url=SenderToCryptoNode.API_URLs.get(network),
+                url=SenderToCryptoNode.GET_OPTIMAL_FEE_URL,
                 network=kwargs.get("token"),
                 fromAddress=from_,
                 toAddress=to_
