@@ -46,7 +46,7 @@ class DB:
     @staticmethod
     async def get_transaction_status(tx_hash: str, network: str) -> Optional[bool]:
         data = await DB.__select_method(
-            sql="SELECT status FROM wallet_transaction_model WHERE transaction_hash = $1 AND network = $2;",
+            sql="SELECT status FROM transaction_model WHERE transaction_hash = $1 AND network = $2;",
             data=(tx_hash, network.upper())
         )
         return data[0] if data == 1 else None
@@ -56,7 +56,7 @@ class DB:
         """Add a new transaction"""
         return await DB.__insert_method(
             sql=(
-                "INSERT INTO wallet_transaction_model "
+                "INSERT INTO transaction_model "
                 "(network, time, transaction_hash, fee, amount, senders, recipients, token, status, user_id)"
                 "VALUES"
                 "($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);"
@@ -73,7 +73,7 @@ class DB:
         """Update the transaction status"""
         return await DB.__insert_method(
             sql=(
-                "UPDATE wallet_transaction_model "
+                "UPDATE transaction_model "
                 "SET status = $1 "
                 "WHERE transaction_hash = $2 AND network = $3 AND user_id = $4;"
             ),
