@@ -1,6 +1,11 @@
-from os import environ
+from os import environ, path, mkdir, listdir
 import decimal
 import logging
+
+ROOT_DIR = path.dirname(path.abspath(__file__))
+NOT_SEND = path.join(ROOT_DIR, 'not_send')
+if 'not_send' not in listdir(ROOT_DIR):
+    mkdir(NOT_SEND)
 
 decimals = decimal.Context()
 decimals.prec = 8

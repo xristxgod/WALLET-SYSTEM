@@ -37,7 +37,7 @@ async def get_sender_status():
             connection.close()
 
 @app.get("/api/health/check/balancer", description="Find out the status of the API", response_class=JSONResponse, tags=["SYSTEM"])
-async def get_sender_status():
+async def get_balancer_status():
     connection: Optional[BlockingConnection] = None
     try:
         connection = BlockingConnection(URLParameters(url=Config.RABBITMQ_URL))
