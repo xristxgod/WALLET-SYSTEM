@@ -1,4 +1,3 @@
-import json
 from typing import Optional, Dict, List, Union
 
 import aio_pika
@@ -41,7 +40,8 @@ class Parser:
         logger.info(f"The user: {user.CHAT_ID} has enough funds on the balance to send the transaction!")
 
     @staticmethod
-    async def create_transaction(user: CryptForUser, outputs: List[Dict]) -> Union[Dict[str], str]:
+    async def create(user: CryptForUser, outputs: List[Dict]) -> Union[Dict[str], str]:
+        """Create transaction"""
         create_tx = await user.create_transaction(outputs=outputs)
         if create_tx is None:
             logger.error(f"When creating a transaction for the user: {user.CHAT_ID} something went wrong!")
@@ -96,16 +96,44 @@ class Parser:
             )
         else:
             logger.info(f"Transaction: {transaction_body.get('transactionHash')} has been sent to the bot!")
-        return {"createTxHex": transaction_body.get("createTxHex")}
+        return {"createTxHex": transaction_body.get("createTxHex"), "txHash": transaction_body.get('transactionHash')}
+
+    @staticmethod
+    async def send(user: CryptForUser, create_tx_hax: str, tx_hash: str, outputs: List[Dict]) -> Optional[str]:
+        """Send transaction"""
+        send_tx = await user.send_transaction(
+            create_tx_hex=create_tx_hax,
+            private_keys=(await DB.get_private_keys(
+                chat_id=user.CHAT_ID,
+                network=user.network,
+                addresses=tuple(user.inputs)
+            ))
+        )
+        if not send_tx:
+            logger.info(f"Transaction: {tx_hash} was not sent!")
+            return Utils.error_message(
+                user=str(user),
+                fee={user.native: user.BASE_FEE},
+                data=user.get_outputs(outputs=outputs),
+            )
+        else:
+            logger.info(f"Transaction: {tx_hash} has been sent!")
 
     @staticmethod
     async def start_sending(user: CryptForUser, outputs: List[Dict]) -> Optional:
         is_enough: Optional[str] = await Parser.is_enough(user=user, outputs=outputs)
         if is_enough is not None:
             return is_enough
-        create_tx_hex = await Parser.create_transaction(user=user, outputs=outputs)
-
-
+        is_create = await Parser.create(user=user, outputs=outputs)
+        if isinstance(is_create, str):
+            return is_create
+        is_send = await Parser.send(
+            create_tx_hax=is_create.get("createTxHex"),
+            tx_hash=is_create.get("txHash"),
+            outputs=outputs
+        )
+        if is_send is not None:
+            return is_send
 
     @staticmethod
     async def processing_message(data: Dict):

@@ -15,12 +15,11 @@ class DB:
     DATABASE_URL = Config.DATABASE_URL
 
     @staticmethod
-    async def __insert_method(sql: str, data: Optional[Union[List, Tuple]] = ()):
+    async def __select_method(sql: str, data: Optional[Union[List, Tuple]] = ()) -> List:
         connection: Optional[asyncpg.Connection] = None
         try:
-            connection = await asyncpg.connect(DB.DATABASE_URL)
-            await connection.execute(sql, data)
-            return True
+            connection = await asyncpg.connect(Config.DATABASE_URL)
+            return await connection.fetch(sql, *data)
         except Exception as error:
             raise error
         finally:
@@ -28,11 +27,12 @@ class DB:
                 await connection.close()
 
     @staticmethod
-    async def __select_method(sql: str, data: Optional[Union[List, Tuple]] = ()) -> List:
+    async def __insert_method(sql: str, data: Optional[Union[List, Tuple]] = ()):
         connection: Optional[asyncpg.Connection] = None
         try:
-            connection = await asyncpg.connect(Config.DATABASE_URL)
-            return await connection.fetch(sql, *data)
+            connection = await asyncpg.connect(DB.DATABASE_URL)
+            await connection.execute(sql, data)
+            return True
         except Exception as error:
             raise error
         finally:
@@ -68,8 +68,11 @@ class DB:
         )
 
     @staticmethod
-    async def get_private_keys(chat_id: TG_CHAT_ID, addresses: List[CRYPTO_ADDRESS], network: NETWORK) -> List:
-        return
+    async def get_private_keys(chat_id: TG_CHAT_ID, addresses: Tuple[CRYPTO_ADDRESS], network: NETWORK) -> List:
+        return [private_key[0] for private_key in await DB.__select_method(
+            sql="SELECT private_key FROM wallet_model WHERE chat_id = $1 AND network = $2 AND address in $3;",
+            data=(chat_id, network, addresses)
+        )]
 
 class RabbitMQ:
 
