@@ -1,5 +1,5 @@
 import decimal
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Tuple
 
 from src.types import CRYPTO_ADDRESS, NETWORK, TG_CHAT_ID
 from src.sender import SenderToCryptoNode
@@ -7,7 +7,11 @@ from config import decimals
 
 class CryptForUser:
     CHAT_ID: Optional[TG_CHAT_ID]
-    BASE_FEE = Optional[str]
+    BASE_FEE: Optional[decimal.Decimal]
+
+    __NATIVE = {
+        "TRON": "TRX"
+    }
 
     def __init__(self, inputs: List[CRYPTO_ADDRESS], network: NETWORK, token: str):
         self.__inputs = inputs
@@ -37,7 +41,7 @@ class CryptForUser:
             })
         return balances
 
-    async def create_transaction(self, outputs: List[Dict]) -> Dict:
+    async def create_transaction(self, outputs: List[Dict]) -> Optional[Dict]:
         return await SenderToCryptoNode.create_transaction(
             inputs=self.__inputs,
             outputs=outputs,
@@ -52,3 +56,20 @@ class CryptForUser:
             network=self.network,
             token=self.token
         ) is None
+
+    # <<<==========================================>>> Utils <<<=====================================================>>>
+
+    def get_outputs(self, outputs: List[Dict]) -> Tuple[str, str, str]:
+        to: str = ""
+        amount: decimal.Decimal = decimals.create_decimal(0.0)
+        for output in outputs:
+            to += f"{output.get('address')} "
+            amount += decimals.create_decimal(output.get("amount"))
+        return to, "%.8f" % amount, f"{self.network.upper()} {self.token.upper()}"
+
+    @property
+    def native(self) -> str:
+        return self.__NATIVE.get(self.network.upper()).lower()
+
+    def __str__(self):
+        return " ".join(self.__inputs)
