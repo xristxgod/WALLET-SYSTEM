@@ -1,7 +1,7 @@
 from typing import Optional, Dict, List
 
 from src.external.client import Client
-from src.types import FULL_NETWORK, CRYPTO_ADDRESS
+from src.types import FULL_NETWORK, CRYPTO_ADDRESS, NETWORK
 from config import Config
 
 class SenderToCryptoNode:
@@ -9,6 +9,7 @@ class SenderToCryptoNode:
     CREATE_TRANSACTION_URL = "/api/<network>/create/transaction"
     SEND_TRANSACTION_URL = "/api/<network>/send/transaction"
     GET_OPTIMAL_FEE_URL = "/api/<network>/fee/<fromAddress>&<toAddress>"
+    GET_BALANCE = "/api/<network>/fee/<address>"
 
     @staticmethod
     def __get_correct_path(url: str, **kwargs):
@@ -24,7 +25,7 @@ class SenderToCryptoNode:
     # <<<=============================================>>> SENDER <<<=================================================>>>
 
     @staticmethod
-    async def get_optimal_fee(network: FULL_NETWORK, **kwargs) -> Optional[Dict]:
+    async def get_optimal_fee(network: NETWORK, **kwargs) -> Optional[Dict]:
         """Get optimal fee"""
         from_, to_ = "", ""
         for _input in kwargs.get("inputs"):
@@ -48,7 +49,7 @@ class SenderToCryptoNode:
         )
 
     @staticmethod
-    async def create_transaction(network: FULL_NETWORK, **kwargs) -> Optional[Dict]:
+    async def create_transaction(network: NETWORK, **kwargs) -> Optional[Dict]:
         """Create transaction"""
         return await Client.post_request(
             url=SenderToCryptoNode._get_correct_url(
@@ -61,7 +62,7 @@ class SenderToCryptoNode:
         )
 
     @staticmethod
-    async def send_transaction(network: FULL_NETWORK, **kwargs) -> Optional:
+    async def send_transaction(network: NETWORK, **kwargs) -> Optional:
         """Send transaction"""
         await Client.post_request(
             url=SenderToCryptoNode._get_correct_url(
@@ -71,6 +72,17 @@ class SenderToCryptoNode:
             ),
             createTxHex=kwargs.get("createTxHex"),
             privateKeys=kwargs.get("privateKeys")
+        )
+
+    @staticmethod
+    async def get_balance(network: NETWORK, address: CRYPTO_ADDRESS, token: str) -> Dict:
+        return await Client.get_request(
+            url=SenderToCryptoNode._get_correct_url(
+                api_url=SenderToCryptoNode.API_URLs.get(network),
+                url=SenderToCryptoNode.GET_BALANCE,
+                network=token.lower(),
+                address=address
+            ),
         )
 
 class SenderToBotAlert:

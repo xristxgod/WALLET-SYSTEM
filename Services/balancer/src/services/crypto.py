@@ -1,5 +1,5 @@
 import decimal
-from typing import Dict, List
+from typing import Optional, Dict, List
 
 from src.types import CRYPTO_ADDRESS, NETWORK
 from src.sender import SenderToCryptoNode
@@ -21,6 +21,19 @@ class CryptForUser:
                 )
             ).get("fee")
         )
+
+    async def get_balances(self, token: Optional[str] = None):
+        balances = {}
+        for address in self.__inputs:
+            balance = await SenderToCryptoNode.get_balance(
+                network=self.network,
+                token=self.token,
+                address=address
+            )
+            balances.update({
+                address: decimals.create_decimal(balance.get("balance"))
+            })
+        return balances
 
     async def create_transaction(self, outputs: List[Dict]) -> Dict:
         return await SenderToCryptoNode.create_transaction(

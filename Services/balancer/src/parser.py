@@ -7,4 +7,8 @@ class Parser:
 
     @staticmethod
     async def processing_message(data: Dict):
-        pass
+        user = CryptForUser(
+            network=data["network"],
+            token=data["token"],
+            inputs=["inputs"]
+        )
