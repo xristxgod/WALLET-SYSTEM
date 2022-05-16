@@ -12,6 +12,7 @@ message_repository = MessageRepository()
 class WorkerUser:
     """This class forms the text for the message"""
     BOT_ALERT: TGToken = Config.BOT_ALERT_TOKEN
+    BOT_MAIN: TGToken = Config.BOT_MAIN_TOKEN
 
     @staticmethod
     async def reg_user_text(body: BodyRegUser) -> bool:
@@ -59,12 +60,17 @@ class WorkerUser:
             f"{Symbol.INFO} Urgent information!\n"
             f"{body.message}"
         )
+        if body.toMain:
+            token = WorkerUser.BOT_MAIN
+        else:
+            token = WorkerUser.BOT_ALERT
+
         if body.chatIDs is not None:
             for chat_id in body.chatIDs:
                 await Sender.send_to_bot_by_chat_id(
                     text=text,
                     chat_id=int(chat_id),
-                    token=WorkerUser.BOT_ALERT
+                    token=token
                 )
             return True
         else:

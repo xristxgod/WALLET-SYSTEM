@@ -23,6 +23,7 @@ class BodyInfo(BaseModel):
     message: TGMessage = Field(description="Message with information")
     chatIDs: Optional[List[TGChatID]] = Field(default=None, description="Send a message to an individual user")
     isAll: Optional[bool] = Field(default=False, description="Send a message to all users or just one")
+    toMain: Optional[bool] = Field(default=False, description="Send a message to the main bot!")
 
     def __init__(self, **kwargs):
         super(BodyInfo, self).__init__(**kwargs)
