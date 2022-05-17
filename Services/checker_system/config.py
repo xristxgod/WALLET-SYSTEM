@@ -1,8 +1,9 @@
-import os
+from os import environ, path, listdir, mkdir
+import logging
+
+ENDPOINTS_URL_PATH = path.join(path.dirname(path.abspath(__file__)), 'files/endpoints_url.json')
+
+logger = logging.getLogger(__name__)
 
 class Config(object):
-
-    DATABASE_URL = os.getenv("DATABASE_URL")
-    DOMAIN_TRON_API = os.getenv("DOMAIN_TRON_API")
-    DOMAIN_BOT_ALERT = os.getenv("DOMAIN_BOT_ALERT")
-    DOMAIN_DATABASE_INTERFACE = os.getenv("DOMAIN_DATABASE_INTERFACE")
+    DOMAINS = {x: y for x, y in environ.items() if x.startswith('DOMAIN_')}
