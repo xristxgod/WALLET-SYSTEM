@@ -8,14 +8,27 @@ import aiofiles
 
 from src.sender import Sender
 from src.utils import Utils
-from config import Config, ENDPOINTS_URL_PATH
+from config import Config, ENDPOINTS_URL_PATH, logger
 
 class Checker:
 
     @staticmethod
     async def request_status(**params):
         try:
-            pass
+            async with aiohttp.ClientSession(**params.get("session_params")) as session:
+                async with session.__getattribute__(params.get("method"))(
+                        params.get("_url"), **params.get("request_params")
+                ) as response:
+                    response: aiohttp.ClientResponse
+                    if params.get("result_status") is not None:
+                        if params.get("result_status") != response.status:
+                            logger.error((
+                                f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ERROR: {params.get('title')}."
+                                f" {params.get('_url')} | {await response.text()}"
+                            ))
+                            return False, lambda: Sender.send_bad(
+                                title=params.get("title"), url=params.get("_url"), tag=params.get("tag"),
+                            )
         except Exception as error:
             pass
 
