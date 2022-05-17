@@ -6,7 +6,7 @@ Working with auxiliary services
 ---
 > `Services/sender_messages` - The service notifies users about any events. Write an example about the replenishment of the balance. And not only.
 ---
-> `Services/coins_monitor` - The service for collecting information about currencies
+> `Services/balancer` - The service creates\send transactions on crypto nodes
 ---
 
 ```shell
