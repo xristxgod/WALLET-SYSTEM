@@ -1,13 +1,13 @@
 class Sender:
 
     @staticmethod
-    async def send_info():
+    async def send_info(text: str):
         pass
 
     @staticmethod
-    async def send_good():
+    async def send_good(text: str):
         pass
 
     @staticmethod
-    async def send_bad():
+    async def send_bad(text: str):
         pass
