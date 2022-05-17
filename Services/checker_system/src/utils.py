@@ -51,3 +51,12 @@ class Utils:
         except Exception as e:
             logger.error(f'ERROR: {e}. DATA: {data}. QUERY: {query_list}')
             return False
+
+    @staticmethod
+    def check_res(data, queries):
+        if len(queries) == 0 or queries is None:
+            return True
+        result = all([Utils.check_result(data, q.split('.')) for q in queries])
+        if not result:
+            logger.error(f'NEW: {data}. QUERY: {queries}')
+        return result

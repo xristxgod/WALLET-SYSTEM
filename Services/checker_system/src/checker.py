@@ -13,15 +13,6 @@ from config import Config, ENDPOINTS_URL_PATH, logger
 class Checker:
 
     @staticmethod
-    async def check_result(data, queries: List):
-        if len(queries) == 0 or queries is None:
-            return True
-        result = all([await Utils.check_result(data, q.split('.')) for q in queries])
-        if not result:
-            logger.error(f'NEW: {data}. QUERY: {queries}')
-        return result
-
-    @staticmethod
     async def request_status(**params):
         try:
             async with aiohttp.ClientSession(**params.get("session_params")) as session:
@@ -63,7 +54,7 @@ class Checker:
                                         title=params.get("title"), url=params.get("_url"), tag=params.get("tag"),
                                         message=f"FALL. The response contains the 'error' field", is_error=True
                                     )
-                                elif not await Checker.check_result(data, params.get("json_query")):
+                                elif not await Utils.check_res(data, params.get("json_query")):
                                     logger.error((
                                         f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ERROR: {params.get('title')}."
                                         f" {params.get('_url')} | {await response.text()}"
