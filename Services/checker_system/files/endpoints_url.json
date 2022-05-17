@@ -1,6 +1,6 @@
 [
   {
-    "url": "{domain_database_interface}/api/health/check/isWork",
+    "url": "{DOMAIN_DATABASE_INTERFACE_API}/api/health/check/isWork",
     "title": "Availability of the main DATABASE INTERFACE API",
     "tag": "database_interface",
     "method": "get",
@@ -14,7 +14,7 @@
     "auth": "Bearer adminGYzYjE1ZDhmZmU0YzIwMWZjOTRkN2NkYjMzZmI0MDQ4NDY0NjgwZWQwZDdkODQ1MzljMGNlYWY4ZWE0ZA"
   },
   {
-    "url": "{domain_database_interface}/api/health/check/database",
+    "url": "{DOMAIN_DATABASE_INTERFACE_API}/api/health/check/database",
     "title": "Availability of the main DATABASE",
     "tag": "database_interface",
     "method": "get",
@@ -29,7 +29,7 @@
   },
 
   {
-    "url": "{domain_crypto_node}/",
+    "url": "{DOMAIN_TRON_API}/",
     "title": "Availability of the CRYPTO NODE API",
     "tag": "crypto",
     "method": "get",
@@ -43,7 +43,7 @@
     "auth": null
   },
   {
-    "url": "{domain_crypto_node}/api/health/check/demon",
+    "url": "{DOMAIN_TRON_API}/api/health/check/demon",
     "title": "Availability of the CRYPTO NODE DEMON",
     "tag": "crypto",
     "method": "get",
@@ -58,7 +58,7 @@
   },
 
   {
-    "url": "{domain_bot_alert}/",
+    "url": "{DOMAIN_BOT_ALERT_API}/",
     "title": "Availability of the BOT ALERT API",
     "tag": "bot_alert",
     "method": "get",
@@ -72,7 +72,7 @@
     "auth": "Bearer adminGYzYjE1ZDhmZmU0YzIwMWZjOTRkN2NkYjMzZmI0MDQ4NDY0NjgwZWQwZDdkODQ1MzljMGNlYWY4ZWE0ZA"
   },
   {
-    "url": "{domain_bot_alert}/api/health/check/sender",
+    "url": "{DOMAIN_BOT_ALERT_API}/api/health/check/sender",
     "title": "Availability of the SENDER MESSAGE BOT",
     "tag": "bot_alert",
     "method": "get",
@@ -86,7 +86,7 @@
     "auth": "Bearer adminGYzYjE1ZDhmZmU0YzIwMWZjOTRkN2NkYjMzZmI0MDQ4NDY0NjgwZWQwZDdkODQ1MzljMGNlYWY4ZWE0ZA"
   },
   {
-    "url": "{domain_bot_alert}/api/health/check/balancer",
+    "url": "{DOMAIN_BOT_ALERT_API}/api/health/check/balancer",
     "title": "Availability of the BALANCER BOT",
     "tag": "bot_alert",
     "method": "get",
@@ -100,7 +100,7 @@
     "auth": "Bearer adminGYzYjE1ZDhmZmU0YzIwMWZjOTRkN2NkYjMzZmI0MDQ4NDY0NjgwZWQwZDdkODQ1MzljMGNlYWY4ZWE0ZA"
   },
   {
-    "url": "{domain_bot_alert}/api/health/check/botMain",
+    "url": "{DOMAIN_BOT_ALERT_API}/api/health/check/botMain",
     "title": "Availability of the BOT MAIN",
     "tag": "bot_alert",
     "method": "get",
