@@ -1,5 +1,7 @@
 import typing
 
+TRON_GRID_API_KEY: str = "16c3b7ca-d498-4314-aa1d-a224135faa26"
+
 TPath: str = "m/44'/195'/0'/0/0"            # Tron path
 
 TransactionHash = typing.Union[str, bytes]  # Transaction Hash

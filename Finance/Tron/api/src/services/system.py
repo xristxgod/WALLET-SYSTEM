@@ -7,8 +7,9 @@ from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from tronpy.async_tron import AsyncTron, AsyncHTTPProvider
 
+from src.services.__init__ import NodeTron
 from src.utils import Utils
-from src.types import TAddress
+from src.types import TAddress, TRON_GRID_API_KEY
 from config import Config, logger
 
 class NodeStatus:
@@ -99,6 +100,16 @@ class DemonStatus:
             await asyncio.sleep(2)
             await DemonStatus.get_demon_status(accept=accept+1)
 
+async def get_gap() -> typing.Dict:
+    our_node_block = await NodeTron().node.get_latest_block_number()
+    public_node_block = await AsyncTron(AsyncHTTPProvider(api_key=TRON_GRID_API_KEY)).get_latest_block_number()
+    return {
+        "our_block": our_node_block,
+        "public_block": public_node_block,
+        "gap": public_node_block - our_node_block
+    }
+
+
 router = APIRouter()
 
 # <<<======================================>>> Api status <<<========================================================>>>
@@ -113,16 +124,16 @@ async def get_api_status():
 async def get_node_status():
     try:
         if Config.NETWORK == "MAINNET":
-            return JSONResponse(content={"message": await NodeStatus.get_node_status()})
-        return JSONResponse(content={"message": True})
+            return JSONResponse(content={"message": await NodeStatus.get_node_status(), **get_gap()})
+        return JSONResponse(content={"message": True, **get_gap()})
     except Exception as error:
-        return JSONResponse(content={"message": False})
+        return JSONResponse(content={"message": False, **get_gap()})
 
 # <<<======================================>>> Demon status <<<======================================================>>>
 
 @router.get("api/health/check/demon", description="Find out the status of the Tron Demon", response_class=JSONResponse, tags=["SYSTEM"])
 async def get_demon_status():
     try:
-        return JSONResponse(content={"message": await DemonStatus.get_demon_status()})
+        return JSONResponse(content={"message": await DemonStatus.get_demon_status(), **get_gap()})
     except Exception as error:
-        return JSONResponse(content={"message": False})
+        return JSONResponse(content={"message": False, **get_gap()})
