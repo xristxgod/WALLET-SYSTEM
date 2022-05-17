@@ -1,5 +1,5 @@
 import json
-from typing import Dict
+from typing import Dict, List
 from datetime import datetime
 
 import asyncio
@@ -13,8 +13,13 @@ from config import Config, ENDPOINTS_URL_PATH, logger
 class Checker:
 
     @staticmethod
-    async def check_result(data, queries):
-        pass
+    async def check_result(data, queries: List):
+        if len(queries) == 0 or queries is None:
+            return True
+        result = all([await Utils.check_result(data, q.split('.')) for q in queries])
+        if not result:
+            logger.error(f'NEW: {data}. QUERY: {queries}')
+        return result
 
     @staticmethod
     async def request_status(**params):
@@ -124,5 +129,4 @@ class Checker:
         async with aiofiles.open(ENDPOINTS_URL_PATH, 'r') as file:
             endpoints_url = json.loads(await file.read())
         await Sender.send_info(text='The bot for checking the system is running!')
-        await asyncio.gather(*[Checker.check_endpoint(**url_params) for url_params in endpoints_url
-                               ])
+        await asyncio.gather(*[Checker.check_endpoint(**url_params) for url_params in endpoints_url])
