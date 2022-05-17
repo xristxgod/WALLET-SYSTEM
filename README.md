@@ -14,7 +14,7 @@ Crypto wallet for Telegram
 ---
 > Languages I use: `PYTHON`, `JS`, `GO`
 
-> But it is based on Python and its frameworks: `FastApi`, `Flask`, `AIOGram` and others.
+> But it is based on Python and its frameworks: `FastApi`, `Django`, `Django rest api`, `AIOGram` and others.
 ---
 
 > `Admin` - Admin panel and admin bot
