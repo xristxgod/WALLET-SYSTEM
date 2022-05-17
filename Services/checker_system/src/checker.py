@@ -13,6 +13,10 @@ from config import Config, ENDPOINTS_URL_PATH, logger
 class Checker:
 
     @staticmethod
+    async def check_result(data, queries):
+        pass
+
+    @staticmethod
     async def request_status(**params):
         try:
             async with aiohttp.ClientSession(**params.get("session_params")) as session:
@@ -26,11 +30,53 @@ class Checker:
                                 f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ERROR: {params.get('title')}."
                                 f" {params.get('_url')} | {await response.text()}"
                             ))
-                            return False, lambda: Sender.send_bad(
-                                title=params.get("title"), url=params.get("_url"), tag=params.get("tag"),
+                            return False, lambda: Sender.send_news(
+                                title=params.get("title"), url=params.get("_url"), tag=params.get("tag"), is_error=True,
+                                message=(
+                                    f"Invalid response status: {response.status}\n"
+                                    f"Expected: {params.get('result_status')}"
+                                )
+                            )
+                        if not response.ok:
+                            logger.error((
+                                f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ERROR: {params.get('title')}."
+                                f" {params.get('_url')} | {await response.text()}"
+                            ))
+                            return False, lambda: Sender.send_news(
+                                title=params.get("title"), url=params.get("_url"), tag=params.get("tag"), is_error=True,
+                                message=f'Request error: {response.status}\n'
+                            )
+                        else:
+                            if params.get("json_query") is not None:
+                                data: Dict = await response.json()
+                                if isinstance(data, dict) and 'error' in data.keys():
+                                    logger.error((
+                                        f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ERROR: {params.get('title')}."
+                                        f" {params.get('_url')} | {await response.text()}"
+                                    ))
+                                    return False, lambda: Sender.send_news(
+                                        title=params.get("title"), url=params.get("_url"), tag=params.get("tag"),
+                                        message=f"FALL. The response contains the 'error' field", is_error=True
+                                    )
+                                elif not await Checker.check_result(data, params.get("json_query")):
+                                    logger.error((
+                                        f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ERROR: {params.get('title')}."
+                                        f" {params.get('_url')} | {await response.text()}"
+                                    ))
+                                    return False, lambda: Sender.send_news(
+                                        title=params.get("title"), url=params.get("_url"), tag=params.get("tag"),
+                                        message=f"FALL. Comparison with the sample", is_error=True
+                                    )
+                            return True, lambda: Sender.send_news(
+                                title=params.get("title"), url=params.get("_url"), tag=params.get("tag"), is_error=False,
+                                message=f"The problems have been fixed. Continuation of work in the previous mode"
                             )
         except Exception as error:
-            pass
+            logger.error(f'ERROR {params.get("title")}: {error}\n{params.get("_url")}')
+            return False, lambda: Sender.send_news(
+                title=params.get("title"), url=params.get("_url"), tag=params.get("tag"), is_error=True,
+                message=f"Error on the bot's side"
+            )
 
     @staticmethod
     async def check_endpoint(**params):
