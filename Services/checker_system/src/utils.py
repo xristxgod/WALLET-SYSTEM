@@ -13,3 +13,7 @@ class Utils:
             else:
                 session_params = {"headers": headers}
         return session_params
+
+    @staticmethod
+    def get_url(urls: str, domains: Dict):
+        return [url.format(**domains) for url in [urls]]
