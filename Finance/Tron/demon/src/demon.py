@@ -14,7 +14,6 @@ from src.utils import TronUtils, DemonUtils, Utils, Errors
 from config import NOT_SEND, Config, logger, decimals
 
 class TransactionDemon:
-
     # Provider config
     PROVIDER = AsyncHTTPProvider(Config.TRON_NODE_URL)
     NETWORK: str = "shasta" if Config.NETWORK == "TESTNET" else "mainnet"
