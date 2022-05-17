@@ -1,34 +1,116 @@
 [
   {
-    "url": "{DOMAIN_DATABASE_INTERFACE}/api/health/check/isWork",
-    "title": "Database"
+    "url": "{domain_database_interface}/api/health/check/isWork",
+    "title": "Availability of the main DATABASE INTERFACE API",
+    "tag": "database_interface",
+    "method": "get",
+    "json_query": [],
+    "headers": null,
+    "result_status": null,
+    "delay_success": 180,
+    "delay_error": 15,
+    "data_for_check": null,
+    "count_checks": null,
+    "auth": "Bearer adminGYzYjE1ZDhmZmU0YzIwMWZjOTRkN2NkYjMzZmI0MDQ4NDY0NjgwZWQwZDdkODQ1MzljMGNlYWY4ZWE0ZA"
   },
   {
-    "url": "{DOMAIN_DATABASE_INTERFACE}/api/health/check/CoinToCoin/isWork",
-    "title": "Database Api CoinToCoin module"
+    "url": "{domain_database_interface}/api/health/check/database",
+    "title": "Availability of the main DATABASE",
+    "tag": "database_interface",
+    "method": "get",
+    "json_query": [],
+    "headers": null,
+    "result_status": null,
+    "delay_success": 180,
+    "delay_error": 15,
+    "data_for_check": null,
+    "count_checks": null,
+    "auth": "Bearer adminGYzYjE1ZDhmZmU0YzIwMWZjOTRkN2NkYjMzZmI0MDQ4NDY0NjgwZWQwZDdkODQ1MzljMGNlYWY4ZWE0ZA"
+  },
+
+  {
+    "url": "{domain_crypto_node}/",
+    "title": "Availability of the CRYPTO NODE API",
+    "tag": "crypto",
+    "method": "get",
+    "json_query": [],
+    "headers": null,
+    "result_status": null,
+    "delay_success": 180,
+    "delay_error": 15,
+    "data_for_check": null,
+    "count_checks": null,
+    "auth": null
   },
   {
-    "url": "{DOMAIN_DATABASE_INTERFACE}/api/health/check/database/isWork",
-    "title": "Database db status"
+    "url": "{domain_crypto_node}/api/health/check/demon",
+    "title": "Availability of the CRYPTO NODE DEMON",
+    "tag": "crypto",
+    "method": "get",
+    "json_query": [],
+    "headers": null,
+    "result_status": null,
+    "delay_success": 180,
+    "delay_error": 15,
+    "data_for_check": null,
+    "count_checks": null,
+    "auth": null
+  },
+
+  {
+    "url": "{domain_bot_alert}/",
+    "title": "Availability of the BOT ALERT API",
+    "tag": "bot_alert",
+    "method": "get",
+    "json_query": [],
+    "headers": null,
+    "result_status": null,
+    "delay_success": 180,
+    "delay_error": 15,
+    "data_for_check": null,
+    "count_checks": null,
+    "auth": "Bearer adminGYzYjE1ZDhmZmU0YzIwMWZjOTRkN2NkYjMzZmI0MDQ4NDY0NjgwZWQwZDdkODQ1MzljMGNlYWY4ZWE0ZA"
   },
   {
-    "url": "{DOMAIN_TRON_API}",
-    "title": "TRON API"
+    "url": "{domain_bot_alert}/api/health/check/sender",
+    "title": "Availability of the SENDER MESSAGE BOT",
+    "tag": "bot_alert",
+    "method": "get",
+    "json_query": [],
+    "headers": null,
+    "result_status": null,
+    "delay_success": 180,
+    "delay_error": 15,
+    "data_for_check": null,
+    "count_checks": null,
+    "auth": "Bearer adminGYzYjE1ZDhmZmU0YzIwMWZjOTRkN2NkYjMzZmI0MDQ4NDY0NjgwZWQwZDdkODQ1MzljMGNlYWY4ZWE0ZA"
   },
   {
-    "url": "{DOMAIN_TRON_API}/api/health/check/node",
-    "title": "TRON NODE"
+    "url": "{domain_bot_alert}/api/health/check/balancer",
+    "title": "Availability of the BALANCER BOT",
+    "tag": "bot_alert",
+    "method": "get",
+    "json_query": [],
+    "headers": null,
+    "result_status": null,
+    "delay_success": 180,
+    "delay_error": 15,
+    "data_for_check": null,
+    "count_checks": null,
+    "auth": "Bearer adminGYzYjE1ZDhmZmU0YzIwMWZjOTRkN2NkYjMzZmI0MDQ4NDY0NjgwZWQwZDdkODQ1MzljMGNlYWY4ZWE0ZA"
   },
   {
-    "url": "{DOMAIN_TRON_API}/api/health/check/demon",
-    "title": "TRON DEMON"
-  },
-  {
-    "url": "{DOMAIN_BOT_ALERT}",
-    "title": "BOT ALERT API"
-  },
-  {
-    "url": "{DOMAIN_BOT_ALERT}/api/health/check/sender",
-    "title": "SENDER SCRIPT"
+    "url": "{domain_bot_alert}/api/health/check/botMain",
+    "title": "Availability of the BOT MAIN",
+    "tag": "bot_alert",
+    "method": "get",
+    "json_query": [],
+    "headers": null,
+    "result_status": null,
+    "delay_success": 180,
+    "delay_error": 15,
+    "data_for_check": null,
+    "count_checks": null,
+    "auth": "Bearer adminGYzYjE1ZDhmZmU0YzIwMWZjOTRkN2NkYjMzZmI0MDQ4NDY0NjgwZWQwZDdkODQ1MzljMGNlYWY4ZWE0ZA"
   }
 ]
