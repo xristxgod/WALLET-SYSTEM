@@ -1,8 +1,0 @@
-asgiref==3.5.1
-Django==4.0.4
-pip==21.2.3
-setuptools==57.4.0
-sqlparse==0.4.2
-tzdata==2022.1
-psycopg2
-djangorestframework==3.11.0
