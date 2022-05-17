@@ -3,7 +3,8 @@ from typing import Tuple
 
 class Config(object):
     DATABASE_URL = environ.get("DATABASE_URL", "postgresql://postgres:mamedov00@localhost/telegram_bot_system")
-    DATABASE_INTERFACE_PASSWORD = environ.get("DATABASE_INTERFACE_PASSWORD", "admin")
+    DATABASE_INTERFACE_USERNAME = environ.get("DATABASE_INTERFACE_USERNAME", "root")
+    DATABASE_INTERFACE_PASSWORD = environ.get("DATABASE_INTERFACE_PASSWORD", "0000")
     DATABASE_INTERFACE_GOOGLE_AUTH_SECRET_KEY = environ.get("DATABASE_INTERFACE_GOOGLE_AUTH_SECRET_KEY", "https://medium.com/aubergine-solutions/quick-start-two-factor-authentication-in-django-admin-panel-d15ceeb62591")
     DATABASE_INTERFACE_SECRET_KEY = environ.get("DATABASE_INTERFACE_SECRET_KEY", "django-insecure-yc25#g4+l$6_@q(41ct2d9zd@o!w4+yt&v8q68hv*esav^k-9n")
 

@@ -9,23 +9,25 @@ class UserModel(models.Model):
         return self.username
 
     class Meta:
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
         db_table = 'user_model'
 
 class NetworkModel(models.Model):
-    id = models.IntegerField(primary_key=True, unique=True)
     network = models.CharField(max_length=255, null=False, unique=True)
 
     def __str__(self):
         return self.network
 
     class Meta:
+        verbose_name = 'Network'
+        verbose_name_plural = 'Networks'
         db_table = 'network_model'
 
 class TokenModel(models.Model):
-    id = models.IntegerField(primary_key=True, unique=True)
     network: NetworkModel = models.ForeignKey('NetworkModel', on_delete=models.CASCADE)
     token = models.CharField(max_length=255, null=False)
-    decimal = models.IntegerField()
+    decimals = models.IntegerField()
     address = models.CharField(max_length=255, null=False, unique=True)
     token_info = models.JSONField(null=True, blank=True)
 
@@ -33,10 +35,11 @@ class TokenModel(models.Model):
         return f"{self.network.network}-{self.token}"
 
     class Meta:
+        verbose_name = 'Token'
+        verbose_name_plural = 'Tokens'
         db_table = 'token_model'
 
 class WalletModel(models.Model):
-    id = models.IntegerField(primary_key=True, unique=True)
     network: NetworkModel = models.ForeignKey('NetworkModel', on_delete=models.CASCADE)
     address = models.CharField(max_length=255, null=False, unique=True)
     private_key = models.CharField(max_length=255, null=False, unique=True)
@@ -50,6 +53,8 @@ class WalletModel(models.Model):
         return f"{self.network.network} | {self.user_id.username}"
 
     class Meta:
+        verbose_name = 'Wallet'
+        verbose_name_plural = 'Wallets'
         db_table = 'wallet_model'
 
 class TransactionStatusModel(models.Model):
@@ -62,10 +67,11 @@ class TransactionStatusModel(models.Model):
         return self.title
 
     class Meta:
+        verbose_name = 'Transaction status'
+        verbose_name_plural = 'Transaction statuses'
         db_table = 'transaction_status_model'
 
 class TransactionModel(models.Model):
-    id = models.IntegerField(primary_key=True, unique=True)
     network: NetworkModel = models.ForeignKey('NetworkModel', on_delete=models.CASCADE)
     time = models.IntegerField()
     transaction_hash = models.CharField(max_length=255, unique=True)
@@ -81,4 +87,6 @@ class TransactionModel(models.Model):
         return f"{self.network.network}-{self.token.token} | {self.user_id.username}"
 
     class Meta:
+        verbose_name = 'Transaction'
+        verbose_name_plural = 'Transactions'
         db_table = 'transaction_model'
