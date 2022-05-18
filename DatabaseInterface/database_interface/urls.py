@@ -16,10 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from api.views import CoinToCoinAPIView
+from api.views import CoinToCoinAPIView, CreateTransactionAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/check/coinToCoin/', CoinToCoinAPIView.as_view()),
-    path('api/create/transaction/', CoinToCoinAPIView.as_view()),
+    path('api/create/transaction/', CreateTransactionAPIView.as_view()),
 ]
