@@ -71,7 +71,7 @@ class BodyCreateTransactionModel:
                     )
 
 # Response
-class ResponseCreataTransactionModel:
+class ResponseCreateTransactionModel:
     """Type of output data"""
     def __init__(self, fee: decimal.Decimal = 0):
         self.fee: decimal.Decimal = fee
@@ -86,7 +86,7 @@ class CreateTransaction(BaseApiModel):
     GET_OPTIMAL_FEE_URL = "/api/<network>/fee/<fromAddress>&<toAddress>"
 
     @staticmethod
-    def create_transaction(body: BodyCreateTransactionModel) -> ResponseCreataTransactionModel:
+    def create_transaction(body: BodyCreateTransactionModel) -> ResponseCreateTransactionModel:
         """Creating a transaction"""
         from_address, to_address = Utils.get_inputs_and_outputs(
             inputs=body.inputs,
@@ -107,10 +107,10 @@ class CreateTransaction(BaseApiModel):
             inputs=body.inputs, outputs=body.outputs,
             fee=fee
         )
-        return ResponseCreataTransactionModel(fee=fee)
+        return ResponseCreateTransactionModel(fee=fee)
 
     @staticmethod
-    def encode(data: ResponseCreataTransactionModel) -> ResponserCreateTransactionSerializer:
+    def encode(data: ResponseCreateTransactionModel) -> ResponserCreateTransactionSerializer:
         """Generates data for the response"""
         return ResponserCreateTransactionSerializer(data).data
 

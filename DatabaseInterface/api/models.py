@@ -44,7 +44,7 @@ class WalletModel(models.Model):
     address = models.CharField(max_length=255, null=False, unique=True)
     private_key = models.CharField(max_length=255, null=False, unique=True)
     public_key = models.CharField(max_length=255, null=True, blank=True, unique=True)
-    passphrase = models.CharField(max_length=255, null=True, blank=True, unique=True)
+    passphrase = models.CharField(max_length=255, null=True, blank=True)
     mnemonic_phrase = models.CharField(max_length=255, null=True, blank=True, unique=True)
     last_balance = models.DecimalField(default=0, max_digits=10, decimal_places=10)
     user_id: UserModel = models.ForeignKey('UserModel', on_delete=models.CASCADE)
