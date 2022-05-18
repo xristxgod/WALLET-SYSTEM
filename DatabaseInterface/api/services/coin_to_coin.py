@@ -1,26 +1,29 @@
+import decimal
 from typing import Optional
 
 from api.serializers import BodyCoinToCoinSerializer, ResponseCoinToCoinSerializer
 from api.services.external.client import Client
 from config import Config, decimals
 
-class ResponseCoinToCoinModel:
-    """Type of output data"""
-    def __init__(self, price: str):
-        self.price = price
-
+# Body
 class BodyCoinToCoinModel:
     """Type of input data"""
     def __init__(self, coin: str, toCoin: str = 'usd'):
-        self.coin = coin
-        self.toCoin = toCoin
-        self.correct_data()
+        self.coin: str = coin
+        self.toCoin: str = toCoin
+        self.is_valid()
 
-    def correct_data(self):
+    def is_valid(self):
         if isinstance(self.coin, list):
             self.coin, = self.coin
         if isinstance(self.toCoin, list):
             self.toCoin, = self.toCoin
+
+# Response
+class ResponseCoinToCoinModel:
+    """Type of output data"""
+    def __init__(self, price: decimal.Decimal):
+        self.price: decimal.Decimal = price
 
 # <<<========================================>>> Coin to coin <<<====================================================>>>
 

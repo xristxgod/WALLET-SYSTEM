@@ -1,0 +1,4 @@
+TG_CHAT_ID = int
+CRYPRO_ADDRESS = str
+FULL_NETWORK = str
+NETWORK = str
