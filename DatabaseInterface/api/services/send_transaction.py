@@ -125,6 +125,7 @@ class SendTransaction(BaseApiModel):
                 "outputs": body.outputs
             }
         )
+        transaction_repository.remove_transaction(chat_id=body.chatID, network=body.network)
         return ResponseSendTransactionModel(
             message=status
         )
