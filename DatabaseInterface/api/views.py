@@ -28,3 +28,6 @@ class SendTransactionAPIView(APIView):
         else:
             data = send_transaction.send_transaction(body=BodySendTransactionModel(is_check=True, **request.data))
         return Response(send_transaction.encode(data=data))
+
+class CreateWalletAPIView(APIView):
+    pass
