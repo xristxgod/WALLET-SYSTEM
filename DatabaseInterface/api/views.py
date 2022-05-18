@@ -27,4 +27,4 @@ class SendTransactionAPIView(APIView):
             data = send_transaction.send_transaction(body=BodySendTransactionModel(is_check=False, **request.data))
         else:
             data = send_transaction.send_transaction(body=BodySendTransactionModel(is_check=True, **request.data))
-        return Response(create_transaction.encode(data=data))
+        return Response(send_transaction.encode(data=data))

@@ -4,10 +4,11 @@ from typing import Optional, List, Dict
 from rest_framework.exceptions import ValidationError
 
 from api.models import UserModel, NetworkModel, WalletModel
+from api.serializers import BodyTransactionSerializer, ResponserSendTransactionSerializer
 from api.services.__init__ import BaseApiModel, transaction_repository
 from api.services.external.sender import Sender
 from api.services.external.queue import Queue
-from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, NETWORK, TG_CHAT_ID
+from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, TG_CHAT_ID
 from api.utils.utils import Utils
 from config import Config, decimals, logger
 
@@ -85,10 +86,9 @@ class SendTransaction(BaseApiModel):
     QUEUE = Config.RABBITMQ_QUEUE_FOR_BALANCER
 
     @staticmethod
-    def send_transaction(body: BodySendTransactionModel) -> ResponseSendTransactionModel:
-        """Send transaction"""
+    def send_to_bot_alert(body: BodySendTransactionModel) -> Optional:
+        """Send to bot alert"""
         from_address, to_address = Utils.get_inputs_and_outputs_for_text(inputs=body.inputs, outputs=body.outputs)
-        network, token = body.network.split("_")
         try:
             Sender.send_message_to_bot(
                 chat_id=body.chatID,
@@ -107,10 +107,27 @@ class SendTransaction(BaseApiModel):
                 method="INFO_CHECKER"
             )
 
-
-
-
-
+    @staticmethod
+    def send_transaction(body: BodySendTransactionModel) -> ResponseSendTransactionModel:
+        """Send transaction"""
+        network, token = body.network.split("_")
+        # Send to bot alert => bot main
+        SendTransaction.send_to_bot_alert(body=body)
+        # Send to balancer
+        status = Queue.send_message(
+            queue_name=SendTransaction.QUEUE,
+            message={
+                "chatID": body.chatID,
+                "network": network,
+                "token": token,
+                "fee": body.fee,
+                "inputs": body.inputs,
+                "outputs": body.outputs
+            }
+        )
+        return ResponseSendTransactionModel(
+            message=status
+        )
 
     @staticmethod
     def is_found(chat_id: TG_CHAT_ID, network: FULL_NETWORK) -> bool:
@@ -119,5 +136,16 @@ class SendTransaction(BaseApiModel):
             chat_id=chat_id,
             network=network
         ) is not None
+
+    @staticmethod
+    def encode(data: ResponseSendTransactionModel) -> ResponserSendTransactionSerializer:
+        """Generates data for the response"""
+        return ResponserSendTransactionSerializer(data).data
+
+    @staticmethod
+    def decode(data) -> Optional:
+        """Checks the input data"""
+        serializer = BodyTransactionSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
 
 send_transaction = SendTransaction

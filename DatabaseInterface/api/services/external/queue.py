@@ -12,7 +12,7 @@ class Queue:
     RABBITMQ_URL = Config.RABBITMQ_URL
 
     @staticmethod
-    def send_message(queue_name: str, message: Dict):
+    def send_message(queue_name: str, message: Dict) -> bool:
         connection: Optional[pika.BlockingConnection] = None
         try:
             connection = pika.BlockingConnection(parameters=pika.URLParameters(Queue.RABBITMQ_URL))
@@ -24,9 +24,11 @@ class Queue:
                 body="{}".format(message),
                 properties=pika.BasicProperties(delivery_mode=2)
             )
+            return True
         except Exception as error:
             logger.error(f"ERROR: {error}")
-            Sender.send_message_to_checker(text=f"{error}")
+            Sender.send_message_to_checker(text=f"{error} | {message}")
+            return False
         finally:
             if connection is not None:
                 connection.close()
