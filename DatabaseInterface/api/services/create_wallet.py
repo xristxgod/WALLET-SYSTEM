@@ -1,14 +1,13 @@
-import decimal
-from typing import Optional, List, Dict
+from typing import Optional, Dict
 
 from rest_framework.exceptions import ValidationError
 
-from api.models import UserModel, NetworkModel
+from api.models import UserModel, NetworkModel, WalletModel
 from api.serializers import BodyCreateWalletSerializer, ResponserCreateWalletSerializer
 from api.services.__init__ import BaseApiModel
 from api.services.external.client import Client
 from api.services.external.sender import Sender
-from api.utils.types import CRYPRO_ADDRESS, CRYPTO_MNEMONIC_WORDS, FULL_NETWORK, NETWORK, TG_CHAT_ID, TG_USERNAME
+from api.utils.types import CRYPTO_MNEMONIC_WORDS, NETWORK, TG_CHAT_ID, TG_USERNAME
 from config import Config, logger
 
 # Body
@@ -52,8 +51,8 @@ class BodyCreateWalletModel:
 # Response
 class ResponseCreateWalletModel:
     """Type of output data"""
-    def __init__(self, chatID: TG_CHAT_ID):
-        self.chatID: decimal.Decimal = chatID
+    def __init__(self, message: bool = True):
+        self.message: bool = message
 
 # <<<========================================>>> Create transaction <<<==============================================>>>
 
@@ -90,7 +89,43 @@ class CreateWallet(BaseApiModel):
             passphrase=body.passphrase,
             mnemonicWords=body.mnemonicWords
         )
-        if not UserModel.objects.get(body.chatID):
-            pass
-        else:
-            pass
+        try:
+            if not UserModel.objects.get(body.chatID):
+                UserModel.objects.create(
+                    id=body.chatID,
+                    username=body.username,
+                    is_admin=False
+                )
+                # Send to bot if this new user
+                CreateWallet.send_to_bot_alert(body=body, is_admin=False)
+            WalletModel.objects.create(
+                network=body.network,
+                address=data.get("address"),
+                private_key=data.get("privateKey"),
+                public_key=data.get("publicKey"),
+                passphrase=data.get("passphrase"),
+                mnemonic_phrase=data.get("mnemonicWords"),
+                last_balance=0,
+                user_id=body.chatID
+            )
+            return ResponseCreateWalletModel(message=True)
+        except Exception as error:
+            logger.error(f"ERROR: {error}")
+            Sender.send_message_to_checker(
+                text=f"{error}",
+                method="INFO_CHECKER"
+            )
+            return ResponseCreateWalletModel(message=False)
+
+    @staticmethod
+    def encode(data: ResponseCreateWalletModel) -> ResponserCreateWalletSerializer:
+        """Generates data for the response"""
+        return ResponserCreateWalletSerializer(data).data
+
+    @staticmethod
+    def decode(data) -> Optional:
+        """Checks the input data"""
+        serializer = BodyCreateWalletSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+
+create_wallet = CreateWallet

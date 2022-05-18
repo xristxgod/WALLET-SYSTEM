@@ -3,7 +3,8 @@ from rest_framework.views import APIView
 
 from api.services.create_transaction import BodyCreateTransactionModel, create_transaction
 from api.services.send_transaction import BodySendTransactionModel, send_transaction
-from api.services.coin_to_coin import BodyCoinToCoinModel,  coin_to_coin
+from api.services.coin_to_coin import BodyCoinToCoinModel, coin_to_coin
+from api.services.create_wallet import BodyCreateWalletModel, create_wallet
 
 class CoinToCoinAPIView(APIView):
     """Coin to coin api view"""
@@ -30,4 +31,8 @@ class SendTransactionAPIView(APIView):
         return Response(send_transaction.encode(data=data))
 
 class CreateWalletAPIView(APIView):
-    pass
+    """Create wallet api view"""
+    def post(self, request) -> Response:
+        create_wallet.decode(data=request.data)
+        data = create_wallet.create_wallet(body=BodyCreateWalletModel(**request.data))
+        return Response(create_wallet.encode(data=data))
