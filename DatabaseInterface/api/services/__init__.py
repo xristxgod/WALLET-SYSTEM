@@ -13,6 +13,14 @@ class BaseApiModel:
             url = url.replace(f"<{key}>", value)
         return base_url + url
 
+    @staticmethod
+    def encode(data: object) -> object:
+        pass
+
+    @staticmethod
+    def decode(data) -> Optional:
+        pass
+
 class TransactionRepository:
     """
     This time class stores transactions created via the create transaction router.

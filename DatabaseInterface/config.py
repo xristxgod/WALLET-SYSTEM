@@ -9,6 +9,10 @@ decimals = decimal.Context()
 decimals.prec = 10
 
 class Config(object):
+    RABBITMQ_URL = environ.get("RABBITMQ_URL")
+    RABBITMQ_QUEUE_FOR_SENDER = environ.get("RABBITMQ_QUEUE_FOR_SENDER")
+    RABBITMQ_QUEUE_FOR_BALANCER = environ.get("RABBITMQ_QUEUE_FOR_BALANCER")
+
     DATABASE_URL = environ.get("DATABASE_URL", "postgresql://postgres:mamedov00@localhost/telegram_bot_system")
     DATABASE_INTERFACE_USERNAME = environ.get("DATABASE_INTERFACE_USERNAME", "root")
     DATABASE_INTERFACE_PASSWORD = environ.get("DATABASE_INTERFACE_PASSWORD", "0000")

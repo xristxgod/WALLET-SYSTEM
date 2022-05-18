@@ -3,16 +3,13 @@ from typing import Optional, List, Dict
 
 from rest_framework.exceptions import ValidationError
 
-from api.services.__init__ import BaseApiModel, transaction_repository
-from api.utils.utils import Utils
 from api.models import UserModel, NetworkModel, WalletModel
+from api.services.__init__ import BaseApiModel, transaction_repository
 from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, NETWORK, TG_CHAT_ID
-from api.serializers import BodyTransactionSerializer, ResponserCreateTransactionSerializer
-from api.services.external.client import Client
 from config import Config, decimals
 
 # Body
-class BodyCreateTransactionModel:
+class BodySendTransactionModel:
     """Type of input data"""
     MIN_AMOUNT = decimals.create_decimal(0)
     MAX_AMOUNT = decimals.create_decimal(1000000000000000)
@@ -71,53 +68,30 @@ class BodyCreateTransactionModel:
                     )
 
 # Response
-class ResponseCreataTransactionModel:
+class ResponseSendTransactionModel:
     """Type of output data"""
-    def __init__(self, fee: decimal.Decimal = 0):
-        self.fee: decimal.Decimal = fee
+    def __init__(self, message: bool = True):
+        self.message: bool = message
 
-# <<<========================================>>> Create transaction <<<==============================================>>>
+# <<<========================================>>> Send transaction <<<================================================>>>
 
-class CreateTransaction(BaseApiModel):
+class SendTransaction(BaseApiModel):
     """
-    This class creates transactions in a certain crypto network.
+    This class sending transactions in a certain crypto network.
     """
-    APIs_URL: Dict[NETWORK] = Config.CRYPTO_NETWORKS_APIS
-    GET_OPTIMAL_FEE_URL = "/api/<network>/fee/<fromAddress>&<toAddress>"
+    RABBITMQ_URL = Config.RABBITMQ_URL
+    QUEUE = Config.RABBITMQ_QUEUE_FOR_BALANCER
 
     @staticmethod
-    def create_transaction(body: BodyCreateTransactionModel) -> ResponseCreataTransactionModel:
-        """Creating a transaction"""
-        from_address, to_address = Utils.get_inputs_and_outputs(
-            inputs=body.inputs,
-            outputs=body.outputs
-        )
-        data = Client.get_request(
-            url=CreateTransaction.get_url(
-                base_url=CreateTransaction.APIs_URL.get(body.network),
-                url=CreateTransaction.GET_OPTIMAL_FEE_URL,
-                network=body.network.split("_")[1],
-                fromAddress=from_address,
-                toAddress=to_address
-            )
-        )
-        fee = decimals.create_decimal(data.get("fee"))
-        transaction_repository.set_transaction(
-            chat_id=body.chatID, network=body.network,
-            inputs=body.inputs, outputs=body.outputs,
-            fee=fee
-        )
-        return ResponseCreataTransactionModel(fee=fee)
+    def send_transaction(body: BodySendTransactionModel) -> ResponseSendTransactionModel:
+        pass
 
     @staticmethod
-    def encode(data: ResponseCreataTransactionModel) -> ResponserCreateTransactionSerializer:
-        """Generates data for the response"""
-        return ResponserCreateTransactionSerializer(data).data
+    def is_found(chat_id: TG_CHAT_ID, network: FULL_NETWORK) -> bool:
+        """If the transaction is in the repository"""
+        return transaction_repository.get_transaction(
+            chat_id=chat_id,
+            network=network
+        ) is not None
 
-    @staticmethod
-    def decode(data) -> Optional:
-        """Checks the input data"""
-        serializer = BodyTransactionSerializer(data=data)
-        serializer.is_valid(raise_exception=True)
-
-create_transaction = CreateTransaction
+send_transaction = SendTransaction
