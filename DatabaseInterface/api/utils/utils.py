@@ -1,7 +1,9 @@
+import decimal
 from typing import Dict, List, Tuple
 from datetime import datetime, timedelta
 
 from api.utils.types import CRYPRO_ADDRESS
+from config import decimals
 
 class Utils:
     @staticmethod
@@ -15,14 +17,25 @@ class Utils:
 
     @staticmethod
     def get_inputs_and_outputs(inputs: List[CRYPRO_ADDRESS], outputs: List[Dict[CRYPRO_ADDRESS, str]]) -> Tuple:
-        from_, to_ = "", ""
+        from_address, to_address = "", ""
         for _input in inputs:
-            from_ = _input + "+"
+            from_address = _input + "+"
         for _output in outputs:
-            to_ = _output['address'] + "+"
+            to_address = _output['address'] + "+"
+        return from_address[:-1], to_address[:-1]
 
-        if to_[-1] == "+":
-            to_ = to_[:-1]
-        if from_[-1] == "+":
-            from_ = from_[:-1]
-        return from_, to_
+    @staticmethod
+    def get_inputs_and_outputs_for_text(inputs: List[CRYPRO_ADDRESS], outputs: List[Dict[CRYPRO_ADDRESS, str]]) -> Tuple:
+        from_address, to_address = "", ""
+        for _input in inputs:
+            from_address += f"{_input} | "
+        for _output in outputs:
+            to_address += f"{_output.get('address')} | "
+        return from_address[:-3], to_address[:-3]
+
+    @staticmethod
+    def get_amount(outputs: List[Dict[CRYPRO_ADDRESS, str]]) -> decimal.Decimal:
+        amount = decimals.create_decimal(0)
+        for _output in outputs:
+            amount += decimals.create_decimal(_output.get('address'))
+        return amount

@@ -5,8 +5,11 @@ from rest_framework.exceptions import ValidationError
 
 from api.models import UserModel, NetworkModel, WalletModel
 from api.services.__init__ import BaseApiModel, transaction_repository
+from api.services.external.sender import Sender
+from api.services.external.queue import Queue
 from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, NETWORK, TG_CHAT_ID
-from config import Config, decimals
+from api.utils.utils import Utils
+from config import Config, decimals, logger
 
 # Body
 class BodySendTransactionModel:
@@ -79,12 +82,35 @@ class SendTransaction(BaseApiModel):
     """
     This class sending transactions in a certain crypto network.
     """
-    RABBITMQ_URL = Config.RABBITMQ_URL
     QUEUE = Config.RABBITMQ_QUEUE_FOR_BALANCER
 
     @staticmethod
     def send_transaction(body: BodySendTransactionModel) -> ResponseSendTransactionModel:
-        pass
+        """Send transaction"""
+        from_address, to_address = Utils.get_inputs_and_outputs_for_text(inputs=body.inputs, outputs=body.outputs)
+        network, token = body.network.split("_")
+        try:
+            Sender.send_message_to_bot(
+                chat_id=body.chatID,
+                network=body.network,
+                fromAddress=from_address,
+                to_address=to_address,
+                fee=body.fee,
+                amount=Utils.get_amount(outputs=body.outputs),
+                status=0,
+                method="CREATE",
+            )
+        except Exception as error:
+            logger.error(f"ERROR: {error}")
+            Sender.send_message_to_checker(
+                text=f"{error}",
+                method="INFO_CHECKER"
+            )
+
+
+
+
+
 
     @staticmethod
     def is_found(chat_id: TG_CHAT_ID, network: FULL_NETWORK) -> bool:

@@ -10,7 +10,6 @@ decimals.prec = 10
 
 class Config(object):
     RABBITMQ_URL = environ.get("RABBITMQ_URL")
-    RABBITMQ_QUEUE_FOR_SENDER = environ.get("RABBITMQ_QUEUE_FOR_SENDER")
     RABBITMQ_QUEUE_FOR_BALANCER = environ.get("RABBITMQ_QUEUE_FOR_BALANCER")
 
     DATABASE_URL = environ.get("DATABASE_URL", "postgresql://postgres:mamedov00@localhost/telegram_bot_system")
@@ -23,6 +22,8 @@ class Config(object):
     CRYPTO_NETWORKS_APIS = {
         "TRON": environ.get("DOMAIN_TRON_API")
     }
+
+    BOT_ALERT_API_URL = environ.get("BOT_ALERT_API_URL")
 
 def get_db_config(url: str = Config.DATABASE_URL) -> Tuple:
     user = url.split(":")[1].replace("//", "")
