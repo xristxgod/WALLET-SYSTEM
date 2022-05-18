@@ -3,7 +3,7 @@ import decimal
 
 from rest_framework import serializers
 
-from api.utils.types import CRYPRO_ADDRESS, CRYPTO_MNEMONIC_WORDS, FULL_NETWORK, NETWORK, TG_CHAT_ID
+from api.utils.types import CRYPRO_ADDRESS, CRYPTO_MNEMONIC_WORDS, FULL_NETWORK, NETWORK, TG_CHAT_ID, TG_USERNAME
 
 # <<<======================================>>> Coin to coin <<<======================================================>>>
 # Body
@@ -35,6 +35,7 @@ class ResponserSendTransactionSerializer(serializers.Serializer):
 # Body
 class BodyCreateWalletSerializer(serializers.Serializer):
     chatID: TG_CHAT_ID = serializers.IntegerField()
+    username: TG_USERNAME = serializers.CharField(max_length=255)
     network: NETWORK = serializers.CharField(max_length=10)
     passphrase: Optional[str] = serializers.CharField(max_length=20, default=None)
     mnemonicWords: Optional[CRYPTO_MNEMONIC_WORDS] = serializers.CharField(max_length=255, default=None)

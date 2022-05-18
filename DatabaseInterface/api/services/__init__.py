@@ -10,7 +10,7 @@ class BaseApiModel:
     def get_url(base_url: str, url: str, **params) -> str:
         """Generates the correct url"""
         for key, value in params.items():
-            url = url.replace(f"<{key}>", value)
+            url = url.replace(f"<{key}>", value.lower())
         return base_url + url
 
     @staticmethod

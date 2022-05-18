@@ -1,4 +1,5 @@
 from api.services.external.client import Client
+from api.utils.types import TG_CHAT_ID, TG_USERNAME, FULL_NETWORK
 from config import Config
 
 class Sender:
@@ -8,7 +9,8 @@ class Sender:
     API_URL = Config.BOT_ALERT_API_URL
     METHODS = {
         "CREATE": "/api/create/transaction",
-        "INFO_CHECKER": "/api/checker/info"
+        "INFO_CHECKER": "/api/checker/info",
+        "REG": "/api/user/reg"
     }
 
     @staticmethod
@@ -16,7 +18,7 @@ class Sender:
         return Sender.API_URL + Sender.METHODS.get(method.upper())
 
     @staticmethod
-    def send_message_to_bot(chat_id: int, network: str, status: int = 0, method: str = 'CREATE', **data) -> bool:
+    def send_message_to_bot(chat_id: TG_CHAT_ID, network: FULL_NETWORK, status: int = 0, method: str = 'CREATE', **data) -> bool:
         return True if Client.post_request(
             url=Sender.get_url(method=method),
             chatID=chat_id,
@@ -33,4 +35,13 @@ class Sender:
         return True if Client.post_request(
             url=Sender.get_url(method=method),
             message=text
+        ).get("message") else False
+
+    @staticmethod
+    def send_message_to_alert_bot(chat_id: TG_CHAT_ID, username: TG_USERNAME, is_admin: bool = False, method: str = "REG") -> bool:
+        return True if Client.post_request(
+            url=Sender.get_url(method=method),
+            chatID=chat_id,
+            username=username,
+            isAdmin=is_admin
         ).get("message") else False

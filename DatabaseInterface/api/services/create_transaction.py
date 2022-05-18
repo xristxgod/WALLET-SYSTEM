@@ -94,7 +94,7 @@ class CreateTransaction(BaseApiModel):
         )
         data = Client.get_request(
             url=CreateTransaction.get_url(
-                base_url=CreateTransaction.APIs_URL.get(body.network),
+                base_url=CreateTransaction.APIs_URL.get(body.network.split("_")[0]),
                 url=CreateTransaction.GET_OPTIMAL_FEE_URL,
                 network=body.network.split("_")[1],
                 fromAddress=from_address,
