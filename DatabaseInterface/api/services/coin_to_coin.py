@@ -33,7 +33,7 @@ class CoinToCoin:
     To get the exact exchange rates.
     """
     API_URL = Config.COIN_TO_COIN_API
-    GET_PRICE = "/api/v3/simple/price?ids=<coin>&vs_currencies=<to_coin>"
+    GET_PRICE_URL = "/api/v3/simple/price?ids=<coin>&vs_currencies=<to_coin>"
 
     @staticmethod
     def _get_url(url: str, **params) -> str:
@@ -46,7 +46,7 @@ class CoinToCoin:
     def get_price(body: BodyCoinToCoinModel) -> ResponseCoinToCoinModel:
         """Get the price of the selected currency in the selected currency"""
         data = Client.get_request(CoinToCoin._get_url(
-            url=CoinToCoin.GET_PRICE,
+            url=CoinToCoin.GET_PRICE_URL,
             coin=body.coin,
             to_coin=body.toCoin
         ))

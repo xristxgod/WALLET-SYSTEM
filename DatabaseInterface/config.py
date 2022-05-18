@@ -14,7 +14,11 @@ class Config(object):
     DATABASE_INTERFACE_PASSWORD = environ.get("DATABASE_INTERFACE_PASSWORD", "0000")
     DATABASE_INTERFACE_GOOGLE_AUTH_SECRET_KEY = environ.get("DATABASE_INTERFACE_GOOGLE_AUTH_SECRET_KEY", "https://medium.com/aubergine-solutions/quick-start-two-factor-authentication-in-django-admin-panel-d15ceeb62591")
     DATABASE_INTERFACE_SECRET_KEY = environ.get("DATABASE_INTERFACE_SECRET_KEY", "django-insecure-yc25#g4+l$6_@q(41ct2d9zd@o!w4+yt&v8q68hv*esav^k-9n")
+
     COIN_TO_COIN_API = environ.get("COIN_TO_COIN_API", "https://api.coingecko.com")
+    CRYPTO_NETWORKS_APIS = {
+        "TRON": environ.get("DOMAIN_TRON_API")
+    }
 
 def get_db_config(url: str = Config.DATABASE_URL) -> Tuple:
     user = url.split(":")[1].replace("//", "")

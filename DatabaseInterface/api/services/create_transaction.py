@@ -69,3 +69,13 @@ class ResponseCreataTransactionModel:
     """Type of output data"""
     def __init__(self, fee: decimal.Decimal = 0):
         self.fee: decimal.Decimal = fee
+
+# <<<========================================>>> Create transaction <<<==============================================>>>
+
+class CreateTransaction:
+    """
+    This class creates transactions in a certain crypto network.
+    """
+    APIs_URL: Dict[NETWORK] = Config.CRYPTO_NETWORKS_APIS
+    GET_OPTIMAL_FEE_URL = "/api/<network>/fee/<fromAddress>&<toAddress>"
+
