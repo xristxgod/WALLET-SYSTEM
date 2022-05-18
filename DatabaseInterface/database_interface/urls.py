@@ -21,4 +21,5 @@ from api.views import CoinToCoinAPIView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/check/coinToCoin/', CoinToCoinAPIView.as_view()),
+    path('api/create/transaction/', CoinToCoinAPIView.as_view()),
 ]

@@ -22,12 +22,14 @@ class BodyCreateTransactionModel:
             chatID: TG_CHAT_ID,
             network: FULL_NETWORK,
             outputs: List[Dict[CRYPRO_ADDRESS, str]],
-            inputs: Optional[List[CRYPRO_ADDRESS]] = None
+            inputs: Optional[List[CRYPRO_ADDRESS]] = None,
+            fee: str = None
     ):
         self.chatID: TG_CHAT_ID = chatID
         self.network: FULL_NETWORK = network.upper()
         self.inputs: List[CRYPRO_ADDRESS] = inputs
         self.outputs: List[Dict[CRYPRO_ADDRESS, str]] = outputs
+        self.fee = fee
         self.is_valid()
 
     def is_valid(self):
