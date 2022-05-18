@@ -1,8 +1,12 @@
 from os import environ
 from typing import Tuple
 import logging
+import decimal
 
 logger = logging.getLogger(__name__)
+
+decimals = decimal.Context()
+decimals.prec = 10
 
 class Config(object):
     DATABASE_URL = environ.get("DATABASE_URL", "postgresql://postgres:mamedov00@localhost/telegram_bot_system")

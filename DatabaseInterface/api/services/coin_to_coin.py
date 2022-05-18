@@ -1,7 +1,63 @@
-from api.services.returned import CoinToCoinModel
+from typing import Optional
+
+from api.serializers import BodyCoinToCoinSerializer, ResponseCoinToCoinSerializer
+from api.services.external.client import Client
+from config import Config, decimals
+
+class ResponseCoinToCoinModel:
+    """Type of output data"""
+    def __init__(self, price: str):
+        self.price = price
+
+class BodyCoinToCoinModel:
+    """Type of input data"""
+    def __init__(self, coin: str, toCoin: str = 'usd'):
+        self.coin = coin
+        self.toCoin = toCoin
+        self.correct_data()
+
+    def correct_data(self):
+        if isinstance(self.coin, list):
+            self.coin, = self.coin
+        if isinstance(self.toCoin, list):
+            self.toCoin, = self.toCoin
+
+# <<<========================================>>> Coin to coin <<<====================================================>>>
 
 class CoinToCoin:
-    @staticmethod
-    def get_price(coin: str, to_coin: str = 'usdt') -> CoinToCoinModel:
-        pass
+    """
+    This class is used to work with the coingecko api.
+    To get the exact exchange rates.
+    """
+    API_URL = Config.COIN_TO_COIN_API
+    GET_PRICE = "/api/v3/simple/price?ids=<coin>&vs_currencies=<to_coin>"
 
+    @staticmethod
+    def _get_url(url: str, **params) -> str:
+        """Generates the correct url"""
+        for key, value in params.items():
+            url = url.replace(f"<{key}>", value)
+        return CoinToCoin.API_URL + url
+
+    @staticmethod
+    def get_price(body: BodyCoinToCoinModel) -> ResponseCoinToCoinModel:
+        """Get the price of the selected currency in the selected currency"""
+        data = Client.get_request(CoinToCoin._get_url(
+            url=CoinToCoin.GET_PRICE,
+            coin=body.coin,
+            to_coin=body.toCoin
+        ))
+        return ResponseCoinToCoinModel(price=decimals.create_decimal(data[body.coin].get(body.toCoin)))
+
+    @staticmethod
+    def encode(data: ResponseCoinToCoinModel) -> ResponseCoinToCoinSerializer:
+        """Generates data for the response"""
+        return ResponseCoinToCoinSerializer(data).data
+
+    @staticmethod
+    def decode(data) -> Optional:
+        """Checks the input data"""
+        serializer = BodyCoinToCoinSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+
+coin_to_coin = CoinToCoin
