@@ -1,6 +1,7 @@
 import decimal
 from typing import Optional
 
+from api.services.__init__ import BaseApiModel
 from api.serializers import BodyCoinToCoinSerializer, ResponseCoinToCoinSerializer
 from api.services.external.client import Client
 from config import Config, decimals
@@ -27,7 +28,7 @@ class ResponseCoinToCoinModel:
 
 # <<<========================================>>> Coin to coin <<<====================================================>>>
 
-class CoinToCoin:
+class CoinToCoin(BaseApiModel):
     """
     This class is used to work with the coingecko api.
     To get the exact exchange rates.
@@ -36,16 +37,10 @@ class CoinToCoin:
     GET_PRICE_URL = "/api/v3/simple/price?ids=<coin>&vs_currencies=<to_coin>"
 
     @staticmethod
-    def _get_url(url: str, **params) -> str:
-        """Generates the correct url"""
-        for key, value in params.items():
-            url = url.replace(f"<{key}>", value)
-        return CoinToCoin.API_URL + url
-
-    @staticmethod
     def get_price(body: BodyCoinToCoinModel) -> ResponseCoinToCoinModel:
         """Get the price of the selected currency in the selected currency"""
-        data = Client.get_request(CoinToCoin._get_url(
+        data = Client.get_request(CoinToCoin.get_url(
+            base_url=CoinToCoin.API_URL,
             url=CoinToCoin.GET_PRICE_URL,
             coin=body.coin,
             to_coin=body.toCoin

@@ -1,8 +1,10 @@
 import decimal
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Tuple
 
 from rest_framework.exceptions import ValidationError
 
+from api.services.__init__ import BaseApiModel, transaction_repository
+from api.utils.utils import Utils
 from api.models import UserModel, NetworkModel, WalletModel, TokenModel
 from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, NETWORK, TG_CHAT_ID
 from api.serializers import BodyTransactionSerializer, ResponserCreateTransactionSerializer
@@ -72,10 +74,46 @@ class ResponseCreataTransactionModel:
 
 # <<<========================================>>> Create transaction <<<==============================================>>>
 
-class CreateTransaction:
+class CreateTransaction(BaseApiModel):
     """
     This class creates transactions in a certain crypto network.
     """
     APIs_URL: Dict[NETWORK] = Config.CRYPTO_NETWORKS_APIS
     GET_OPTIMAL_FEE_URL = "/api/<network>/fee/<fromAddress>&<toAddress>"
 
+    @staticmethod
+    def create_transaction(body: BodyCreateTransactionModel) -> ResponseCreataTransactionModel:
+        """Creating a transaction"""
+        from_address, to_address = Utils.get_inputs_and_outputs(
+            inputs=body.inputs,
+            outputs=body.outputs
+        )
+        data = Client.get_request(
+            url=CreateTransaction.get_url(
+                base_url=CreateTransaction.APIs_URL.get(body.network),
+                url=CreateTransaction.GET_OPTIMAL_FEE_URL,
+                network=body.network.split("_")[1],
+                fromAddress=from_address,
+                toAddress=to_address
+            )
+        )
+        fee = decimals.create_decimal(data.get("fee"))
+        transaction_repository.set_transaction(
+            chat_id=body.chatID, network=body.network,
+            inputs=body.inputs, outputs=body.outputs,
+            fee=fee
+        )
+        return ResponseCreataTransactionModel(fee=fee)
+
+    @staticmethod
+    def encode(data: ResponseCreataTransactionModel) -> ResponserCreateTransactionSerializer:
+        """Generates data for the response"""
+        return ResponserCreateTransactionSerializer(data).data
+
+    @staticmethod
+    def decode(data) -> Optional:
+        """Checks the input data"""
+        serializer = BodyTransactionSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+
+create_transaction = CreateTransaction

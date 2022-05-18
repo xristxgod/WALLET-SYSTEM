@@ -20,6 +20,7 @@ class BodyTransactionSerializer(serializers.Serializer):
     network: str = serializers.CharField(max_length=10)
     inputs: Optional[List[str]] = serializers.ListField(default=[])
     outputs: List[Dict[str, str]] = serializers.ListField()
+    fee: Optional[decimal.Decimal] = serializers.DecimalField(default=0, decimal_places=10, max_digits=18)
 
 # Response
 class ResponserCreateTransactionSerializer(serializers.Serializer):

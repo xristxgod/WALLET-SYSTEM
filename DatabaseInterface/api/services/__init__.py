@@ -4,10 +4,22 @@ from datetime import datetime
 from api.utils.types import TG_CHAT_ID, FULL_NETWORK
 from api.utils.utils import Utils
 
+class BaseApiModel:
+
+    @staticmethod
+    def get_url(base_url: str, url: str, **params) -> str:
+        """Generates the correct url"""
+        for key, value in params.items():
+            url = url.replace(f"<{key}>", value)
+        return base_url + url
+
 class TransactionRepository:
     """
     This time class stores transactions created via the create transaction router.
     """
+    WAIT_MINUTES = 15
+    WAIT_SECONDS = 30
+
     def __init__(self):
         """
         {
@@ -31,21 +43,23 @@ class TransactionRepository:
             }
         }
         """
-        self.transactions_list: Dict = {}
+        self.__transactions_list: Dict = {}
 
     def set_transaction(self, chat_id: TG_CHAT_ID, network: FULL_NETWORK, **transaction_data):
-        if chat_id in self.transactions_list.keys() and network in self.transactions_list.get(chat_id).keys():
-            self.transactions_list[chat_id].pop(network)
+        if chat_id in self.__transactions_list.keys() and network in self.__transactions_list.get(chat_id).keys():
+            self.__transactions_list[chat_id].pop(network)
 
-        if chat_id in self.transactions_list.keys() and network not in self.transactions_list.get(chat_id).keys():
-            self.transactions_list.get(chat_id).update({
-                "inputs": transaction_data.get("inputs"),
-                "outputs": transaction_data.get("outputs"),
-                "fee": transaction_data.get("fee"),
-                "timestamp": int(datetime.timestamp(datetime.now()))
+        if chat_id in self.__transactions_list.keys() and network not in self.__transactions_list.get(chat_id).keys():
+            self.__transactions_list[chat_id].update({
+                network: {
+                    "inputs": transaction_data.get("inputs"),
+                    "outputs": transaction_data.get("outputs"),
+                    "fee": transaction_data.get("fee"),
+                    "timestamp": int(datetime.timestamp(datetime.now()))
+                }
             })
-        elif chat_id not in self.transactions_list.keys():
-            self.transactions_list.update({
+        elif chat_id not in self.__transactions_list.keys():
+            self.__transactions_list.update({
                 chat_id: {
                     network: {
                         "inputs": transaction_data.get("inputs"),
@@ -58,25 +72,34 @@ class TransactionRepository:
 
     def remove_transaction(self, chat_id: TG_CHAT_ID, network: FULL_NETWORK) -> bool:
         try:
-            chat_id_data: Optional[Dict] = self.transactions_list.get(chat_id)
+            chat_id_data: Optional[Dict] = self.__transactions_list.get(chat_id)
             if chat_id_data is None:
                 return True
             transaction_data: Optional[Dict] = chat_id_data.get(network)
             if transaction_data is None:
                 return True
-            self.transactions_list[chat_id].pop(network)
+            if len(chat_id_data) == 1:
+                self.__transactions_list.pop(chat_id)
+            else:
+                self.__transactions_list[chat_id].pop(network)
             return True
         except Exception:
             return False
 
     def get_transaction(self, chat_id: TG_CHAT_ID, network: FULL_NETWORK) -> Optional[Dict]:
-        chat_id_data: Optional[Dict] = self.transactions_list.get(chat_id)
+        chat_id_data: Optional[Dict] = self.__transactions_list.get(chat_id)
         if chat_id_data is None:
             return None
         transaction_data: Optional[Dict] = chat_id_data.get(network)
         if transaction_data is None:
             return None
-        if not Utils.is_have_time(transaction_data["timestamp"], minute=15):
-            self.transactions_list[chat_id].pop(network)
+        if not Utils.is_have_time(transaction_data["timestamp"], minutes=self.WAIT_MINUTES, seconds=self.WAIT_SECONDS):
+            self.__transactions_list[chat_id].pop(network)
             return None
         return transaction_data
+
+    @property
+    def transactions(self):
+        return self.__transactions_list
+
+transaction_repository = TransactionRepository()
