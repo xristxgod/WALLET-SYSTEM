@@ -69,4 +69,8 @@ class APISystemStatusAPIView(APIView):
         return Response({"message": True})
 
 class DatabaseStatusAPIView(APIView):
-    pass
+    """
+    This module checks the status of the database.
+    """
+    def get(self, request) -> Response:
+        return Response({"message": True})

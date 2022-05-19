@@ -8,8 +8,8 @@ from api.serializers import BodyGetBalanceSerializer, ResponserGetBalanceSeriali
 from api.services.__init__ import BaseApiModel
 from api.services.external.client import Client
 from api.services.external.sender import Sender
-from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, TG_CHAT_ID, TG_USERNAME
-from config import Config, logger
+from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, NETWORK, TG_CHAT_ID, TG_USERNAME
+from config import Config, logger, decimals
 
 # Body
 class BodyGetBalanaceModel:
@@ -58,16 +58,74 @@ class BodyGetBalanaceModel:
 # Response
 class ResponseGetBalanaceModel:
     """Type of output data"""
-    def __init__(self, balance: decimal.Decimal, network: FULL_NETWORK, convert: Optional[List[str]] = []):
+    def __init__(
+            self,
+            balance: decimal.Decimal,
+            network: FULL_NETWORK,
+            convert: Optional[Dict[str, decimal.Decimal]] = {}
+    ):
         self.balance: decimal.Decimal = balance
         self.network: FULL_NETWORK = network
-        self.convert: Optional[List[str]] = convert
+        self.convert: Optional[Dict[str, decimal.Decimal]] = convert
 
 # <<<========================================>>> Create transaction <<<==============================================>>>
 
 class GetBalance(BaseApiModel):
+    """
+    This class creates wallets in a certain crypto network.
+    """
+    APIs_URL: Dict[NETWORK] = Config.CRYPTO_NETWORKS_APIS
+    GET_BALANCE_URL = "/api/<network>/balance/<address>"
+
+    @staticmethod
+    def get_convert(balance: decimal.Decimal, network: FULL_NETWORK, toConvert: List[str]) -> Dict:
+        return {}
+
     @staticmethod
     def get_balance(body: BodyGetBalanaceModel) -> ResponseGetBalanaceModel:
-        pass
+        data = Client.get_request(
+            url=GetBalance.get_url(
+                base_url=GetBalance.APIs_URL.get(body.network.split("_")[0]),
+                url=GetBalance.GET_BALANCE_URL,
+                network=body.network.split("_")[1],
+                address=body.address
+            )
+        )
+        if data.get("balance") is not None:
+            balance = data.get("balance")
+            WalletModel.objects.filter(
+                network=body.network.split("_")[0],
+                user_id=body.chatID,
+                addres=body.address
+            ).update(
+                last_balance=decimals.create_decimal(balance)
+            )
+        balance = WalletModel.objects.filter(
+            network=body.network.split("_")[0],
+            user_id=body.chatID,
+            addres=body.address
+        ).balance
+
+        if body.convert is not None:
+            convert: Dict = GetBalance.get_convert(balance=balance, network=body.network, toConvert=body.convert)
+        else:
+            convert: Dict = {}
+
+        return ResponseGetBalanaceModel(
+            balance=decimals.create_decimal(balance),
+            network=body.network,
+            convert=convert
+        )
+
+    @staticmethod
+    def encode(data: ResponseGetBalanaceModel) -> ResponserGetBalanceSerializer:
+        """Generates data for the response"""
+        return ResponserGetBalanceSerializer(data).data
+
+    @staticmethod
+    def decode(data) -> Optional:
+        """Checks the input data"""
+        serializer = BodyGetBalanceSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
 
 get_balance = GetBalance
