@@ -45,7 +45,7 @@ class BodyCreateWalletModel:
 
 
     def __correct_network(self):
-        if not NetworkModel.objects.filter(network=self.network.split("_")[0])[0]:
+        if not NetworkModel.objects.filter(network=self.network)[0]:
             raise ValidationError('This network is not in the database!')
 
 # Response

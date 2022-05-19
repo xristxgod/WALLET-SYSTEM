@@ -110,4 +110,8 @@ class TransactionRepository:
     def transactions(self):
         return self.__transactions_list
 
+    def remove_all_transactions(self) -> bool:
+        self.__transactions_list = []
+        return True
+
 transaction_repository = TransactionRepository()

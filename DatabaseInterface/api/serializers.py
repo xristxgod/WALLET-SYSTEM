@@ -44,3 +44,16 @@ class BodyCreateWalletSerializer(serializers.Serializer):
 class ResponserCreateWalletSerializer(serializers.Serializer):
     message: Optional[bool] = serializers.BooleanField(default=True)
 
+# <<<======================================>>> Balance <<<===========================================================>>>
+# Body
+class BodyGetBalanceSerializer(serializers.Serializer):
+    chatID: TG_CHAT_ID = serializers.IntegerField()
+    network: FULL_NETWORK = serializers.CharField(max_length=10)
+    address: Optional[CRYPRO_ADDRESS] = serializers.CharField(max_length=255, default=None)
+    convert: Optional[List[str]] = serializers.ListField(default=[])
+
+# Response
+class ResponserGetBalanceSerializer(serializers.Serializer):
+    balance: decimal.Decimal = serializers.DecimalField(decimal_places=10, max_digits=18)
+    network: FULL_NETWORK = serializers.CharField(max_length=10)
+    convert: Optional[List[str]] = serializers.ListField(default=[])

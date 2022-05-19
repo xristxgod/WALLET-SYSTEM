@@ -52,10 +52,10 @@ class BodyCreateTransactionModel:
 
     def __correct_inputs(self):
         if self.inputs is None or (isinstance(self.inputs, list) and len(self.inputs) == 0):
-            self.inputs = [WalletModel.objects.filter(network=self.network, user_id=self.chatID)[0]]
+            self.inputs = [WalletModel.objects.filter(network=self.network.split("_")[0], user_id=self.chatID)[0]]
         if self.inputs is not None and isinstance(self.inputs, list) and len(self.inputs) >= 1:
             for address in self.inputs:
-                if not WalletModel.objects.filter(network=self.network, user_id=self.chatID, address=address)[0]:
+                if not WalletModel.objects.filter(network=self.network.split("_")[0], user_id=self.chatID, address=address)[0]:
                     raise ValidationError('This address was not found in the database, or does not belong to this chatID!')
 
     def __correct_outputs(self):
