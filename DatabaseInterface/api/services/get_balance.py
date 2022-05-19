@@ -7,9 +7,8 @@ from api.models import UserModel, NetworkModel, WalletModel
 from api.serializers import BodyGetBalanceSerializer, ResponserGetBalanceSerializer
 from api.services.__init__ import BaseApiModel
 from api.services.external.client import Client
-from api.services.external.sender import Sender
-from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, NETWORK, TG_CHAT_ID, TG_USERNAME
-from config import Config, logger, decimals
+from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, NETWORK, TG_CHAT_ID, COINS
+from config import Config, decimals
 
 # Body
 class BodyGetBalanaceModel:
@@ -81,13 +80,9 @@ class GetBalance(BaseApiModel):
     GET_PRICE_URL = "/api/v3/simple/price?ids=<coin>&vs_currencies=<to_coin>"
 
     @staticmethod
-    def get_correct_base_coin(network: str) -> str:
-        pass
-
-    @staticmethod
     def get_convert(balance: decimal.Decimal, network: FULL_NETWORK, toConvert: List[str]) -> Dict:
         balances = {}
-        coin = GetBalance.get_correct_base_coin(network=network)
+        coin = COINS.get(network)
         for to_coin in toConvert:
             data = Client.get_request(GetBalance.get_url(
                 base_url=GetBalance.COIN_TO_COIN_API_URL,
@@ -96,7 +91,7 @@ class GetBalance(BaseApiModel):
                 to_coin=to_coin
             ))
             balances.update({
-                f"balance{to_coin.upper()}": decimals.create_decimal(data[coin].get(to_coin))
+                f"balance{to_coin.upper()}": balance * decimals.create_decimal(data[coin].get(to_coin))
             })
         return balances
 
