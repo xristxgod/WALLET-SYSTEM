@@ -77,9 +77,28 @@ class GetBalance(BaseApiModel):
     APIs_URL: Dict[NETWORK] = Config.CRYPTO_NETWORKS_APIS
     GET_BALANCE_URL = "/api/<network>/balance/<address>"
 
+    COIN_TO_COIN_API_URL = Config.COIN_TO_COIN_API
+    GET_PRICE_URL = "/api/v3/simple/price?ids=<coin>&vs_currencies=<to_coin>"
+
+    @staticmethod
+    def get_correct_base_coin(network: str) -> str:
+        pass
+
     @staticmethod
     def get_convert(balance: decimal.Decimal, network: FULL_NETWORK, toConvert: List[str]) -> Dict:
-        return {}
+        balances = {}
+        coin = GetBalance.get_correct_base_coin(network=network)
+        for to_coin in toConvert:
+            data = Client.get_request(GetBalance.get_url(
+                base_url=GetBalance.COIN_TO_COIN_API_URL,
+                url=GetBalance.GET_PRICE_URL,
+                coin=coin,
+                to_coin=to_coin
+            ))
+            balances.update({
+                f"balance{to_coin.upper()}": decimals.create_decimal(data[coin].get(to_coin))
+            })
+        return balances
 
     @staticmethod
     def get_balance(body: BodyGetBalanaceModel) -> ResponseGetBalanaceModel:
