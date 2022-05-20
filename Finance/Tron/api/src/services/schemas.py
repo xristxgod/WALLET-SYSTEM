@@ -78,7 +78,7 @@ class ResponseGetOptimalFee(BaseModel):
 
 class ResponseGetBalance(BaseModel):
     """Response for get balance"""
-    balance: Union[float, int]
+    balance: decimal.Decimal
     token: str = None
 
     def __init__(self, **kwargs):
