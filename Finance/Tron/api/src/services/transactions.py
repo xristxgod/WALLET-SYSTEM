@@ -18,7 +18,7 @@ def get_all_trx_for_format(txns: List, address: TAddress):
         res.append(ResponseSignAndSendTransaction(**txn))
     return ResponseAllTransaction(
         address=address,
-        data=res
+        transactions=res
     )
 
 class TransactionParser(NodeTron):

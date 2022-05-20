@@ -104,4 +104,4 @@ class ResponseSignAndSendTransaction(BaseModel):
 
 class ResponseAllTransaction(BaseModel):
     address: TAddress = Field(description="Wallet address")
-    data: Optional[typing.List[ResponseSignAndSendTransaction]] = Field(description="All transactions", default=None)
+    transactions: Optional[typing.List[ResponseSignAndSendTransaction]] = Field(description="All transactions", default=None)
