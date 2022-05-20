@@ -12,6 +12,9 @@ Crypto wallet for Telegram
 > new telegram features such as `Payment platform`-`https://core.telegram.org/bots/payments`.
 
 ---
+Technologies:
+-----
+
 > Languages I use: `PYTHON`, `JS`, `BASH`.
 
 > But it is based on Python and its frameworks: `FastApi`, `Django`, `Django REST API`, `AIOGram`, `Celery`, `ASYNCpg`, `AIOPika`, `Pika`, `Psycopg2`.
