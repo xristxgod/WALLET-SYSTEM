@@ -7,7 +7,7 @@ from typing import List, Dict, Union
 import requests
 from tronpy.async_tron import AsyncTron, AsyncHTTPProvider
 
-from src.services.schemas import BodyOutputs, ResponseSignAndSendTransaction, ResponseAllTransaction
+from src.services.schemas import BodyInputsOrOutputs, ResponseSignAndSendTransaction, ResponseAllTransaction
 from src.__init__ import DB
 from src.services import NodeTron
 from src.utils import TronUtils
@@ -113,17 +113,16 @@ class TransactionParser:
             "fee": fee,
             "amount": amount,
             "inputs": [
-
-                {
+                BodyInputsOrOutputs(**{
                     "address": txn["from"],
                     "amount": amount
-                }
+                })
             ],
             "outputs": [
-                {
+                BodyInputsOrOutputs(**{
                     "address": txn["to"],
                     "amount": amount
-                }
+                })
             ],
             "token": txn["token_info"]["symbol"]
         }
