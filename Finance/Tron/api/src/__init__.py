@@ -28,11 +28,11 @@ class DB:
     <<<--------------------------------------------------->>>
     """
     @staticmethod
-    async def __select_method(sql) -> Dict:
+    async def __select_method(sql) -> asyncpg.Record:
         connection: Optional[asyncpg.Connection] = None
         try:
             connection = await asyncpg.connect(DB.DATABASE_URL)
-            return dict(await connection.fetch(sql))
+            return await connection.fetch(sql)
         except Exception as error:
             raise error
         finally:
@@ -42,14 +42,13 @@ class DB:
     @staticmethod
     async def get_token_info(token: str) -> Union[Dict, None]:
         try:
-            print(token)
             if Config.NETWORK == "TESTNET":
                 data = [t for t in TOKENS if t["token"] == token.upper()][0]
             else:
-                data = await DB.__select_method((
+                data = (await DB.__select_method((
                     f"SELECT address, decimals, token_info FROM token_model "
                     f"WHERE token = '{token.upper()}' AND network = {TRON_NETWORK_INDEX};"
-                ))
+                )))[0]
             return {
                 "token": token,
                 "address": data["address"],

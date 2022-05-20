@@ -59,7 +59,6 @@ class TronMethods(NodeTron):
                 balance = 0
         else:
             token_info = await DB.get_token_info(token=token.upper())
-            print(token_info)
             contract = await self.node.get_contract(token_info["address"])
             if int(await contract.functions.balanceOf(address)) > 0:
                 balance = int(await contract.functions.balanceOf(address)) / 10 ** token_info["decimals"]
