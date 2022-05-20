@@ -50,8 +50,6 @@ class BodyCreateTransaction(BaseModel):
         super(BodyCreateTransaction, self).__init__(**kwargs)
         if isinstance(self.outputs, str):
             self.outputs = json.loads(self.outputs)
-        if isinstance(self.inputs, list):
-            self.fromAddress = self.inputs[0]
 
 class BodySignAndSendTransaction(BaseModel):
     """Sign and send transaction"""

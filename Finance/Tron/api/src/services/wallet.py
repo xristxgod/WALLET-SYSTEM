@@ -119,16 +119,17 @@ class TronMethods(NodeTron):
             # Connecting to a smart contract
             contract = await self.node.get_contract(addr=token_info["address"])
             # Let's get the amount for the offspring in decimal
-            amount = decimals.create_decimal(float(outputs.amount) * 10 ** int(token_info["decimals"]))
+            amount = int(float(outputs.amount) * 10 ** int(token_info["decimals"]))
             # Checks whether the user has a tokens balance to transfer
             if int(await contract.functions.balanceOf(outputs.address)) * 10 ** int(token_info["decimals"]) < amount:
                 raise Exception("You do not have enough funds on your balance to make a transaction!!!")
             fee = await self.get_optimal_fee(from_address=body.inputs[0], to_address=outputs.address, token=token)
             # Creating a transaction
-            txn = await contract.functions.transfer(outputs.address, amount).with_owner(body.inputs)
+            txn = await contract.functions.transfer(outputs.address, amount)
+            txn = txn.with_owner(body.inputs[0])
             txn = await txn.build()
             body_transaction = TransactionUtils.get_transaction_body(
-                txn=txn.to_json(), fee=fee.fee, amount=amount, token=token,
+                txn=txn.to_json(), fee=fee.fee, amount=decimals.create_decimal(amount), token=token,
                 from_address=body.inputs[0], to_address=outputs.address
             )
         return ResponseCreateTransaction(

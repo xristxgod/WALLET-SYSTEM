@@ -105,7 +105,7 @@ async def get_all_transactions_by_address(address: TAddress, network: str):
 )
 async def create_transaction(body: BodyCreateTransaction, network: Optional[str] = "tron"):
     try:
-        logger.error(f"Calling '/{network}/create-transaction'")
+        logger.error(f"Calling '/{network}/create/transaction'")
         if Coins.is_native(coin=network):
             return await wallet.create_transaction(body=body, token="TRX")
         elif Coins.is_token(coin=network):
