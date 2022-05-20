@@ -105,7 +105,7 @@ class TransactionParser:
         if "fee" in tx_fee:
             fee = "%.8f" % decimals.create_decimal(self.fromSun(tx_fee["fee"]))
         else:
-            fee = 0
+            fee = "0"
         amount = "%.8f" % decimals.create_decimal(int(txn["value"]) / (10 ** int(txn["token_info"]["decimals"])))
         data = {
             "time": txn["block_timestamp"],
@@ -142,16 +142,16 @@ class TransactionParser:
                     raise Exception
                 fee = "%.8f" % decimals.create_decimal(self.fromSun(fee_limit["fee"]))
             except Exception:
-                fee = 0
+                fee = "0"
             values = {
                 "time": txn["raw_data"]["timestamp"] if "timestamp" in txn["raw_data"] else "",
                 "transactionHash": txn["txID"],
                 "fee": fee,
-                "amount": 0,
+                "amount": "0",
                 "inputs": [
                     BodyInputsOrOutputs(**{
                         "address": self.node.to_base58check_address(txn_values["owner_address"]),
-                        "amount": 0
+                        "amount": "0"
                     })
                 ],
                 "outputs": []
@@ -211,11 +211,11 @@ class TransactionParser:
         if self.node is not None:
             await self.node.close()
 
-async def get_transaction_by_tx_hash(tx_hash: str) -> ResponseSignAndSendTransaction:
+async def get_transaction_by_tx_hash(tx_hash: str) -> List[ResponseSignAndSendTransaction]:
     transaction_parser = None
     try:
         transaction_parser = TransactionParser()
-        return ResponseSignAndSendTransaction(**(await transaction_parser.get_transaction(transaction_hash=tx_hash))[0])
+        return [ResponseSignAndSendTransaction(**(await transaction_parser.get_transaction(transaction_hash=tx_hash))[0])]
     finally:
         if transaction_parser is not None:
             await transaction_parser.close_session()

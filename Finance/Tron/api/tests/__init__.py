@@ -1,3 +1,4 @@
+from src.services.schemas import ResponseSignAndSendTransaction, BodyInputsOrOutputs
 from config import Config
 
 __NETWORK = Config.NETWORK
@@ -18,28 +19,31 @@ TEST_TX_HASH_USDT_MAINNET = "217465af653081e204382e845c31f717fa7b67a76ae773b0847
 TEST_TX_HASH_TRX = TEST_TX_HASH_TRX_TESTNET if __NETWORK == "TESTNET" else TEST_TX_HASH_TRX_MAINNET
 TEST_TX_HASH_USDT = TEST_TX_HASH_USDT_TESTNET if __NETWORK == "TESTNET" else TEST_TX_HASH_USDT_MAINNET
 
-TX_DATA_TRX = [{
-    "time": 1650391958848 if __NETWORK == "TESTNET" else 1643978763710,
-    "transactionHash": TEST_TX_HASH_TRX_TESTNET if __NETWORK == "TESTNET" else TEST_TX_HASH_TRX_MAINNET,
-    "fee": 0,
-    "amount": "4.83168000" if __NETWORK == "TESTNET" else "2.13128700",
-    "inputs": [
-        {
-            "address": "TPvxLpLeC1Rd13CymBVWnXJiURjWk3SfRx",
-            "amount": "4.83168000" if __NETWORK == "TESTNET" else "2.13128700"
-        }
-    ],
-    "outputs": [
-        {
-            "address": "TUtHbnkPe5j9XoV8bLpWBTHv8FycxXvn3h" if __NETWORK == "TESTNET" else "TSUMnKToM3F31cxLWqW94rJJQ8WZHDLYat",
-            "amount": "4.83168000" if __NETWORK == "TESTNET" else "2.13128700"
-        }
-    ],
-}]
+TX_DATA_TRX = [
+    ResponseSignAndSendTransaction(
+        time=1650391958848 if __NETWORK == "TESTNET" else 1643978763710,
+        transactionHash=TEST_TX_HASH_TRX_TESTNET if __NETWORK == "TESTNET" else TEST_TX_HASH_TRX_MAINNET,
+        fee="0",
+        amount="4.83168000" if __NETWORK == "TESTNET" else "2.13128700",
+        inputs=[
+            BodyInputsOrOutputs(
+                address='TPvxLpLeC1Rd13CymBVWnXJiURjWk3SfRx',
+                amount="4.83168000" if __NETWORK == "TESTNET" else "2.13128700"
+            )
+        ],
+        outputs=[
+            BodyInputsOrOutputs(
+                address="TUtHbnkPe5j9XoV8bLpWBTHv8FycxXvn3h" if __NETWORK == "TESTNET" else "TSUMnKToM3F31cxLWqW94rJJQ8WZHDLYat",
+                amount="4.83168000" if __NETWORK == "TESTNET" else "2.13128700"
+            )
+        ]
+    )
+]
+
 TX_DATA_USDT = [{
     "time": 1650894664361 if __NETWORK == "TESTNET" else 1643974612928,
     "transactionHash": TEST_TX_HASH_USDT_TESTNET if __NETWORK == "TESTNET" else TEST_TX_HASH_USDT_MAINNET,
-    "fee": 0 if __NETWORK == "TESTNET" else "4.09668000",
+    "fee": "0" if __NETWORK == "TESTNET" else "4.09668000",
     "amount": "5.00000000" if __NETWORK == "TESTNET" else "20.00000000",
     "inputs": [
         {

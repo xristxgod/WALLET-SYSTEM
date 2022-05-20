@@ -89,8 +89,8 @@ class ResponseGetBalance(BaseModel):
 class ResponseSignAndSendTransaction(BaseModel):
     time: int = Field(description="The time when the transaction was sent")
     transactionHash: str = Field(description="The Transaction Hash")
-    fee: Optional[str] = Field(default=None, description="Transaction fee")
-    amount: Optional[str] = Field(default=None, description="The amount of the shipment")
+    fee: Optional[Union[float, str, int, decimal.Decimal]] = Field(default=None, description="Transaction fee")
+    amount: Optional[Union[float, str, int, decimal.Decimal]] = Field(default=None, description="The amount of the shipment")
     inputs: Optional[List[BodyInputsOrOutputs]] = Field(default=None, description="Information about the sender")
     outputs: Optional[List[BodyInputsOrOutputs]] = Field(default=None, description="Information about the recipient")
     token: Optional[str] = Field(default=None, description="Token name")
