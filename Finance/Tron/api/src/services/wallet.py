@@ -28,7 +28,7 @@ class TronMethods(NodeTron):
         hdwallet.from_mnemonic(mnemonic=body.mnemonicWords, language="english", passphrase=body.passphrase)
         return ResponseCreateWallet(
             passphrase=body.passphrase,
-            mnemonicWords=body.mnemonic_words,
+            mnemonicWords=body.mnemonicWords,
             privateKey=hdwallet.private_key(),
             publicKey=hdwallet.public_key(),
             address=hdwallet.address()

@@ -20,7 +20,7 @@ router = APIRouter(prefix="/api")
 # <<<----------------------------------->>> Wallet Info <<<---------------------------------------------------------->>>
 
 @router.post(
-    "/{network}/create/wallet", response_model=ResponseCreateWallet,
+    "/tron/create/wallet", response_model=ResponseCreateWallet,
     description="This method creates a tron wallet", tags=["WALLET"]
 )
 async def create_wallet(body: BodyCreateWallet, network: Optional[str] = "tron"):
