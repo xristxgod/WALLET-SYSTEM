@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse
 
 from src.services.wallet import wallet
-from src.services.transactions import TransactionParser
+from src.services.transactions import get_transaction_by_tx_hash, get_transactions_by_address
 from src.services.schemas import (
     ResponseCreateWallet, BodyCreateWallet,
     BodyCreateTransaction, BodySignAndSendTransaction,
@@ -69,15 +69,13 @@ async def get_optimal_fee(fromAddress: TAddress, toAddress: TAddress, network: O
 # <<<----------------------------------->>> Transaction Info <<<----------------------------------------------------->>>
 
 @router.get(
-    "/tron/transaction/{trxHash}", description="Get transaction by transaction hash",
+    "/tron/transaction/{tx_hash}", description="Get transaction by transaction hash",
     response_model=ResponseSignAndSendTransaction, tags=["TRANSACTION"]
 )
-async def get_transaction_by_tx_id(trxHash: TransactionHash):
+async def get_transaction_by_tx_id(tx_hash: TransactionHash):
     try:
-        logger.error(f"Calling '/tron/get-transaction/{trxHash}'")
-        return ResponseSignAndSendTransaction(
-            **((await TransactionParser().get_transaction(transaction_hash=trxHash))[0])
-        )
+        logger.error(f"Calling '/tron/transaction/{tx_hash}'")
+        return await get_transaction_by_tx_hash(tx_hash=tx_hash)
     except Exception as error:
         logger.error(f"ERROR: {error}")
         return JSONResponse(content={})

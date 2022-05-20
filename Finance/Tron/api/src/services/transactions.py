@@ -5,10 +5,12 @@ from decimal import Decimal
 from typing import List, Dict, Union
 
 import requests
+from tronpy.async_tron import AsyncTron, AsyncHTTPProvider
 
-from src.services.schemas import ResponseSignAndSendTransaction, ResponseAllTransaction
+from src.services.schemas import BodyOutputs, ResponseSignAndSendTransaction, ResponseAllTransaction
 from src.__init__ import DB
 from src.services import NodeTron
+from src.utils import TronUtils
 from src.types import TAddress, TransactionHash, Coins
 from config import Config, decimals
 
@@ -21,7 +23,24 @@ def get_all_trx_for_format(txns: List, address: TAddress):
         transactions=res
     )
 
-class TransactionParser(NodeTron):
+class TransactionParser:
+    # Provider config
+    PROVIDER = AsyncHTTPProvider(Config.NODE_URL)
+    NETWORK: str = "shasta" if Config.NETWORK == "TESTNET" else "mainnet"
+    # Converts
+    fromSun = staticmethod(TronUtils.from_sun)
+    toSun = staticmethod(TronUtils.to_sun)
+
+    def __init__(self):
+        """
+        Connect to Tron Node
+        :param node_url: Node url
+        :param network: Network | mainnet or shasta
+        """
+        self.node = AsyncTron(
+            provider=NodeTron.PROVIDER if NodeTron.NETWORK == "mainnet" else None,
+            network=NodeTron.NETWORK
+        )
 
     async def get_transaction(self, transaction_hash: TransactionHash) -> typing.List:
         return await self.__get_transactions(transactions=[await self.node.get_transaction(txn_id=transaction_hash)])
@@ -94,6 +113,7 @@ class TransactionParser(NodeTron):
             "fee": fee,
             "amount": amount,
             "inputs": [
+
                 {
                     "address": txn["from"],
                     "amount": amount
@@ -218,9 +238,31 @@ class TransactionParser(NodeTron):
         except Exception as error:
             return {"data": str(data)}
 
+    async def close_session(self):
+        if self.node is not None:
+            await self.node.close()
+
+async def get_transaction_by_tx_hash(tx_hash: str) -> ResponseSignAndSendTransaction:
+    transaction_parser = None
+    try:
+        transaction_parser = TransactionParser()
+        return ResponseSignAndSendTransaction(**(await transaction_parser.get_transaction(transaction_hash=tx_hash))[0])
+    finally:
+        if transaction_parser is not None:
+            await transaction_parser.close_session()
+
+async def get_transactions_by_address(address: TAddress, token: str = None) -> ResponseAllTransaction:
+    transaction_parser = None
+    try:
+        transaction_parser = TransactionParser()
+        return await transaction_parser.get_all_transactions(address=address, token=token)
+    finally:
+        if transaction_parser is not None:
+            await transaction_parser.close_session()
+
 if __name__ == '__main__':
     address = "YourAddress"
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    result = loop.run_until_complete(TransactionParser().get_all_transactions(address))
+    result = loop.run_until_complete(get_transactions_by_address(address))
     print(result)

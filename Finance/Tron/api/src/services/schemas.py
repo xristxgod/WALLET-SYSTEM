@@ -9,7 +9,7 @@ from src.types import TPrivateKey, TPublicKey, TAddress
 
 # <<<===================================>>> Helper <<<===============================================================>>>
 
-class BodyOutputs(BaseModel):
+class BodyInputsOrOutputs(BaseModel):
     """Body for create transaction in outputs"""
     address: TAddress = Field(description="The recipient's wallet address.")
     amount: Union[float, str, int, decimal.Decimal] = Field(description="Amount")
@@ -38,13 +38,13 @@ class BodyGenerateAddress(BaseModel):
         super(BodyGenerateAddress, self).__init__(**kwargs)
         if self.account is None or self.account == "string":
             self.account = 0
-        if self.mnemonic_words is None or self.mnemonic_words == "string":
+        if self.mnemonicWords is None or self.mnemonicWords == "string":
             self.index = 1
 
 class BodyCreateTransaction(BaseModel):
     """Create a transaction TRX or Tokens TRC20"""
     inputs: List[TAddress] = Field(description="Sender addresses")
-    outputs: List[BodyOutputs] = Field(description="Recipient addresses")
+    outputs: List[BodyInputsOrOutputs] = Field(description="Recipient addresses")
 
     def __init__(self, **kwargs):
         super(BodyCreateTransaction, self).__init__(**kwargs)
@@ -91,8 +91,8 @@ class ResponseSignAndSendTransaction(BaseModel):
     transactionHash: str = Field(description="The Transaction Hash")
     fee: Optional[str] = Field(default=None, description="Transaction fee")
     amount: Optional[str] = Field(default=None, description="The amount of the shipment")
-    inputs: Optional[List[BodyOutputs]] = Field(default=None, description="Information about the sender")
-    outputs: Optional[List[BodyOutputs]] = Field(default=None, description="Information about the recipient")
+    inputs: Optional[List[BodyInputsOrOutputs]] = Field(default=None, description="Information about the sender")
+    outputs: Optional[List[BodyInputsOrOutputs]] = Field(default=None, description="Information about the recipient")
     token: Optional[str] = Field(default=None, description="Token name")
     data: Optional[Dict] = Field(default=None, description="This includes what the api could not process")
 
