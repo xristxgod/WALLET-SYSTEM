@@ -3,7 +3,6 @@ import typing
 
 TPath: str = "m/44'/195'/0'/0/0"            # Tron path
 
-
 FullNetwork = str                           # TRON-USDT, TRON-TRX
 TransactionHash = typing.Union[str, bytes]  # Transaction Hash
 TAddress = str                              # Wallet address

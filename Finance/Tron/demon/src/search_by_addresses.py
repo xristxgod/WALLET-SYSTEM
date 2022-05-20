@@ -63,16 +63,16 @@ class AddressesDemon(TransactionDemon):
         list_block = await AddressesDemon.get_all_blocks_by_list_addresses(list_addresses=list_addresses)
         logger.error("SEARCH BLOCKS")
         if not start_block and not end_block and list_blocks is None:
-            await self.start_in_list_block(list_blocks=list_block, list_addresses=addresses)
+            await self.start_in_list_blocks(list_blocks=list_block, list_addresses=addresses)
         elif not start_block and not end_block and list_blocks is not None:
-            await self.start_in_list_block(list_blocks=list_blocks, list_addresses=addresses)
+            await self.start_in_list_blocks(list_blocks=list_blocks, list_addresses=addresses)
         elif not start_block and end_block:
-            await self.start_in_list_block(
+            await self.start_in_list_blocks(
                 list_blocks=AddressesDemon.fix_list(list_block=list_block, start_block=1, end_block=end_block),
                 list_addresses=addresses
             )
         elif start_block and not end_block:
-            await self.start_in_list_block(
+            await self.start_in_list_blocks(
                 list_blocks=AddressesDemon.fix_list(
                     list_block=list_block,
                     start_block=1,

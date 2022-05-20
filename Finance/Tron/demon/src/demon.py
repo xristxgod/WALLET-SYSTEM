@@ -230,14 +230,20 @@ class TransactionDemon:
                         await Errors.write_to_error(error=error, msg="ERROR 'TransactionDemon' STEP 232")
                         continue
 
-    async def start_in_range(self, start_block: int, end_block: int):
+    async def start_in_range(self, start_block: int, end_block: int, list_addresses: List[TAddress] = None):
         for block_number in range(start_block, end_block):
-            addresses = await DB.get_addresses()
+            if list_addresses is None:
+                addresses = await DB.get_addresses()
+            else:
+                addresses = list_addresses
             await self.processing_block(block_number=block_number, addresses=addresses)
 
-    async def start_in_list_block(self, list_blocks: List[int]):
+    async def start_in_list_blocks(self, list_blocks: List[int], list_addresses: List[TAddress] = None):
         for block_number in list_blocks:
-            addresses = await DB.get_addresses()
+            if list_addresses is None:
+                addresses = await DB.get_addresses()
+            else:
+                addresses = list_addresses
             await self.processing_block(block_number=int(block_number), addresses=addresses)
 
     async def start(self, start_block: int = None, end_block: int = None, list_blocks: List[int] = None):
