@@ -1,3 +1,4 @@
+import decimal
 import typing
 
 TPath: str = "m/44'/195'/0'/0/0"            # Tron path
@@ -28,3 +29,8 @@ class Coins:
                 return value[0].upper()
         else:
             return False
+
+def default_json(json_object: object):
+    if isinstance(json_object, decimal.Decimal):
+        return float(json_object)
+    return str(json_object)

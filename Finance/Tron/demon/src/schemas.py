@@ -29,6 +29,14 @@ class BodyTransaction(BaseModel):
     token: Optional[str] = Field(default=None, description="Token name")
     data: Optional[str] = Field(default=None, description="This includes what the api could not process")
 
+    def __init__(self, **kwargs):
+        super(BodyTransaction, self).__init__(**kwargs)
+        if self.token is None:
+            del self.token
+        if self.data is None:
+            del self.data
+
+
 class BodyMessage(BaseModel):
     address: TAddress = Field(description="The sender's wallet address.")
     transactions: List[BodyTransaction] = Field(description="The transactions for send")

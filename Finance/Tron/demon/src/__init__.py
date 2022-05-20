@@ -75,7 +75,7 @@ class DB:
                 "token": data["token"],
                 "address": data["address"],
                 "decimals": data["decimals"],
-                "token_info": json.loads(data["token_info"]),
+                "token_info": data["token_info"],
             }
         except Exception:
             return None
@@ -93,7 +93,6 @@ class DB:
             ]
 
 class RabbitMQ:
-
     RABBITMQ_URL = Config.RABBITMQ_URL
     RABBITMQ_QUEUE_FOR_SENDER = Config.RABBITMQ_QUEUE_FOR_SENDER
 
@@ -104,7 +103,10 @@ class RabbitMQ:
             connection = await aio_pika.connect_robust(url=RabbitMQ.RABBITMQ_URL)
             channel = await connection.channel()
             await channel.declare_queue(queue_name)
-            await channel.default_exchange.publish(message=msg)
+            await channel.default_exchange.publish(
+                routing_key=queue_name,
+                message=msg
+            )
         except Exception as error:
             logger.error(f'ERROR RABBIT MQ SEND STEP 96: {error}')
             await Errors.write_to_error(error=error, msg="ERROR 'RABBITMQ' STEP 96")

@@ -10,7 +10,7 @@ from tronpy.async_tron import AsyncTron, AsyncHTTPProvider
 
 from src.__init__ import DB, RabbitMQ
 from src.schemas import BodyTransaction, BodyInputsOrOutputs, BodyMessage, BodyHeader
-from src.types import TAddress
+from src.types import TAddress, default_json
 from src.utils import TronUtils, DemonUtils, Utils, Errors
 from config import NOT_SEND, Config, logger, decimals
 
@@ -32,6 +32,10 @@ class TransactionDemon:
             provider=self.PROVIDER if self.NETWORK == "mainnet" else None,
             network=self.NETWORK
         )
+
+    async def close_session(self):
+        if self.node is not None:
+            await self.node.close()
 
     async def get_node_block_number(self) -> int:
         """Get the number of the private block in the node"""
@@ -116,7 +120,6 @@ class TransactionDemon:
                 # We record the recipient if the transaction was made in tokens.
                 tx_to = TransactionDemon.toBase58CheckAddress("41" + tx_values["data"][32:72])
                 tx_addresses.append(tx_to)
-
             address = None
             for tx_address in tx_addresses:
                 # We are looking for the address of our wallet among the addresses in the transaction.
@@ -124,7 +127,6 @@ class TransactionDemon:
                     # If we find it, we write it to a variable.
                     address = tx_address
                     break
-
             if address is not None or tx_hash in all_txn_hash_in_db:
                 if address is None:
                     address = tx_from
@@ -134,7 +136,7 @@ class TransactionDemon:
                     # We analyze data transactions.
                     token = await TransactionDemon.smartContractTransaction(
                         data=tx_values["data"],
-                        contract_address=tx_values["contract_address"]
+                        token_info=await DB.get_token_info(address=tx_values["contract_address"])
                     )
                     if "data" in token:
                         return None
@@ -189,15 +191,12 @@ class TransactionDemon:
         else:
             tx_network = "TRON-TRX"
         # We pack the transaction in a gift box.
-        package_for_sending: List[BodyHeader, BodyMessage] = [
-            BodyHeader(
-                network=tx_network,
-                block=block_number
-            ),
-            package
+        package_for_sending: List = [
+            BodyHeader(network=tx_network, block=block_number).dict(),
+            package.dict()
         ]
         try:
-            await RabbitMQ.send_to_sender(values=json.dumps(package_for_sending))
+            await RabbitMQ.send_to_sender(values=json.dumps(package_for_sending, default=default_json).encode("utf-8"))
         except Exception as error:
             logger.error(f"ERROR DEMON SEND TO RABBIT STEP 212: {error}")
             await Errors.write_to_error(error=error, msg="ERROR 'TransactionDemon' STEP 212")
@@ -245,7 +244,7 @@ class TransactionDemon:
         logger.error((
             "START OF THE SEARCH: "
             f"START BLOCK: {start_block if start_block is not None else 'NOT SPECIFIED'} | "
-            f"END BLOCK: {end_block if end_block is not None else 'NOT SPECIFIED'} | "
+            f"END BLOCK: {end_block if end_block is not None else 'NOT SPECIFIED'}"
         ))
         if list_blocks:
             await self.start_in_list_block(list_blocks=list_blocks)
@@ -258,10 +257,11 @@ class TransactionDemon:
         else:
             await self.send_all_from_folder_not_send()
             await self.run()
+        await self.close_session()
         logger.error("END OF SEARCH")
 
     @staticmethod
-    async def send_all_from_folder_not_send(self):
+    async def send_all_from_folder_not_send():
         """Send those transits that were not sent due to any errors"""
         files = os.listdir(NOT_SEND)
         for file_name in files:
