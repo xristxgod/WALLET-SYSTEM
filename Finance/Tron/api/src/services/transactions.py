@@ -107,7 +107,7 @@ class TransactionParser:
         else:
             fee = 0
         amount = "%.8f" % decimals.create_decimal(int(txn["value"]) / (10 ** int(txn["token_info"]["decimals"])))
-        return {
+        data = {
             "time": txn["block_timestamp"],
             "transactionHash": txn["transaction_id"],
             "fee": fee,
@@ -126,6 +126,7 @@ class TransactionParser:
             ],
             "token": txn["token_info"]["symbol"]
         }
+        return data
 
     async def __packaging_for_dispatch(self, txn: Dict, txn_type: str) -> Dict:
         """
@@ -148,9 +149,10 @@ class TransactionParser:
                 "fee": fee,
                 "amount": 0,
                 "inputs": [
-                    {
-                        "address": self.node.to_base58check_address(txn_values["owner_address"])
-                    }
+                    BodyInputsOrOutputs(**{
+                        "address": self.node.to_base58check_address(txn_values["owner_address"]),
+                        "amount": 0
+                    })
                 ],
                 "outputs": []
             }
@@ -158,11 +160,11 @@ class TransactionParser:
             if txn_type in ["TransferContract", "TransferAssetContract"]:
                 amount = "%.8f" % decimals.create_decimal(self.fromSun(txn_values["amount"]))
                 values["amount"] = amount
-                values["outputs"] = [{
+                values["outputs"] = [BodyInputsOrOutputs(**{
                     "address": self.node.to_base58check_address(txn_values["to_address"]),
                     "amount": amount
-                }]
-                values["inputs"][0]["amount"] = amount
+                })]
+                values["inputs"][0].amount = amount
                 if "asset_name" in txn_values:
                     values["token"] = self.node.get_asset(id=txn_values["asset_name"])
             # TRC20
@@ -174,45 +176,13 @@ class TransactionParser:
                     values["data"] = smart_contract["data"]
                 else:
                     amount = smart_contract["amount"]
-                    values["senders"][0]["amount"] = amount
-                    values["outputs"] = [{
+                    values["inputs"][0].amount = amount
+                    values["outputs"] = [BodyInputsOrOutputs(**{
                         "address": smart_contract["to_address"],
                         "amount": amount
-                    }]
+                    })]
                     values["token"] = smart_contract["token"]
                     values["amount"] = amount
-            # Freeze or Unfreeze balance
-            elif txn_type in ["FreezeBalanceContract", "UnfreezeBalanceContract"]:
-                if "resource" in txn_values:
-                    values["resource"] = txn_values["resource"]
-                else:
-                    values["resource"] = "BANDWIDTH"
-
-                if "receiver_address" in txn_values:
-                    values["outputs"] = [{
-                        "address": self.node.to_base58check_address(txn_values["receiver_address"]),
-                        "amount": 0
-                    }]
-                else:
-                    values["outputs"] = [{
-                        "address": values["senders"][0]["address"],
-                        "amount": 0
-                    }]
-
-                if "frozen_balance" in txn_values:
-                    amount = str(self.fromSun(txn_values["frozen_balance"]))
-                    values["amount"] = amount
-                    values["inputs"][0]["amount"] = amount
-                    values["outputs"][0]["address"] = amount
-            # Vote
-            elif txn_type == "VoteWitnessContract":
-                try:
-                    values["outputs"] = [{
-                        "address": txn_values["votes"][0]["vote_address"],
-                        "voteCount": txn_values["votes"][0]["vote_count"]
-                    }]
-                except Exception as error:
-                    pass
             return values
         except Exception as error:
             return {}

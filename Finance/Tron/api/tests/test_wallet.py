@@ -2,7 +2,7 @@ import unittest
 
 from tests.__init__ import *
 from src.services.wallet import BodyCreateWallet, wallet
-from src.services.transactions import TransactionParser
+from src.services.transactions import get_transaction_by_tx_hash
 
 class TestWalletMethodSync(unittest.TestCase):
 
@@ -37,7 +37,8 @@ class TestWalletMethodAsync(unittest.IsolatedAsyncioTestCase):
         await wallet.node.close()
 
     async def test_get_transaction_by_tx_hash(self):
-        trx_tx_data = await TransactionParser().get_transaction(transaction_hash=TEST_TX_HASH_TRX)
-        usdt_tx_data = await TransactionParser().get_transaction(transaction_hash=TEST_TX_HASH_USDT)
+        trx_tx_data = (await get_transaction_by_tx_hash(tx_hash=TEST_TX_HASH_TRX)).__dict__
+        print(trx_tx_data)
+        usdt_tx_data = (await get_transaction_by_tx_hash(tx_hash=TEST_TX_HASH_USDT)).__dict__
         self.assertEqual(TX_DATA_TRX, trx_tx_data)
         self.assertEqual(TX_DATA_USDT, usdt_tx_data)
