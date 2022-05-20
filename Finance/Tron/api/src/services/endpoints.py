@@ -85,7 +85,8 @@ async def get_transaction_by_tx_id(trxHash: TransactionHash, network: Optional[s
         else:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Network "{network}" was not found')
     except Exception as error:
-        return JSONResponse(content={"error": str(error)})
+        logger.error(f"ERROR: {error}")
+        return JSONResponse(content={})
 
 @router.get(
     "/{network}/transactions/{address}", description="Get transaction by transaction hash",
