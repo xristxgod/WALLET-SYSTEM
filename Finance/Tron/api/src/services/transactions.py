@@ -56,7 +56,6 @@ class TransactionParser(NodeTron):
             )
             for right_border in range(len(transactions))
         ])
-        await self.node.close()
         for transactions in list_transactions:
             fund_trx_for_send.extend(transactions)
         return fund_trx_for_send

@@ -74,7 +74,7 @@ async def get_optimal_fee(fromAddress: TAddress, toAddress: TAddress, network: O
 )
 async def get_transaction_by_tx_id(trxHash: TransactionHash):
     try:
-        logger.error(f"Calling '/tron/get-transaction-info/{trxHash}'")
+        logger.error(f"Calling '/tron/get-transaction/{trxHash}'")
         return ResponseSignAndSendTransaction(
             **((await TransactionParser().get_transaction(transaction_hash=trxHash))[0])
         )

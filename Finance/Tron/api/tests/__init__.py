@@ -16,38 +16,38 @@ TEST_TX_HASH_USDT_TESTNET = "0e6040350685e40c1a56f54484a79d2b062c31f39307aecf8f7
 TEST_TX_HASH_USDT_MAINNET = "217465af653081e204382e845c31f717fa7b67a76ae773b0847d37d46fb91c23"
 
 TX_DATA_TRX = {
-    "time": 1650391958848 if __NETWORK == "TESTNET" else 1,
+    "time": 1650391958848 if __NETWORK == "TESTNET" else 1643978763710,
     "transactionHash": TEST_TX_HASH_TRX_TESTNET if __NETWORK == "TESTNET" else TEST_TX_HASH_TRX_MAINNET,
-    "fee": "0" if __NETWORK == "TESTNET" else "",
-    "amount": "4.83168000" if __NETWORK == "TESTNET" else "",
+    "fee": "0",
+    "amount": "4.83168000" if __NETWORK == "TESTNET" else "2.13128700",
     "senders": [
         {
-            "address": "TPvxLpLeC1Rd13CymBVWnXJiURjWk3SfRx" if __NETWORK == "TESTNET" else "",
-            "amount": "4.83168000" if __NETWORK == "TESTNET" else ""
+            "address": "TPvxLpLeC1Rd13CymBVWnXJiURjWk3SfRx",
+            "amount": "4.83168000" if __NETWORK == "TESTNET" else "2.13128700"
         }
     ],
     "recipients": [
         {
-            "address": "TUtHbnkPe5j9XoV8bLpWBTHv8FycxXvn3h" if __NETWORK == "TESTNET" else "",
-            "amount": "4.83168000" if __NETWORK == "TESTNET" else ""
+            "address": "TUtHbnkPe5j9XoV8bLpWBTHv8FycxXvn3h" if __NETWORK == "TESTNET" else "TSUMnKToM3F31cxLWqW94rJJQ8WZHDLYat",
+            "amount": "4.83168000" if __NETWORK == "TESTNET" else "2.13128700"
         }
     ],
 }
 TX_DATA_USDT = {
-    "time": 1650894664361 if __NETWORK == "TESTNET" else 1,
+    "time": 1650894664361 if __NETWORK == "TESTNET" else 1643974612928,
     "transactionHash": TEST_TX_HASH_USDT_TESTNET if __NETWORK == "TESTNET" else TEST_TX_HASH_USDT_MAINNET,
-    "fee": "0" if __NETWORK == "TESTNET" else "",
-    "amount": "5.00000000" if __NETWORK == "TESTNET" else "",
+    "fee": "0" if __NETWORK == "TESTNET" else "4.09668000",
+    "amount": "5.00000000" if __NETWORK == "TESTNET" else "20.00000000",
     "senders": [
         {
-            "address": "TPvxLpLeC1Rd13CymBVWnXJiURjWk3SfRx" if __NETWORK == "TESTNET" else "",
-            "amount": "5.00000000" if __NETWORK == "TESTNET" else ""
+            "address": "TPvxLpLeC1Rd13CymBVWnXJiURjWk3SfRx" if __NETWORK == "TESTNET" else "TCbZxFBERYu2jfmg3jKMZN1f6i5KEGnkFi",
+            "amount": "5.00000000" if __NETWORK == "TESTNET" else "20.00000000"
         }
     ],
     "recipients": [
         {
-            "address": "TJsaD5WvpzrYF2XN3DaiUjqjnJkZAzZUwC" if __NETWORK == "TESTNET" else "",
-            "amount": "5.00000000" if __NETWORK == "TESTNET" else ""
+            "address": "TJsaD5WvpzrYF2XN3DaiUjqjnJkZAzZUwC" if __NETWORK == "TESTNET" else "TPvxLpLeC1Rd13CymBVWnXJiURjWk3SfRx",
+            "amount": "5.00000000" if __NETWORK == "TESTNET" else "20.00000000"
         }
     ],
     "token": "USDT"
