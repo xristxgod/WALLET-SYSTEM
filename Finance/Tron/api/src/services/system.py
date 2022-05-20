@@ -19,7 +19,7 @@ class NodeStatus:
 
     @staticmethod
     async def _get_node_info(our_node: AsyncTron) -> typing.Optional:
-        if int(await our_node.get_node_info()["activeConnectCount"]) == 0:
+        if int((await our_node.get_node_info())["activeConnectCount"]) == 0:
             # If there are no active connections to the node, then the node is dead!
             raise Exception("Problems with the node. There are no active connections")
 
