@@ -2,7 +2,7 @@ import typing
 import json
 
 import tronpy.exceptions
-import tronpy.async_tron
+import tronpy.tron
 from hdwallet import BIP44HDWallet
 from hdwallet.derivations import BIP44Derivation
 from hdwallet.cryptocurrencies import TronMainnet
@@ -18,7 +18,7 @@ from src.services import NodeTron
 from src.utils import TransactionUtils
 from src.types import TAddress
 from src import DB
-from config import logger, decimals
+from config import Config, logger, decimals
 
 class TronMethods(NodeTron):
     """This class creates and use a Tron account"""
@@ -148,13 +148,15 @@ class TronMethods(NodeTron):
         private_key = tronpy.async_tron.PrivateKey(private_key_bytes=bytes.fromhex(body.privateKeys[0]))
         # Unpacking the original transaction data.
         raw_data = json.loads(bytes.fromhex(body.createTxHex).decode("utf-8"))
-        # Signing the transaction with a private key.
-        sign_transaction = tronpy.async_tron.AsyncTransaction(
-            client=NodeTron().node, raw_data=raw_data
-        ).sign(priv_key=private_key)
-        # Sending a transaction
-        send_transaction = await sign_transaction.broadcast()
+        # Signing the transaction with a private key. Sending a transaction
+        transaction = tronpy.tron.Transaction(
+            client=tronpy.tron.Tron(
+                provider=tronpy.tron.HTTPProvider(Config.NODE_URL) if NodeTron.NETWORK == "mainnet" else None,
+                network=NodeTron.NETWORK
+            ),
+            raw_data=raw_data
+        ).sign(priv_key=private_key).broadcast()
         # After sending, we receive the full body of the transaction (checklist)
-        return await get_transaction_by_tx_hash(tx_hash=send_transaction["id"])
+        return await get_transaction_by_tx_hash(tx_hash=transaction.txid)
 
 wallet = TronMethods()

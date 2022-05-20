@@ -123,10 +123,11 @@ async def create_transaction(body: BodyCreateTransaction, network: Optional[str]
 )
 async def sign_and_send_transaction(body: BodySignAndSendTransaction, network: str):
     try:
-        logger.error(f"Calling '/{network}/sign-send-transaction'")
+        logger.error(f"Calling '/{network}/send/transaction'")
         if Coins.is_token(coin=network) or Coins.is_native(coin=network):
             return await wallet.sign_and_send_transaction(body=body)
         else:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Coin "{network}" was not found')
     except Exception as error:
-        return JSONResponse(content={"error": str(error)})
+        raise error
+        # return JSONResponse(content={"error": str(error)})
