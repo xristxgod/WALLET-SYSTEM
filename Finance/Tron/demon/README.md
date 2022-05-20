@@ -44,7 +44,6 @@ Run script via console
 
 ------------------
 
-The diagram:
+Diaram:
 
 ![image](https://user-images.githubusercontent.com/84931791/169566747-a6513fc1-380a-4541-b313-fb757e40f17b.png)
-
