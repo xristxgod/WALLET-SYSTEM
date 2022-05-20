@@ -21,6 +21,8 @@ Crypto wallet for Telegram
 > Async helper frameworks: `AIOHttp`, `AIOfiles`.
 
 > Crypto frameworks: `TronPy`, `Web3`, `HDwallet`.
+
+> Other: `Docker`, `Radis`, `RabbitMQ`, `Cron`.
 ---
 
 > `DatabaseInterface` - Admin panel and admin bot
