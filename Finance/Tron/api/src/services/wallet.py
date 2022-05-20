@@ -95,7 +95,7 @@ class TronMethods(NodeTron):
             self, body: BodyCreateTransaction, token: typing.Optional[str] = "TRX"
     ) -> ResponseCreateTransaction:
         outputs: BodyInputsOrOutputs = body.outputs[0]
-        if token.upper() == "TRX":
+        if token == "TRX":
             # Checks the correctness of the data entered by users
             amount = NodeTron.toSun(float(outputs.amount))
             # Resources that will go to the transaction
@@ -122,7 +122,6 @@ class TronMethods(NodeTron):
             if int(await contract.functions.balanceOf(body.inputs[0])) * 10 ** int(token_info["decimals"]) < amount:
                 raise Exception("You do not have enough funds on your balance to make a transaction!!!")
             fee = await self.get_optimal_fee(from_address=body.inputs[0], to_address=outputs.address, token=token)
-            print(fee)
             # Creating a transaction
             txn = await contract.functions.transfer(outputs.address, amount)
             txn = txn.with_owner(body.inputs[0])

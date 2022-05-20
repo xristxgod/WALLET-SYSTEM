@@ -69,3 +69,7 @@ class NodeTron:
             "freeBandwidthUsed": free_bandwidth_used,
             "totalBandwidth": total_bandwidth
         }
+
+    async def close_session(self):
+        if self.node is not None:
+            await self.node.close()
