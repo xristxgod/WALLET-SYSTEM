@@ -74,7 +74,7 @@ class ResponseCreateWallet(BaseModel):
     address: TAddress = Field(description="Wallet address")
 
 class ResponseGetOptimalFee(BaseModel):
-    fee: str
+    fee: decimal.Decimal
 
 class ResponseGetBalance(BaseModel):
     """Response for get balance"""
@@ -107,7 +107,7 @@ class ResponseCreateTransaction(BaseModel):
     """Response to create transaction"""
     createTxHex: str = Field(description="The hex of the unsigned transaction")
     bodyTransaction: ResponseSignAndSendTransaction = Field(description="Transaction body in json")
-    fee: str = Field(description="Transaction fee")
+    fee: decimal.Decimal = Field(description="Transaction fee")
 
 class ResponseAllTransaction(BaseModel):
     address: TAddress = Field(description="Wallet address")
