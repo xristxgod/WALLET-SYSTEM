@@ -27,3 +27,4 @@ class TestWalletMethodAsync(unittest.IsolatedAsyncioTestCase):
         self.assertEqual("0", balance_trx_not_active.balance)
         self.assertEqual("0", balance_usdt_not_active.balance)
         self.assertEqual("USDT", balance_usdt_active.token)
+        await wallet.node.close()

@@ -65,7 +65,8 @@ class TronMethods(NodeTron):
             else:
                 balance = 0
         return ResponseGetBalance(
-            balance="%.8f" % decimals.create_decimal(balance) if balance > 0 else 0
+            balance="%.8f" % decimals.create_decimal(balance) if balance > 0 else 0,
+            token=None if token is None else token.upper()
         )
 
     async def get_optimal_fee(self, from_address: TAddress, to_address: TAddress, token: str) -> ResponseGetOptimalFee:
