@@ -39,5 +39,6 @@ class TestWalletMethodAsync(unittest.IsolatedAsyncioTestCase):
     async def test_get_transaction_by_tx_hash(self):
         trx_tx_data = await TransactionParser().get_transaction(transaction_hash=TEST_TX_HASH_TRX)
         usdt_tx_data = await TransactionParser().get_transaction(transaction_hash=TEST_TX_HASH_USDT)
+        print(usdt_tx_data)
         self.assertEqual(TX_DATA_TRX, trx_tx_data)
         self.assertEqual(TX_DATA_USDT, usdt_tx_data)
