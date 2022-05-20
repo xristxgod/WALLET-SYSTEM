@@ -12,9 +12,15 @@ Crypto wallet for Telegram
 > new telegram features such as `Payment platform`-`https://core.telegram.org/bots/payments`.
 
 ---
-> Languages I use: `PYTHON`, `JS`, `GO`
+> Languages I use: `PYTHON`, `JS`.
 
-> But it is based on Python and its frameworks: `FastApi`, `Django`, `Django REST API`, `AIOGram`, `Celery`, `Pydantic`, `AIOPika`, `AIOHttp`, `ASYNCpg`  and others.
+> But it is based on Python and its frameworks: `FastApi`, `Django`, `Django REST API`, `AIOGram`, `Celery`, `ASYNCpg`, `AIOPika`, `Pika`, `Psycopg2`.
+
+> Helper frameworks:  `Pydantic`, `emoji`.
+
+> Async helper frameworks: `AIOHttp`, `AIOfiles`.
+
+> Crypto frameworks: `TronPy`, `Web3`, `HDwallet`.
 ---
 
 > `DatabaseInterface` - Admin panel and admin bot
