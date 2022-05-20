@@ -253,7 +253,7 @@ class TransactionDemon:
             f"END BLOCK: {end_block if end_block is not None else 'NOT SPECIFIED'}"
         ))
         if list_blocks:
-            await self.start_in_list_block(list_blocks=list_blocks)
+            await self.start_in_list_blocks(list_blocks=list_blocks)
         elif start_block and end_block:
             await self.start_in_range(start_block, end_block)
         elif start_block and not end_block:
