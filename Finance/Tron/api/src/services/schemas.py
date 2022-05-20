@@ -94,7 +94,7 @@ class ResponseSignAndSendTransaction(BaseModel):
     inputs: Optional[List[BodyInputsOrOutputs]] = Field(default=None, description="Information about the sender")
     outputs: Optional[List[BodyInputsOrOutputs]] = Field(default=None, description="Information about the recipient")
     token: Optional[str] = Field(default=None, description="Token name")
-    data: Optional[Dict] = Field(default=None, description="This includes what the api could not process")
+    data: Optional[str] = Field(default=None, description="This includes what the api could not process")
 
     def __init__(self, **kwargs):
         super(ResponseSignAndSendTransaction, self).__init__(**kwargs)

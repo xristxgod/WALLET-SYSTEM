@@ -17,7 +17,7 @@ from config import Config, decimals
 def get_all_trx_for_format(txns: List, address: TAddress):
     res = []
     for txn in txns:
-        res.append(ResponseSignAndSendTransaction(**txn))
+        res.append(txn)
     return ResponseAllTransaction(
         address=address,
         transactions=res
@@ -60,6 +60,7 @@ class TransactionParser:
             (await TransactionParser.get_url(network=NodeTron.NETWORK, address=address, token=token)),
             headers=TransactionParser.get_headers()
         ).json()["data"]
+
         return get_all_trx_for_format(
             txns=await self.__get_transactions(transactions=transactions, token=token),
             address=address

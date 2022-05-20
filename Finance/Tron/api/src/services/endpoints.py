@@ -88,7 +88,7 @@ async def get_all_transactions_by_address(address: TAddress, network: str):
     try:
         logger.error(f"Calling '/{network}/get-all-transactions/{address}'")
         if Coins.is_token(coin=network) or Coins.is_native(coin=network):
-            return await TransactionParser().get_all_transactions(
+            return await get_transactions_by_address(
                     address=address,
                     token=Coins.is_token(coin=network) if not Coins.is_native(coin=network) else None
                 )
