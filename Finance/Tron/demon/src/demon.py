@@ -9,7 +9,7 @@ import aiofiles
 from tronpy.async_tron import AsyncTron, AsyncHTTPProvider
 
 from src.__init__ import DB, RabbitMQ
-from src.schemas import BodyTransaction, BodyInputsOrOutputs, BodyMessage
+from src.schemas import BodyTransaction, BodyInputsOrOutputs, BodyMessage, BodyHeader
 from src.types import TAddress
 from src.utils import TronUtils, DemonUtils, Utils, Errors
 from config import NOT_SEND, Config, logger, decimals
@@ -129,7 +129,7 @@ class TransactionDemon:
                 if address is None:
                     address = tx_from
                 if tx_type == "TransferContract":
-                    amount = "%.8f" % decimals.create_decimal(TransactionDemon.fromSun(tx_values["amount"]))
+                    amount = decimals.create_decimal(TransactionDemon.fromSun(tx_values["amount"]))
                 elif tx_type == "TriggerSmartContract":
                     # We analyze data transactions.
                     token = await TransactionDemon.smartContractTransaction(
@@ -162,7 +162,6 @@ class TransactionDemon:
                         amount=amount
                     )]
                 )
-
                 if token is not None and "data" not in token:
                     # If the transaction was made in a token.
                     values.token = token["token"]
@@ -174,15 +173,15 @@ class TransactionDemon:
             return None
 
     @staticmethod
-    async def send_to_rabbit(package, block_number) -> None:
+    async def send_to_rabbit(package: BodyMessage, block_number: int) -> None:
         """
         We are preparing transactions to be sent to RabbitMQ
         :param package: Ready transaction
         :param block_number: Block number
         """
         token = (
-            package["transactions"][0]["token"].lower()
-            if "token" in package['transactions'][0].keys()
+            package.transactions[0].token.lower()
+            if "token" in package.transactions[0].__dict__.keys()
             else "trx"
         )
         if token is not None and token != "trx":
@@ -190,11 +189,11 @@ class TransactionDemon:
         else:
             tx_network = "TRON-TRX"
         # We pack the transaction in a gift box.
-        package_for_sending = [
-            {
-                "network": tx_network,
-                "block": block_number
-            },
+        package_for_sending: List[BodyHeader, BodyMessage] = [
+            BodyHeader(
+                network=tx_network,
+                block=block_number
+            ),
             package
         ]
         try:
