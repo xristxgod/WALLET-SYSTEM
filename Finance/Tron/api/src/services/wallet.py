@@ -92,7 +92,7 @@ class TronMethods(NodeTron):
         return ResponseGetOptimalFee(fee=fee)
 
     async def create_transaction(
-            self, body: BodyCreateTransaction, token: typing.Optional[str] = None
+            self, body: BodyCreateTransaction, token: typing.Optional[str] = "TRX"
     ) -> ResponseCreateTransaction:
         outputs: BodyInputsOrOutputs = body.outputs[0]
         if token.upper() == "TRX":
