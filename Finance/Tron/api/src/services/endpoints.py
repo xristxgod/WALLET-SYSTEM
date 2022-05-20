@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse
 
 from src.services.wallet import wallet
-from src.services.transactions import transaction_parser
+from src.services.transactions import TransactionParser
 from src.services.schemas import (
     ResponseCreateWallet, BodyCreateWallet,
     BodyCreateTransaction, BodySignAndSendTransaction,
@@ -80,7 +80,7 @@ async def get_transaction_by_tx_id(trxHash: TransactionHash, network: Optional[s
         logger.error(f"Calling '/{network}/get-transaction-info/{trxHash}'")
         if Coins.is_native(coin=network) or Coins.is_token(coin=network):
             return ResponseSignAndSendTransaction(
-                **((await transaction_parser.get_transaction(transaction_hash=trxHash))[0])
+                **((await TransactionParser().get_transaction(transaction_hash=trxHash))[0])
             )
         else:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Network "{network}" was not found')
@@ -95,7 +95,7 @@ async def get_all_transactions_by_address(address: TAddress, network: str):
     try:
         logger.error(f"Calling '/{network}/get-all-transactions/{address}'")
         if Coins.is_token(coin=network) or Coins.is_native(coin=network):
-            return await transaction_parser.get_all_transactions(
+            return await TransactionParser().get_all_transactions(
                     address=address,
                     token=Coins.is_token(coin=network) if not Coins.is_native(coin=network) else None
                 )

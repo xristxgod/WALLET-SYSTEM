@@ -93,7 +93,15 @@ class ResponseSignAndSendTransaction(BaseModel):
     amount: Optional[str] = Field(default=None, description="The amount of the shipment")
     senders: Optional[List[Dict[TAddress, str]]] = Field(default=None, description="Information about the sender")
     recipients: Optional[List[Dict[TAddress, str]]] = Field(default=None, description="Information about the recipient")
+    token: Optional[str] = Field(default=None, description="Token name")
     data: Optional[Dict] = Field(default=None, description="This includes what the api could not process")
+
+    def __init__(self, **kwargs):
+        super(ResponseSignAndSendTransaction, self).__init__(**kwargs)
+        if self.token is None:
+            del self.token
+        if self.data is None:
+            del self.data
 
 class ResponseAllTransaction(BaseModel):
     address: TAddress = Field(description="Wallet address")

@@ -7,7 +7,7 @@ from hdwallet import BIP44HDWallet
 from hdwallet.derivations import BIP44Derivation
 from hdwallet.cryptocurrencies import TronMainnet
 
-from src.services.transactions import transaction_parser
+from src.services.transactions import TransactionParser
 from src.services.schemas import (
     ResponseCreateWallet, BodyCreateWallet, ResponseGetBalance,
     ResponseGetOptimalFee, BodyCreateTransaction, BodySignAndSendTransaction,
@@ -101,16 +101,16 @@ class TronMethods(NodeTron):
             amount = NodeTron.toSun(float(to_amount))
             # Resources that will go to the transaction
             fee = await self.get_optimal_fee(
-                from_address=body.fromAddress,
+                from_address=body.fromAddress[0],
                 to_address=to_address,
                 token=token
             )
             # Creates and build a transaction
-            txn = self.node.trx.transfer(from_=body.fromAddress, to=to_address, amount=amount)
+            txn = self.node.trx.transfer(from_=body.fromAddress[0], to=to_address, amount=amount)
             txn = await txn.build()
             body_transaction = TransactionUtils.get_transaction_body(
                 txn=txn.to_json(), fee=fee.fee, amount="%.8f" % amount,
-                from_address=body.fromAddress, to_address=to_address
+                from_address=body.fromAddress[0], to_address=to_address
             )
         else:
             to_address, to_amount = list(body.outputs[0].items())[0]
@@ -123,13 +123,13 @@ class TronMethods(NodeTron):
             # Checks whether the user has a tokens balance to transfer
             if int(await contract.functions.balanceOf(to_address)) * 10 ** int(token_info["decimals"]) < amount:
                 raise Exception("You do not have enough funds on your balance to make a transaction!!!")
-            fee = await self.get_optimal_fee(from_address=body.fromAddress, to_address=to_address, token=token)
+            fee = await self.get_optimal_fee(from_address=body.fromAddress[0], to_address=to_address, token=token)
             # Creating a transaction
             txn = await contract.functions.transfer(to_address, amount).with_owner(body.fromAddress)
             txn = await txn.build()
             body_transaction = TransactionUtils.get_transaction_body(
                 txn=txn.to_json(), fee=fee.fee, amount="%.8f" % amount, token=token,
-                from_address=body.fromAddress, to_address=to_address
+                from_address=body.fromAddress[0], to_address=to_address
             )
         return ResponseCreateTransaction(
             # The original transaction data for signing and sending the transaction
@@ -155,7 +155,7 @@ class TronMethods(NodeTron):
         send_transaction = await sign_transaction.broadcast()
         # After sending, we receive the full body of the transaction (checklist)
         return ResponseSignAndSendTransaction(
-            **(await transaction_parser.get_transaction(transaction_hash=send_transaction["id"])[0])
+            **(await TransactionParser().get_transaction(transaction_hash=send_transaction["id"])[0])
         )
 
 wallet = TronMethods()

@@ -220,11 +220,9 @@ class TransactionParser(NodeTron):
         except Exception as error:
             return {"data": str(data)}
 
-transaction_parser = TransactionParser()
-
 if __name__ == '__main__':
     address = "YourAddress"
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    result = loop.run_until_complete(transaction_parser.get_all_transactions(address))
+    result = loop.run_until_complete(TransactionParser().get_all_transactions(address))
     print(result)
