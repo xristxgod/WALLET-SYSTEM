@@ -23,13 +23,10 @@ router = APIRouter(prefix="/api")
     "/tron/create/wallet", response_model=ResponseCreateWallet,
     description="This method creates a tron wallet", tags=["WALLET"]
 )
-async def create_wallet(body: BodyCreateWallet, network: Optional[str] = "tron"):
+async def create_wallet(body: BodyCreateWallet):
     try:
-        logger.error(f"Calling '/{network}/create/wallet'")
-        if Coins.is_native(coin=network) or Coins.is_token(coin=network):
-            return wallet.create_wallet(body=body)
-        else:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Network "{network}" was not found')
+        logger.error(f"Calling '/tron/create/wallet'")
+        return wallet.create_wallet(body=body)
     except Exception as error:
         return {"error": str(error)}
 
@@ -72,18 +69,15 @@ async def get_optimal_fee(fromAddress: TAddress, toAddress: TAddress, network: O
 # <<<----------------------------------->>> Transaction Info <<<----------------------------------------------------->>>
 
 @router.get(
-    "/{network}/transaction/{trxHash}", description="Get transaction by transaction hash",
+    "/tron/transaction/{trxHash}", description="Get transaction by transaction hash",
     response_model=ResponseSignAndSendTransaction, tags=["TRANSACTION"]
 )
-async def get_transaction_by_tx_id(trxHash: TransactionHash, network: Optional[str] = "tron"):
+async def get_transaction_by_tx_id(trxHash: TransactionHash):
     try:
-        logger.error(f"Calling '/{network}/get-transaction-info/{trxHash}'")
-        if Coins.is_native(coin=network) or Coins.is_token(coin=network):
-            return ResponseSignAndSendTransaction(
-                **((await TransactionParser().get_transaction(transaction_hash=trxHash))[0])
-            )
-        else:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Network "{network}" was not found')
+        logger.error(f"Calling '/tron/get-transaction-info/{trxHash}'")
+        return ResponseSignAndSendTransaction(
+            **((await TransactionParser().get_transaction(transaction_hash=trxHash))[0])
+        )
     except Exception as error:
         logger.error(f"ERROR: {error}")
         return JSONResponse(content={})

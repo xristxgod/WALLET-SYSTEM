@@ -18,8 +18,8 @@ TEST_TX_HASH_USDT_MAINNET = "217465af653081e204382e845c31f717fa7b67a76ae773b0847
 TX_DATA_TRX = {
     "time": 1650391958848 if __NETWORK == "TESTNET" else 1,
     "transactionHash": TEST_TX_HASH_TRX_TESTNET if __NETWORK == "TESTNET" else TEST_TX_HASH_TRX_MAINNET,
-    "fee": "" if __NETWORK == "TESTNET" else "",
-    "amount": "" if __NETWORK == "TESTNET" else "",
+    "fee": "0" if __NETWORK == "TESTNET" else "",
+    "amount": "4.83168000" if __NETWORK == "TESTNET" else "",
     "senders": [
         {
             "address": "TPvxLpLeC1Rd13CymBVWnXJiURjWk3SfRx" if __NETWORK == "TESTNET" else "",
@@ -34,8 +34,8 @@ TX_DATA_TRX = {
     ],
 }
 TX_DATA_USDT = {
-    "time": 1650391958848 if __NETWORK == "TESTNET" else 1,
-    "transactionHash": TEST_TX_HASH_TRX_TESTNET if __NETWORK == "TESTNET" else TEST_TX_HASH_TRX_MAINNET,
+    "time": 1650894664361 if __NETWORK == "TESTNET" else 1,
+    "transactionHash": TEST_TX_HASH_USDT_TESTNET if __NETWORK == "TESTNET" else TEST_TX_HASH_USDT_MAINNET,
     "fee": "" if __NETWORK == "TESTNET" else "",
     "amount": "" if __NETWORK == "TESTNET" else "",
     "senders": [
