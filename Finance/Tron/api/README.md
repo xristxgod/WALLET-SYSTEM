@@ -14,4 +14,4 @@ uvicorn app:app --host 0.0.0.0 --port 6000
 
 --------
 Documentation page:
-![img.png](img.png)
+![image](https://user-images.githubusercontent.com/84931791/169534220-14e119ce-af1b-4e6f-ae0a-09cdb547ed4f.png)
