@@ -25,7 +25,7 @@ class NetworkModel(models.Model):
         db_table = 'network_model'
 
 class TokenModel(models.Model):
-    network: NetworkModel = models.ForeignKey('NetworkModel', on_delete=models.CASCADE)
+    network: NetworkModel = models.ForeignKey('NetworkModel', on_delete=models.CASCADE, db_column="network")
     token = models.CharField(max_length=255, null=False)
     decimals = models.IntegerField()
     address = models.CharField(max_length=255, null=False, unique=True)
@@ -40,14 +40,14 @@ class TokenModel(models.Model):
         db_table = 'token_model'
 
 class WalletModel(models.Model):
-    network: NetworkModel = models.ForeignKey('NetworkModel', on_delete=models.CASCADE)
+    network: NetworkModel = models.ForeignKey('NetworkModel', on_delete=models.CASCADE, db_column="network")
     address = models.CharField(max_length=255, null=False, unique=True)
     private_key = models.CharField(max_length=255, null=False, unique=True)
     public_key = models.CharField(max_length=255, null=True, blank=True, unique=True)
     passphrase = models.CharField(max_length=255, null=True, blank=True)
     mnemonic_phrase = models.CharField(max_length=255, null=True, blank=True, unique=True)
     last_balance = models.DecimalField(default=0, max_digits=10, decimal_places=10)
-    user_id: UserModel = models.ForeignKey('UserModel', on_delete=models.CASCADE)
+    user_id: UserModel = models.ForeignKey('UserModel', on_delete=models.CASCADE, db_column="user_id")
 
     def __str__(self):
         return f"{self.network.network} | {self.user_id.username}"
@@ -72,16 +72,18 @@ class TransactionStatusModel(models.Model):
         db_table = 'transaction_status_model'
 
 class TransactionModel(models.Model):
-    network: NetworkModel = models.ForeignKey('NetworkModel', on_delete=models.CASCADE)
+    network: NetworkModel = models.ForeignKey('NetworkModel', on_delete=models.CASCADE, db_column="network")
     time = models.IntegerField()
     transaction_hash = models.CharField(max_length=255, unique=True)
     fee = models.DecimalField(default=0, max_digits=10, decimal_places=10)
     amount = models.DecimalField(default=0, max_digits=10, decimal_places=10)
     senders = models.JSONField(null=True, blank=True)
     recipients = models.JSONField(null=True, blank=True)
-    token: TokenModel = models.ForeignKey('TokenModel', on_delete=models.CASCADE)
-    status: TransactionStatusModel = models.ForeignKey('TransactionStatusModel', on_delete=models.CASCADE)
-    user_id: UserModel = models.ForeignKey('UserModel', on_delete=models.CASCADE)
+    token: TokenModel = models.ForeignKey('TokenModel', on_delete=models.CASCADE, db_column="token")
+    status: TransactionStatusModel = models.ForeignKey(
+        'TransactionStatusModel', on_delete=models.CASCADE, db_column="status"
+    )
+    user_id: UserModel = models.ForeignKey('UserModel', on_delete=models.CASCADE, db_column="user_id")
 
     def __str__(self):
         return f"{self.network.network}-{self.token.token} | {self.user_id.username}"

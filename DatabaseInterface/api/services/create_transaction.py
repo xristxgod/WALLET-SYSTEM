@@ -82,8 +82,8 @@ class CreateTransaction(BaseApiModel):
     """
     This class creates transactions in a certain crypto network.
     """
-    APIs_URL: Dict[NETWORK] = Config.CRYPTO_NETWORKS_APIS
-    GET_OPTIMAL_FEE_URL = "/api/<network>/fee/<fromAddress>&<toAddress>"
+    # APIs_URL: Dict[NETWORK] = Config.CRYPTO_NETWORKS_APIS
+    # GET_OPTIMAL_FEE_URL = "/api/<network>/fee/<fromAddress>&<toAddress>"
 
     @staticmethod
     def create_transaction(body: BodyCreateTransactionModel) -> ResponseCreateTransactionModel:

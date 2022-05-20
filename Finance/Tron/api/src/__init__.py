@@ -3,7 +3,7 @@ from typing import Dict, Optional, Union
 
 import asyncpg
 
-from config import Config
+from config import Config, TRON_NETWORK_INDEX
 
 TOKENS = [
     {
@@ -40,14 +40,15 @@ class DB:
                 await connection.close()
 
     @staticmethod
-    async def get_token_info(token: str, network: str = "TRON") -> Union[Dict, None]:
+    async def get_token_info(token: str) -> Union[Dict, None]:
         try:
+            print(token)
             if Config.NETWORK == "TESTNET":
                 data = [t for t in TOKENS if t["token"] == token.upper()][0]
             else:
                 data = await DB.__select_method((
                     f"SELECT address, decimals, token_info FROM token_model "
-                    f"WHERE token = '{token.upper()}' AND network = '{network.upper()}';"
+                    f"WHERE token = '{token.upper()}' AND network = {TRON_NETWORK_INDEX};"
                 ))
             return {
                 "token": token,

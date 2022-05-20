@@ -20,7 +20,7 @@ class Config(object):
 
     COIN_TO_COIN_API = environ.get("COIN_TO_COIN_API", "https://api.coingecko.com")
     CRYPTO_NETWORKS_APIS = {
-        "TRON": environ.get("DOMAIN_TRON_API")
+        "TRON": environ.get("DOMAIN_TRON_API", "-")
     }
 
     BOT_ALERT_API_URL = environ.get("BOT_ALERT_API_URL")

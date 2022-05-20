@@ -36,18 +36,19 @@ TX_DATA_TRX = {
 TX_DATA_USDT = {
     "time": 1650894664361 if __NETWORK == "TESTNET" else 1,
     "transactionHash": TEST_TX_HASH_USDT_TESTNET if __NETWORK == "TESTNET" else TEST_TX_HASH_USDT_MAINNET,
-    "fee": "" if __NETWORK == "TESTNET" else "",
-    "amount": "" if __NETWORK == "TESTNET" else "",
+    "fee": "0" if __NETWORK == "TESTNET" else "",
+    "amount": "5.00000000" if __NETWORK == "TESTNET" else "",
     "senders": [
         {
             "address": "TPvxLpLeC1Rd13CymBVWnXJiURjWk3SfRx" if __NETWORK == "TESTNET" else "",
-            "amount": "4.83168000" if __NETWORK == "TESTNET" else ""
+            "amount": "5.00000000" if __NETWORK == "TESTNET" else ""
         }
     ],
     "recipients": [
         {
-            "address": "TUtHbnkPe5j9XoV8bLpWBTHv8FycxXvn3h" if __NETWORK == "TESTNET" else "",
-            "amount": "4.83168000" if __NETWORK == "TESTNET" else ""
+            "address": "TJsaD5WvpzrYF2XN3DaiUjqjnJkZAzZUwC" if __NETWORK == "TESTNET" else "",
+            "amount": "5.00000000" if __NETWORK == "TESTNET" else ""
         }
     ],
+    "token": "USDT"
 }
