@@ -52,21 +52,19 @@ class TronMethods(NodeTron):
         )
 
     async def get_balance(self, address: TAddress, token: typing.Optional[str] = None) -> ResponseGetBalance:
+        balance = 0
         if token is None:
             try:
                 balance = await self.node.get_account_balance(addr=address)
             except Exception as error:
                 logger.error(f"ERROR STEP 29: {error}")
-                balance = 0
         else:
             token_info = await DB.get_token_info(token=token.upper())
             contract = await self.node.get_contract(token_info["address"])
             if int(await contract.functions.balanceOf(address)) > 0:
                 balance = int(await contract.functions.balanceOf(address)) / 10 ** token_info["decimals"]
-            else:
-                balance = 0
         return ResponseGetBalance(
-            balance="%.8f" % decimals.create_decimal(balance) if balance > 0 else 0,
+            balance=balance,
             token=None if token is None else token.upper()
         )
 
@@ -90,8 +88,8 @@ class TronMethods(NodeTron):
             fee = await self.get_energy(address=from_address, energy=energy) / await self.calculate_burn_energy(1)
             bd = token_info["token_info"]["bandwidth"]
         if int((await self.get_account_bandwidth(address=from_address))["totalBandwidth"]) <= bd:
-            fee += decimals.create_decimal(267) / 1_000
-        return ResponseGetOptimalFee(fee=fee if fee > 0 else fee)
+            fee += 267 / 1_000
+        return ResponseGetOptimalFee(fee=fee)
 
     async def create_transaction(
             self, body: BodyCreateTransaction, token: typing.Optional[str] = None
