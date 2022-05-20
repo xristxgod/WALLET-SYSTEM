@@ -78,7 +78,7 @@ class TransactionUtils:
             fee: decimal.Decimal,
             from_address: TAddress,
             to_address: TAddress,
-            amount: decimal.Decimal,
+            amount: float,
             token: str = None
     ) -> ResponseSignAndSendTransaction:
         return ResponseSignAndSendTransaction(

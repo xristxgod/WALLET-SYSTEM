@@ -88,14 +88,14 @@ class TronMethods(NodeTron):
             fee = await self.get_energy(address=from_address, energy=energy) / await self.calculate_burn_energy(1)
             bd = token_info["token_info"]["bandwidth"]
         if int((await self.get_account_bandwidth(address=from_address))["totalBandwidth"]) <= bd:
-            fee += 267 / 1_000
+            fee += decimals.create_decimal(267) / 1_000
         return ResponseGetOptimalFee(fee=fee)
 
     async def create_transaction(
             self, body: BodyCreateTransaction, token: typing.Optional[str] = None
     ) -> ResponseCreateTransaction:
         outputs: BodyInputsOrOutputs = body.outputs[0]
-        if token == "TRX":
+        if token.upper() == "TRX":
             # Checks the correctness of the data entered by users
             amount = NodeTron.toSun(float(outputs.amount))
             # Resources that will go to the transaction
@@ -108,7 +108,7 @@ class TronMethods(NodeTron):
             txn = self.node.trx.transfer(from_=body.inputs[0], to=outputs.address, amount=amount)
             txn = await txn.build()
             body_transaction = TransactionUtils.get_transaction_body(
-                txn=txn.to_json(), fee=fee.fee, amount=amount,
+                txn=txn.to_json(), fee=fee.fee, amount=NodeTron.fromSun(amount),
                 from_address=body.inputs[0], to_address=outputs.address
             )
         else:
@@ -119,15 +119,16 @@ class TronMethods(NodeTron):
             # Let's get the amount for the offspring in decimal
             amount = int(float(outputs.amount) * 10 ** int(token_info["decimals"]))
             # Checks whether the user has a tokens balance to transfer
-            if int(await contract.functions.balanceOf(outputs.address)) * 10 ** int(token_info["decimals"]) < amount:
+            if int(await contract.functions.balanceOf(body.inputs[0])) * 10 ** int(token_info["decimals"]) < amount:
                 raise Exception("You do not have enough funds on your balance to make a transaction!!!")
             fee = await self.get_optimal_fee(from_address=body.inputs[0], to_address=outputs.address, token=token)
+            print(fee)
             # Creating a transaction
             txn = await contract.functions.transfer(outputs.address, amount)
             txn = txn.with_owner(body.inputs[0])
             txn = await txn.build()
             body_transaction = TransactionUtils.get_transaction_body(
-                txn=txn.to_json(), fee=fee.fee, amount=decimals.create_decimal(amount), token=token,
+                txn=txn.to_json(), fee=fee.fee, amount=float(amount / 10 ** int(token_info["decimals"])), token=token,
                 from_address=body.inputs[0], to_address=outputs.address
             )
         return ResponseCreateTransaction(
@@ -142,19 +143,20 @@ class TronMethods(NodeTron):
     @staticmethod
     async def sign_and_send_transaction(body: BodySignAndSendTransaction) -> ResponseSignAndSendTransaction:
         """Sign and Send a transaction"""
-        # Verification of the private key
-        private_key = tronpy.async_tron.PrivateKey(private_key_bytes=bytes.fromhex(body.privateKeys[0]))
-        # Unpacking the original transaction data.
-        raw_data = json.loads(bytes.fromhex(body.createTxHex).decode("utf-8"))
-        # Signing the transaction with a private key. Sending a transaction
-        transaction = tronpy.tron.Transaction(
-            client=tronpy.tron.Tron(
-                provider=tronpy.tron.HTTPProvider(Config.NODE_URL) if NodeTron.NETWORK == "mainnet" else None,
-                network=NodeTron.NETWORK
-            ),
-            raw_data=raw_data
-        ).sign(priv_key=private_key).broadcast()
-        # After sending, we receive the full body of the transaction (checklist)
-        return await get_transaction_by_tx_hash(tx_hash=transaction.txid)
+        return await get_transaction_by_tx_hash(
+            tx_hash=tronpy.tron.Transaction(
+                client=tronpy.tron.Tron(
+                    provider=tronpy.tron.HTTPProvider(Config.NODE_URL) if NodeTron.NETWORK == "mainnet" else None,
+                    network=NodeTron.NETWORK
+                ),
+                raw_data=json.loads(bytes.fromhex(body.createTxHex).decode("utf-8"))
+            ).sign(
+                priv_key=tronpy.tron.PrivateKey(
+                    private_key_bytes=bytes.fromhex(
+                        body.privateKeys[0]
+                    )
+                )
+            ).broadcast().txid
+        )
 
 wallet = TronMethods()
