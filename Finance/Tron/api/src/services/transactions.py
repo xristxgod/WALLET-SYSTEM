@@ -105,12 +105,12 @@ class TransactionParser:
         if "fee" in tx_fee:
             fee = decimals.create_decimal(self.fromSun(tx_fee["fee"]))
         else:
-            fee = 0
-        amount = float(decimals.create_decimal(int(txn["value"]) / (10 ** int(txn["token_info"]["decimals"]))))
+            fee = decimals.create_decimal(0)
+        amount = decimals.create_decimal(int(txn["value"]) / (10 ** int(txn["token_info"]["decimals"])))
         return ResponseSignAndSendTransaction(
             time=txn["block_timestamp"],
             transactionHash=txn["transaction_id"],
-            fee=float(fee),
+            fee=fee,
             amount=amount,
             inputs=[BodyInputsOrOutputs(address=txn["from"], amount=amount)],
             outputs=[BodyInputsOrOutputs(address=txn["to"], amount=amount)],
@@ -131,23 +131,23 @@ class TransactionParser:
                     raise Exception
                 fee = decimals.create_decimal(self.fromSun(fee_limit["fee"]))
             except Exception:
-                fee = 0
+                fee = decimals.create_decimal(0)
             values = ResponseSignAndSendTransaction(
                 time=txn["raw_data"]["timestamp"] if "timestamp" in txn["raw_data"] else 0,
                 transactionHash=txn["txID"],
-                fee=float(fee),
-                amount=float(0),
+                fee=fee,
+                amount=decimals.create_decimal(0),
                 inputs=[
                     BodyInputsOrOutputs(
                         address=self.node.to_base58check_address(txn_values["owner_address"]),
-                        amount=float(0)
+                        amount=decimals.create_decimal(0)
                     )
                 ],
                 outputs=[],
             )
             # TRX or TRC10
             if txn_type in ["TransferContract", "TransferAssetContract"]:
-                amount = float(decimals.create_decimal(self.fromSun(txn_values["amount"])))
+                amount = decimals.create_decimal(self.fromSun(txn_values["amount"]))
                 values.amount = amount
                 values.outputs = [BodyInputsOrOutputs(
                     address=self.node.to_base58check_address(txn_values["to_address"]),
@@ -164,7 +164,7 @@ class TransactionParser:
                 if "data" in smart_contract:
                     values.data = smart_contract["data"]
                 else:
-                    amount = float(smart_contract["amount"])
+                    amount = decimals.create_decimal(smart_contract["amount"])
                     values.inputs[0].amount = amount
                     values.outputs = [BodyInputsOrOutputs(address=smart_contract["to_address"], amount=amount)]
                     values.token = smart_contract["token"]
@@ -197,11 +197,11 @@ class TransactionParser:
         if self.node is not None:
             await self.node.close()
 
-async def get_transaction_by_tx_hash(tx_hash: str) -> List[ResponseSignAndSendTransaction]:
+async def get_transaction_by_tx_hash(tx_hash: str) -> ResponseSignAndSendTransaction:
     transaction_parser = None
     try:
         transaction_parser = TransactionParser()
-        return await transaction_parser.get_transaction(transaction_hash=tx_hash)
+        return (await transaction_parser.get_transaction(transaction_hash=tx_hash))[0]
     finally:
         if transaction_parser is not None:
             await transaction_parser.close_session()

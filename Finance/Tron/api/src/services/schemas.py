@@ -12,7 +12,7 @@ from src.types import TPrivateKey, TPublicKey, TAddress
 class BodyInputsOrOutputs(BaseModel):
     """Body for create transaction in outputs"""
     address: TAddress = Field(description="The recipient's wallet address.")
-    amount: Union[float, int] = Field(description="Amount")
+    amount: decimal.Decimal = Field(description="Amount")
 
 # <<<===================================>>> Body <<<=================================================================>>>
 
@@ -89,8 +89,8 @@ class ResponseGetBalance(BaseModel):
 class ResponseSignAndSendTransaction(BaseModel):
     time: int = Field(description="The time when the transaction was sent")
     transactionHash: str = Field(description="The Transaction Hash")
-    fee: Optional[Union[float, int]] = Field(default=None, description="Transaction fee")
-    amount: Optional[Union[float, int]] = Field(default=None, description="The amount of the shipment")
+    fee: Optional[decimal.Decimal] = Field(default=None, description="Transaction fee")
+    amount: Optional[decimal.Decimal] = Field(default=None, description="The amount of the shipment")
     inputs: Optional[List[BodyInputsOrOutputs]] = Field(default=None, description="Information about the sender")
     outputs: Optional[List[BodyInputsOrOutputs]] = Field(default=None, description="Information about the recipient")
     token: Optional[str] = Field(default=None, description="Token name")
