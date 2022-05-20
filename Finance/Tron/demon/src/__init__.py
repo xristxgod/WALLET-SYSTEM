@@ -5,7 +5,7 @@ import asyncpg
 import aio_pika
 
 from src.utils import Errors, Utils
-from src.types import TAddress
+from src.types import TAddress, TRON_NETWORK_INDEX, CREATE_TRANSACTION_STATUS_NUMBER
 from config import Config, logger
 
 TOKENS = [
@@ -32,19 +32,23 @@ class DB:
 
     @staticmethod
     async def get_addresses() -> List:
-        data = await DB.__select_method(sql="SELECT address FROM wallet_model WHERE network = 'TRON';")
+        data = await DB.__select_method(sql=F"SELECT address FROM wallet_model WHERE network = {TRON_NETWORK_INDEX};")
         return [address[0] for address in data]
 
     @staticmethod
     async def get_all_transactions_hash() -> List:
-        data = await DB.__select_method(sql="SELECT transaction_hash FROM transaction_model WHERE status=0")
+        data = await DB.__select_method(
+            sql=f"SELECT transaction_hash FROM transaction_model WHERE status={CREATE_TRANSACTION_STATUS_NUMBER};"
+        )
         return [tx_hash[0] for tx_hash in data]
 
     @staticmethod
     async def get_transaction_hash(transaction_hash: str) -> Dict:
         return dict(
             await DB.__select_method(
-                sql=f"SELECT * FROM transaction_model WHERE status=1 and transaction_id='{transaction_hash}';"
+                sql=(
+                    f"SELECT transaction_hash FROM transaction_model WHERE status={CREATE_TRANSACTION_STATUS_NUMBER} "
+                    f"AND transaction_hash='{transaction_hash}';")
             )
         )
 
@@ -54,18 +58,18 @@ class DB:
             return TOKENS
         else:
             return await DB.__select_method(
-                sql="SELECT address, decimals, token_info FROM token_model WHERE network='TRON'"
+                sql=f"SELECT address, decimals, token_info FROM token_model WHERE network={TRON_NETWORK_INDEX}"
             )
 
     @staticmethod
-    async def get_token_info(address: TAddress, network: str = "TRON") -> Union[Dict, None]:
+    async def get_token_info(address: TAddress) -> Union[Dict, None]:
         try:
             if Config.NETWORK == "TESTNET":
                 data = [t for t in TOKENS if t["address"] == address][0]
             else:
                 data = await DB.__select_method((
                     f"SELECT token, address, decimals, token_info FROM token_model "
-                    f"WHERE address = '{address}' AND network = '{network.upper()}';"
+                    f"WHERE address = '{address}' AND network = {TRON_NETWORK_INDEX};"
                 ))
             return {
                 "token": data["token"],
@@ -83,7 +87,9 @@ class DB:
         else:
             return [
                 symbol["address"]
-                for symbol in dict(await DB.__select_method(sql="SELECT address FROM token_model WHERE network='TRON'"))
+                for symbol in dict(await DB.__select_method(
+                    sql=f"SELECT address FROM token_model WHERE network={TRON_NETWORK_INDEX};"
+                ))
             ]
 
 class RabbitMQ:

@@ -9,6 +9,9 @@ TAddress = str                              # Wallet address
 TPrivateKey = typing.Union[str, bytes]      # Private key for account
 TPublicKey = typing.Union[str, bytes]       # Public key for account
 
+TRON_NETWORK_INDEX = 1
+CREATE_TRANSACTION_STATUS_NUMBER = 1
+
 class Coins:
 
     TRX = ["trx", "tron", "native"]
