@@ -88,7 +88,6 @@ class ResponseCreateTransaction(BaseModel):
 class ResponseSignAndSendTransaction(BaseModel):
     time: int = Field(description="The time when the transaction was sent")
     transactionHash: str = Field(description="The Transaction Hash")
-    transactionType: str = Field(description="The Transaction Type")
     fee: Optional[str] = Field(default=None, description="Transaction fee")
     amount: Optional[str] = Field(default=None, description="The amount of the shipment")
     senders: Optional[List[Dict[TAddress, str]]] = Field(default=None, description="Information about the sender")

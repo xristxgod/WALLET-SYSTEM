@@ -126,7 +126,6 @@ class TransactionParser(NodeTron):
             values = {
                 "time": txn["raw_data"]["timestamp"] if "timestamp" in txn["raw_data"] else "",
                 "transactionHash": txn["txID"],
-                "transactionType": txn_type,
                 "fee": fee,
                 "amount": 0,
                 "senders": [
