@@ -13,7 +13,7 @@ TOKENS = [
         "token": "USDT",
         "address": "TRvz1r3URQq5otL7ioTbxVUfim9RVSm1hA",
         "decimals": 6,
-        "token_info": '{"bandwidth": 345, "feeLimit": 1000, "isBalanceNotNullEnergy": 14631, "isBalanceNullEnergy": 29631}',
+        "token_info": {"bandwidth": 345, "feeLimit": 1000, "isBalanceNotNullEnergy": 14631, "isBalanceNullEnergy": 29631},
     }
 ]
 
