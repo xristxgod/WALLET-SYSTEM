@@ -116,6 +116,7 @@ router = APIRouter()
 
 @router.get("/", description="Find out the status of the API", response_class=JSONResponse, tags=["SYSTEM"])
 async def get_api_status():
+    logger.info("Calling '/'")
     return JSONResponse(content={"message": True})
 
 # <<<======================================>>> Node status <<<=======================================================>>>
@@ -123,10 +124,12 @@ async def get_api_status():
 @router.get("api/health/check/node", description="Find out the status of the Tron Node", response_class=JSONResponse, tags=["SYSTEM"])
 async def get_node_status():
     try:
+        logger.info("Calling 'api/health/check/node'")
         if Config.NETWORK == "MAINNET":
             return JSONResponse(content={"message": await NodeStatus.get_node_status(), **get_gap()})
         return JSONResponse(content={"message": True, **get_gap()})
     except Exception as error:
+        logger.error(f"ERROR: {error}")
         return JSONResponse(content={"message": False, **get_gap()})
 
 # <<<======================================>>> Demon status <<<======================================================>>>
@@ -134,6 +137,7 @@ async def get_node_status():
 @router.get("api/health/check/demon", description="Find out the status of the Tron Demon", response_class=JSONResponse, tags=["SYSTEM"])
 async def get_demon_status():
     try:
+        logger.info("Calling 'api/health/check/demon'")
         return JSONResponse(content={"message": await DemonStatus.get_demon_status(), **get_gap()})
     except Exception as error:
         return JSONResponse(content={"message": False, **get_gap()})

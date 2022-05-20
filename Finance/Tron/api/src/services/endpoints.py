@@ -25,7 +25,7 @@ router = APIRouter(prefix="/api")
 )
 async def create_wallet(body: BodyCreateWallet):
     try:
-        logger.error(f"Calling '/tron/create/wallet'")
+        logger.info(f"Calling 'api/tron/create/wallet'")
         return wallet.create_wallet(body=body)
     except Exception as error:
         return {"error": str(error)}
@@ -36,7 +36,7 @@ async def create_wallet(body: BodyCreateWallet):
 )
 async def get_balance(address: TAddress, network: Optional[str] = "tron"):
     try:
-        logger.error(f"Calling '{network}/balance/{address}'")
+        logger.info(f"Calling 'api/{network}/balance/{address}'")
         if Coins.is_native(coin=network):
             return await wallet.get_balance(address=address)
         elif Coins.is_token(coin=network):
@@ -54,7 +54,7 @@ async def get_balance(address: TAddress, network: Optional[str] = "tron"):
 )
 async def get_optimal_fee(fromAddress: TAddress, toAddress: TAddress, network: Optional[str] = "tron"):
     try:
-        logger.error(f"Calling '/{network}/fee/{fromAddress}&{toAddress}'")
+        logger.info(f"Calling 'api/{network}/fee/{fromAddress}&{toAddress}'")
         if Coins.is_native(coin=network):
             return await wallet.get_optimal_fee(from_address=fromAddress, to_address=toAddress, token="TRX")
         elif Coins.is_token(coin=network):
@@ -74,7 +74,7 @@ async def get_optimal_fee(fromAddress: TAddress, toAddress: TAddress, network: O
 )
 async def get_transaction_by_tx_id(tx_hash: TransactionHash):
     try:
-        logger.error(f"Calling '/tron/transaction/{tx_hash}'")
+        logger.info(f"Calling 'api/tron/transaction/{tx_hash}'")
         return await get_transaction_by_tx_hash(tx_hash=tx_hash)
     except Exception as error:
         logger.error(f"ERROR: {error}")
@@ -86,7 +86,7 @@ async def get_transaction_by_tx_id(tx_hash: TransactionHash):
 )
 async def get_all_transactions_by_address(address: TAddress, network: str):
     try:
-        logger.error(f"Calling '/{network}/get-all-transactions/{address}'")
+        logger.info(f"Calling 'api/{network}/transactions/{address}'")
         if Coins.is_token(coin=network) or Coins.is_native(coin=network):
             return await get_transactions_by_address(
                     address=address,
@@ -105,7 +105,7 @@ async def get_all_transactions_by_address(address: TAddress, network: str):
 )
 async def create_transaction(body: BodyCreateTransaction, network: Optional[str] = "tron"):
     try:
-        logger.error(f"Calling '/{network}/create/transaction'")
+        logger.info(f"Calling 'api/{network}/create/transaction'")
         if Coins.is_native(coin=network):
             return await wallet.create_transaction(body=body, token="TRX")
         elif Coins.is_token(coin=network):
@@ -123,11 +123,10 @@ async def create_transaction(body: BodyCreateTransaction, network: Optional[str]
 )
 async def sign_and_send_transaction(body: BodySignAndSendTransaction, network: str):
     try:
-        logger.error(f"Calling '/{network}/send/transaction'")
+        logger.info(f"Calling 'api/{network}/send/transaction'")
         if Coins.is_token(coin=network) or Coins.is_native(coin=network):
             return await wallet.sign_and_send_transaction(body=body)
         else:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Coin "{network}" was not found')
     except Exception as error:
-        raise error
-        # return JSONResponse(content={"error": str(error)})
+        return JSONResponse(content={"error": str(error)})
