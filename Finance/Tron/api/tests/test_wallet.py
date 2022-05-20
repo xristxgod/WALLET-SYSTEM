@@ -30,4 +30,13 @@ class TestWalletMethodAsync(unittest.IsolatedAsyncioTestCase):
         self.assertEqual("0", balance_trx_not_active.balance)
         self.assertEqual("0", balance_usdt_not_active.balance)
         self.assertEqual("USDT", balance_usdt_active.token)
+        # await wallet.node.close()
+
+    async def test_get_optimal_fee(self):
+        active_address = "TPvxLpLeC1Rd13CymBVWnXJiURjWk3SfRx"
+        not_active_address = "TR3aMFx8mYZEcbno6nJAnparYYp8ZgGrLH"
+        self.assertEqual("1.00000000", (await wallet.get_optimal_fee(
+            from_address=active_address,
+            to_address=not_active_address,
+        )).fee)
         await wallet.node.close()

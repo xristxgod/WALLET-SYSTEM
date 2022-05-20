@@ -69,9 +69,11 @@ class TronMethods(NodeTron):
             token=None if token is None else token.upper()
         )
 
-    async def get_optimal_fee(self, from_address: TAddress, to_address: TAddress, token: str) -> ResponseGetOptimalFee:
+    async def get_optimal_fee(self, from_address: TAddress, to_address: TAddress, token: str = "TRX") -> ResponseGetOptimalFee:
         fee = 0
-        if token == "TRX":
+        if from_address == to_address:
+            raise tronpy.exceptions.AddressNotFound('The transaction cannot be executed to the same address.')
+        if token.upper() in ["TRX", "TRON"]:
             try:
                 _ = await self.node.get_account(to_address)
             except tronpy.exceptions.AddressNotFound:
