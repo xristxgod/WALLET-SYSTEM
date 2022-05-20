@@ -14,6 +14,9 @@ class TestWalletMethodSync(unittest.TestCase):
         self.assertEqual(passphrase, wallet_info.passphrase)
         self.assertEqual(mnemonic_words, wallet_info.mnemonicWords)
         self.assertEqual(len(wallet_info.__dict__), 5)
+        self.assertEqual("TR3aMFx8mYZEcbno6nJAnparYYp8ZgGrLH", wallet_info.address)
+        self.assertEqual("e3ce95e69da6d6aa843800c4c3be636fffaba32952e066a534098663cc9d7fb5", wallet_info.privateKey)
+        self.assertEqual("02d79f9e95151c998f7e91df1fdf58eeff0ded8fd93dd2af153464ec075298e25c", wallet_info.publicKey)
         self.assertTrue(wallet_info.address.startswith("T"))
 
 class TestWalletMethodAsync(unittest.IsolatedAsyncioTestCase):
