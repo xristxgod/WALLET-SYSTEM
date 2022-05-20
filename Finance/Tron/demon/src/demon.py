@@ -1,7 +1,7 @@
 import os
 import asyncio
 import json
-from typing import List, Dict
+from typing import Optional, List, Dict
 from time import time as timer
 from datetime import timedelta
 
@@ -9,6 +9,7 @@ import aiofiles
 from tronpy.async_tron import AsyncTron, AsyncHTTPProvider
 
 from src.__init__ import DB, RabbitMQ
+from src.schemas import BodyTransaction, BodyInputsOrOutputs, BodyMessage
 from src.types import TAddress
 from src.utils import TronUtils, DemonUtils, Utils, Errors
 from config import NOT_SEND, Config, logger, decimals
@@ -78,7 +79,7 @@ class TransactionDemon:
 
     async def processing_transaction(
             self, tx: Dict, addresses: List[TAddress], timestamp: int, all_txn_hash_in_db: List
-    ):
+    ) -> Optional[BodyMessage]:
         """
         This method analyzes transactions in detail, and searches for the necessary addresses in them.
         :param tx: The transaction that needs to be parsed
@@ -143,28 +144,29 @@ class TransactionDemon:
                 # We get a more detailed transaction.
                 tx_fee = await self.node.get_transaction_info(tx_hash)
                 if "fee" not in tx_fee:
-                    fee = "0"
+                    fee = 0
                 else:
-                    fee = "%.8f" % decimals.create_decimal(TransactionDemon.fromSun(tx_fee["fee"]))
-                values = {
-                    "time": timestamp,
-                    "transactionHash": tx_hash,
-                    "amount": amount,
-                    "fee": fee,
-                    "senders": [{
-                        "address": tx_from,
-                        "amount": amount
-                    }],
-                    "recipients": [{
-                        "address": tx_to,
-                        "amount": amount,
-                    }],
-                }
+                    fee = decimals.create_decimal(TransactionDemon.fromSun(tx_fee["fee"]))
+
+                values = BodyTransaction(
+                    time=timestamp,
+                    transactionHash=tx_hash,
+                    amount=amount,
+                    fee=fee,
+                    inputs=[BodyInputsOrOutputs(
+                        address=tx_from,
+                        amount=amount
+                    )],
+                    outputs=[BodyInputsOrOutputs(
+                        address=tx_to,
+                        amount=amount
+                    )]
+                )
+
                 if token is not None and "data" not in token:
                     # If the transaction was made in a token.
-                    values["token"] = token["token"]
-                    values["name"] = token["name"]
-                return {"address": address, "transactions": [values]}
+                    values.token = token["token"]
+                return BodyMessage(address=address, transactions=[values])
             return None
         except Exception as error:
             logger.error(f"ERROR DEMON PROCESSING TRANSACTION STEP 100: {error}")
