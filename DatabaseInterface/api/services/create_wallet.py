@@ -60,8 +60,8 @@ class CreateWallet(BaseApiModel):
     """
     This class creates wallets in a certain crypto network.
     """
-    # APIs_URL: Dict[NETWORK] = Config.CRYPTO_NETWORKS_APIS
-    # CREATE_WALLET_URL = "/api/<network>/create/wallet"
+    APIs_URL: Dict[NETWORK] = Config.CRYPTO_NETWORKS_APIS
+    CREATE_WALLET_URL = "/api/<network>/create/wallet"
 
     @staticmethod
     def send_to_bot_alert(body: BodyCreateWalletModel, is_admin: bool = False):
