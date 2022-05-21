@@ -77,8 +77,8 @@ class TransactionModel(models.Model):
     transaction_hash = models.CharField(max_length=255, unique=True)
     fee = models.DecimalField(default=0, max_digits=10, decimal_places=10)
     amount = models.DecimalField(default=0, max_digits=10, decimal_places=10)
-    senders = models.JSONField(null=True, blank=True)
-    recipients = models.JSONField(null=True, blank=True)
+    inputs = models.JSONField(null=True, blank=True)
+    outputs = models.JSONField(null=True, blank=True)
     token: TokenModel = models.ForeignKey('TokenModel', on_delete=models.CASCADE, db_column="token")
     status: TransactionStatusModel = models.ForeignKey(
         'TransactionStatusModel', on_delete=models.CASCADE, db_column="status"
