@@ -43,6 +43,7 @@ class CreateWalletAPIView(APIView):
 class BalanceAPIView(APIView):
     """Get balance api view"""
     def post(self, request) -> Response:
+        print(request.data)
         get_balance.decode(data=request.data)
         data = get_balance.get_balance(body=BodyGetBalanaceModel(**request.data))
         return Response(get_balance.encode(data=data))

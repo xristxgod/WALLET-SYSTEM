@@ -1,6 +1,7 @@
 import decimal
+from typing import Union
 
-TG_CHAT_ID = int
+TG_CHAT_ID = Union[int, str, bytes]
 TG_USERNAME = str
 
 CRYPRO_ADDRESS = str
@@ -12,6 +13,8 @@ DOMAIN = str
 
 COINS = {
     "TRON-TRX": "tron",
+    "TRON": "tron",
+    "TRON-TRON": "tron",
     "TRON-USDT": "usdt"
 }
 

@@ -19,13 +19,13 @@ services:
       context: bot_alert/
       dockerfile: Dockerfile
     container_name: bot_alert
-    command: uvicorn app:app --host 0.0.0.0 --port 7000
+    command: uvicorn app:app --host 0.0.0.0 --port 5000
     env_file:
       - ./.env
     ports:
-      - "83:7000"
+      - "81:5000"
     expose:
-      - 83
+      - 81
     networks:
       - telegram_wallet_bot
     volumes:

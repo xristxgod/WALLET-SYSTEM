@@ -6,11 +6,11 @@ services:
       context: Tron/api/
       dockerfile: Dockerfile
     container_name: tron_api
-    command: uvicorn app:app --host 0.0.0.0 --port 6000
+    command: uvicorn app:app --host 0.0.0.0 --port 5000
     env_file:
       - ./.env
     ports:
-      - "82:6000"
+      - "82:5000"
     expose:
       - 82
     networks:

@@ -18,7 +18,7 @@ from django.urls import path
 
 from api.views import DatabaseStatusAPIView, APISystemStatusAPIView, GetTransactionRepositoryCacheAPIView
 from api.views import (
-    CoinToCoinAPIView,
+    CoinToCoinAPIView, BalanceAPIView,
     CreateTransactionAPIView, SendTransactionAPIView,
     CreateWalletAPIView
 )
@@ -26,9 +26,12 @@ from api.views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/check/coinToCoin/', CoinToCoinAPIView.as_view()),
+
+    path('api/create/wallet/', CreateWalletAPIView.as_view()),
+    path('api/balance/', BalanceAPIView.as_view()),
+
     path('api/create/transaction/', CreateTransactionAPIView.as_view()),
     path('api/send/transaction/', SendTransactionAPIView.as_view()),
-    path('api/create/wallet/', CreateWalletAPIView.as_view()),
 
     path('api/health/check/isWork', APISystemStatusAPIView.as_view()),
     path('api/health/check/database', DatabaseStatusAPIView.as_view()),

@@ -7,6 +7,7 @@ from config import logger
 class Client:
     @staticmethod
     def get_request(url: str) -> Optional[Union[Dict, List]]:
+        print(url)
         try:
             data = requests.request('GET', url)
             return data.json()

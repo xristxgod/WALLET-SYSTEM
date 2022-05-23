@@ -100,11 +100,12 @@ class GetBalance(BaseApiModel):
 
     @staticmethod
     def get_balance(body: BodyGetBalanaceModel) -> ResponseGetBalanaceModel:
+        network, token = body.network.split("-")
         data = Client.get_request(
             url=GetBalance.get_url(
-                base_url=APIs_URL.get(body.network.split("_")[0]),
+                base_url=APIs_URL.get(network),
                 url=GET_BALANCE_URL,
-                network=body.network.split("_")[1],
+                network=COINS.get(body.network),
                 address=body.address
             )
         )
