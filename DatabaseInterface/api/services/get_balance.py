@@ -12,6 +12,7 @@ from config import Config, decimals
 
 APIs_URL: Dict[NETWORK, DOMAIN] = Config.CRYPTO_NETWORKS_APIS
 GET_BALANCE_URL = "/api/<network>/balance/<address>"
+
 COIN_TO_COIN_API_URL = Config.COIN_TO_COIN_API
 GET_PRICE_URL = "/api/v3/simple/price?ids=<coin>&vs_currencies=<to_coin>"
 
