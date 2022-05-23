@@ -20,7 +20,7 @@ class Config(object):
 
     COIN_TO_COIN_API = getenv("COIN_TO_COIN_API", "https://api.coingecko.com")
     CRYPTO_NETWORKS_APIS = {
-        "TRON": getenv("DOMAIN_TRON_API", "-"),
+        "TRON": getenv("DOMAIN_TRON_API", "-")
     }
 
     BOT_ALERT_API_URL = getenv("BOT_ALERT_API_URL", "-")

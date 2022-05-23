@@ -1,5 +1,7 @@
 from django.db import models
 
+from config import decimals
+
 class UserModel(models.Model):
     id = models.IntegerField(primary_key=True, unique=True)
     username = models.CharField(max_length=255, blank=True, null=True)
@@ -46,7 +48,7 @@ class WalletModel(models.Model):
     public_key = models.CharField(max_length=255, null=True, blank=True, unique=True)
     passphrase = models.CharField(max_length=255, null=True, blank=True)
     mnemonic_phrase = models.CharField(max_length=255, null=True, blank=True, unique=True)
-    last_balance = models.DecimalField(default=0, max_digits=10, decimal_places=10)
+    last_balance = models.DecimalField(default=decimals.create_decimal(0), max_digits=18, decimal_places=10)
     user_id: UserModel = models.ForeignKey('UserModel', on_delete=models.CASCADE, db_column="user_id")
 
     def __str__(self):
