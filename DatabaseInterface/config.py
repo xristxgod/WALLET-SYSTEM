@@ -1,4 +1,4 @@
-from os import environ
+from os import getenv
 from typing import Tuple
 import logging
 import decimal
@@ -9,21 +9,21 @@ decimals = decimal.Context()
 decimals.prec = 10
 
 class Config(object):
-    RABBITMQ_URL = environ.get("RABBITMQ_URL")
-    RABBITMQ_QUEUE_FOR_BALANCER = environ.get("RABBITMQ_QUEUE_FOR_BALANCER")
+    RABBITMQ_URL = getenv("RABBITMQ_URL")
+    RABBITMQ_QUEUE_FOR_BALANCER = getenv("RABBITMQ_QUEUE_FOR_BALANCER")
 
-    DATABASE_URL = environ.get("DATABASE_URL", "postgresql://postgres:mamedov00@localhost/telegram_bot_system")
-    DATABASE_INTERFACE_USERNAME = environ.get("DATABASE_INTERFACE_USERNAME", "root")
-    DATABASE_INTERFACE_PASSWORD = environ.get("DATABASE_INTERFACE_PASSWORD", "0000")
-    DATABASE_INTERFACE_GOOGLE_AUTH_SECRET_KEY = environ.get("DATABASE_INTERFACE_GOOGLE_AUTH_SECRET_KEY", "https://medium.com/aubergine-solutions/quick-start-two-factor-authentication-in-django-admin-panel-d15ceeb62591")
-    DATABASE_INTERFACE_SECRET_KEY = environ.get("DATABASE_INTERFACE_SECRET_KEY", "django-insecure-yc25#g4+l$6_@q(41ct2d9zd@o!w4+yt&v8q68hv*esav^k-9n")
+    DATABASE_URL = getenv("DATABASE_URL", "postgresql://postgres:mamedov00@localhost/telegram_bot_system")
+    DATABASE_INTERFACE_USERNAME = getenv("DATABASE_INTERFACE_USERNAME", "root")
+    DATABASE_INTERFACE_PASSWORD = getenv("DATABASE_INTERFACE_PASSWORD", "0000")
+    DATABASE_INTERFACE_GOOGLE_AUTH_SECRET_KEY = getenv("DATABASE_INTERFACE_GOOGLE_AUTH_SECRET_KEY", "https://medium.com/aubergine-solutions/quick-start-two-factor-authentication-in-django-admin-panel-d15ceeb62591")
+    DATABASE_INTERFACE_SECRET_KEY = getenv("DATABASE_INTERFACE_SECRET_KEY", "django-insecure-yc25#g4+l$6_@q(41ct2d9zd@o!w4+yt&v8q68hv*esav^k-9n")
 
-    COIN_TO_COIN_API = environ.get("COIN_TO_COIN_API", "https://api.coingecko.com")
+    COIN_TO_COIN_API = getenv("COIN_TO_COIN_API", "https://api.coingecko.com")
     CRYPTO_NETWORKS_APIS = {
-        "TRON": environ.get("DOMAIN_TRON_API", "-")
+        "TRON": getenv("DOMAIN_TRON_API", "-")
     }
 
-    BOT_ALERT_API_URL = environ.get("BOT_ALERT_API_URL")
+    BOT_ALERT_API_URL = getenv("BOT_ALERT_API_URL")
 
 def get_db_config(url: str = Config.DATABASE_URL) -> Tuple:
     user = url.split(":")[1].replace("//", "")
