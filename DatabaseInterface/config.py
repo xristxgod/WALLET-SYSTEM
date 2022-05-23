@@ -22,6 +22,9 @@ class Config(object):
     CRYPTO_NETWORKS_APIS = {
         "TRON": getenv("DOMAIN_TRON_API", "http://127.0.0.1:5000")
     }
+    CRYPTO_NETWORKS_JWT_TOKENS = {
+        "TRON": getenv("TRON_JWT_TOKEN", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbiI6IlRST04ifQ.TJf7gCgfP0nNBodmhewofAKdMhT-dThaGzjVe-EJgS8")
+    }
 
     BOT_ALERT_API_URL = getenv("BOT_ALERT_API_URL", "-")
 

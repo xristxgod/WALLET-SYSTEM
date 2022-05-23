@@ -7,11 +7,12 @@ from api.models import UserModel, NetworkModel, WalletModel
 from api.serializers import BodyGetBalanceSerializer, ResponserGetBalanceSerializer
 from api.services.__init__ import BaseApiModel
 from api.services.external.client import Client
-from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, NETWORK, DOMAIN, TG_CHAT_ID, COINS
+from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, NETWORK, JWT_TOKEN_BEARER, DOMAIN, TG_CHAT_ID, COINS
 from config import Config, decimals
 
 APIs_URL: Dict[NETWORK, DOMAIN] = Config.CRYPTO_NETWORKS_APIS
 GET_BALANCE_URL = "/api/<network>/balance/<address>"
+JWT_TOKENS_BEARER: Dict[NETWORK, JWT_TOKEN_BEARER] = Config.CRYPTO_NETWORKS_JWT_TOKENS
 
 COIN_TO_COIN_API_URL = Config.COIN_TO_COIN_API
 GET_PRICE_URL = "/api/v3/simple/price?ids=<coin>&vs_currencies=<to_coin>"
@@ -116,7 +117,10 @@ class GetBalance(BaseApiModel):
                 url=GET_BALANCE_URL,
                 network=COINS.get(body.network),
                 address=body.address.encode("utf-8").hex().lower()
-            )
+            ),
+            headers=GetBalance.get_headers(
+                jwt_token=JWT_TOKENS_BEARER.get(body.network)
+            ),
         )
         if data.get("balance") is not None:
             balance = data.get("balance")

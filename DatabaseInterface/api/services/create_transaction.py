@@ -6,13 +6,14 @@ from rest_framework.exceptions import ValidationError
 from api.services.__init__ import BaseApiModel, transaction_repository
 from api.utils.utils import Utils
 from api.models import UserModel, NetworkModel, WalletModel
-from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, NETWORK, DOMAIN, TG_CHAT_ID, COINS
+from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, NETWORK, DOMAIN, TG_CHAT_ID, COINS, JWT_TOKEN_BEARER
 from api.serializers import BodyTransactionSerializer, ResponserCreateTransactionSerializer
 from api.services.external.client import Client
 from config import Config, decimals
 
 APIs_URL: Dict[NETWORK, DOMAIN] = Config.CRYPTO_NETWORKS_APIS
 GET_OPTIMAL_FEE_URL = "/api/<network>/fee/<from_address>&<to_address>"
+JWT_TOKENS_BEARER: Dict[NETWORK, JWT_TOKEN_BEARER] = Config.CRYPTO_NETWORKS_JWT_TOKENS
 
 # Body
 class BodyCreateTransactionModel:
@@ -105,6 +106,9 @@ class CreateTransaction(BaseApiModel):
                 network=COINS.get(body.network),
                 from_address=from_address.encode("utf-8").hex().lower(),
                 to_address=to_address.encode("utf-8").hex().lower()
+            ),
+            headers=CreateTransaction.get_headers(
+                jwt_token=JWT_TOKENS_BEARER.get(body.network.split("-")[0])
             )
         )
         fee = decimals.create_decimal(data.get("fee"))

@@ -6,17 +6,17 @@ from config import logger
 
 class Client:
     @staticmethod
-    def get_request(url: str) -> Optional[Union[Dict, List]]:
+    def get_request(url: str, headers: Optional[Dict] = None) -> Optional[Union[Dict, List]]:
         try:
-            data = requests.request('GET', url)
+            data = requests.request('GET', url, headers=headers)
             return data.json()
         except Exception as error:
             logger.error(f"ERROR: {error}")
 
     @staticmethod
-    def post_request(url: str, **data) -> Optional[Union[Dict, List]]:
+    def post_request(url: str, headers: Optional[Dict] = None, **data) -> Optional[Union[Dict, List]]:
         try:
-            data = requests.request("POST", url, json=data)
+            data = requests.request("POST", url, headers=headers, json=data)
             return data.json()
         except Exception as error:
             logger.error(f"ERROR: {error}")

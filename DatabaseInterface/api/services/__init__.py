@@ -14,6 +14,16 @@ class BaseApiModel:
         return base_url + url
 
     @staticmethod
+    def get_headers(jwt_token: str = None, **kwargs) -> Dict:
+        if jwt_token:
+            return {
+                "Authorization": jwt_token,
+                **kwargs
+            }
+        return kwargs
+
+
+    @staticmethod
     def encode(data: object) -> object:
         pass
 

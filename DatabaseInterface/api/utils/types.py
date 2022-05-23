@@ -10,6 +10,7 @@ CRYPTO_MNEMONIC_WORDS = str
 FULL_NETWORK = str
 NETWORK = str
 DOMAIN = str
+JWT_TOKEN_BEARER = str
 
 COINS = {
     "TRON-TRX": "tron",
