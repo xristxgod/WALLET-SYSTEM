@@ -1,5 +1,6 @@
+import uuid
 import decimal
-from typing import Optional, List, Dict, Tuple
+from typing import Optional, List, Dict
 
 from rest_framework.exceptions import ValidationError
 
@@ -114,26 +115,18 @@ class SendTransaction(BaseApiModel):
     @staticmethod
     def send_transaction(body: BodySendTransactionModel) -> ResponseSendTransactionModel:
         """Send transaction"""
+        temporary_transaction_hash = uuid.uuid4().hex
         network, token = body.network.split("-")
         amount = Utils.get_amount(body.outputs)
         # Send to bot alert => bot main
         SendTransaction.send_to_bot_alert(network=body.network, amount=amount, body=body)
-        # Send to balancer
-        status = Queue.send_message(
-            queue_name=QUEUE,
-            message={
-                "chatID": body.chatID,
-                "network": network,
-                "token": token,
-                "fee": body.fee,
-                "inputs": body.inputs,
-                "outputs": body.outputs
-            }
-        )
+
         transaction_repository.remove_transaction(chat_id=body.chatID, network=body.network)
+
         transaction = TransactionModel(
             network=NetworkModel.objects.get(network=network.split("-")[0]),
             time=Utils.get_timestamp_now(),
+            transaction_hash=temporary_transaction_hash,
             fee=body.fee,
             amount=amount,
             inputs=Utils.get_correct_inputs(inputs=body.inputs, amount=amount),
@@ -145,6 +138,19 @@ class SendTransaction(BaseApiModel):
             user_id=UserModel.objects.get(pk=body.chatID)
         )
         transaction.save()
+        # Send to balancer
+        status = Queue.send_message(
+            queue_name=QUEUE,
+            message={
+                "chatID": body.chatID,
+                "temporary_transaction_hash": temporary_transaction_hash,
+                "network": network,
+                "token": token,
+                "fee": body.fee,
+                "inputs": body.inputs,
+                "outputs": body.outputs
+            }
+        )
         return ResponseSendTransactionModel(
             message=status
         )

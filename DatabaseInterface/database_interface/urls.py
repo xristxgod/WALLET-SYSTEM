@@ -35,5 +35,6 @@ urlpatterns = [
 
     path('api/health/check/isWork', APISystemStatusAPIView.as_view()),
     path('api/health/check/database', DatabaseStatusAPIView.as_view()),
+
     path('api/check/transaction/cache', GetTransactionRepositoryCacheAPIView.as_view()),
 ]
