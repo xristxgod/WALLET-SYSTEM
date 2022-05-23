@@ -100,9 +100,10 @@ class GetBalance(BaseApiModel):
                 coin=coin,
                 to_coin=to_coin
             ))
-            balances.update({
-                f"balance{to_coin.upper()}": balance * decimals.create_decimal(data[coin].get(to_coin))
-            })
+            if data[coin] != {} and data[coin] is not None:
+                balances.update({
+                    f"balance{to_coin.upper()}": balance * decimals.create_decimal(data[coin].get(to_coin))
+                })
         return balances
 
     @staticmethod
@@ -132,10 +133,9 @@ class GetBalance(BaseApiModel):
             address=body.address
         ).last_balance
         if body.convert is not None:
-            convert: Dict = GetBalance.get_convert(balance=balance, network=body.network, toConvert=body.convert)
+            convert = GetBalance.get_convert(balance=balance, network=body.network, toConvert=body.convert)
         else:
-            convert: Dict = {}
-
+            convert = None
         return ResponseGetBalanaceModel(
             balance=decimals.create_decimal(balance),
             network=body.network,
