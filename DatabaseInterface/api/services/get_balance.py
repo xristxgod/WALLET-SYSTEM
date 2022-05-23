@@ -76,6 +76,13 @@ class ResponseGetBalanaceModel:
         self.network: FULL_NETWORK = network
         self.convert: Optional[Dict[str, decimal.Decimal]] = convert
 
+        self.is_valid()
+
+    def is_valid(self):
+        if self.convert is None:
+            del self.convert
+
+
 # <<<========================================>>> Create transaction <<<==============================================>>>
 
 class GetBalance(BaseApiModel):
