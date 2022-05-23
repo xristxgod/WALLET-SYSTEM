@@ -18,3 +18,7 @@ class Config(object):
     NETWORK = os.getenv("NETWORK", "TESTNET")
     DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:mamedov00@localhost/telegram_bot_system")
     CHECKER_NODE_BLOCK = os.getenv("CHECKER_NODE_BLOCK", "https://ngx.com")
+
+    TRON_JWT_NAME = os.getenv("TRON_JWT_NAME", "TRON")
+    TRON_JWT_SECRET = os.getenv("TRON_JWT_SECRET", "fb68f4994e936dd60308")
+    TRON_JWT_ALGORITHM = os.getenv("TRON_JWT_ALGORITHM", "HS256")

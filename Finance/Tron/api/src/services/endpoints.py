@@ -1,8 +1,9 @@
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from fastapi.responses import JSONResponse
 
+from src.auth.auth_handler import JWTBearer
 from src.services.wallet import wallet
 from src.services.transactions import get_transaction_by_tx_hash, get_transactions_by_address
 from src.services.schemas import (
@@ -21,7 +22,8 @@ router = APIRouter(prefix="/api")
 
 @router.post(
     "/tron/create/wallet", response_model=ResponseCreateWallet,
-    description="This method creates a tron wallet", tags=["WALLET"]
+    description="This method creates a tron wallet", tags=["WALLET"],
+    dependencies=[Depends(JWTBearer())],
 )
 async def create_wallet(body: BodyCreateWallet):
     try:
@@ -89,9 +91,9 @@ async def get_all_transactions_by_address(address: TAddress, network: str):
         logger.info(f"Calling 'api/{network}/transactions/{address}'")
         if Coins.is_token(coin=network) or Coins.is_native(coin=network):
             return await get_transactions_by_address(
-                    address=address,
-                    token=Coins.is_token(coin=network) if not Coins.is_native(coin=network) else None
-                )
+                address=address,
+                token=Coins.is_token(coin=network) if not Coins.is_native(coin=network) else None
+            )
         else:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Network "{network}" was not found')
     except Exception as error:
@@ -102,6 +104,7 @@ async def get_all_transactions_by_address(address: TAddress, network: str):
 @router.post(
     "/{network}/create/transaction", response_model=ResponseCreateTransaction,
     tags=["TRANSACTION"], description="Create transaction with sending from any address to any another",
+    dependencies=[Depends(JWTBearer())]
 )
 async def create_transaction(body: BodyCreateTransaction, network: Optional[str] = "tron"):
     try:
@@ -119,7 +122,8 @@ async def create_transaction(body: BodyCreateTransaction, network: Optional[str]
 
 @router.post(
     "/{network}/send/transaction", description="Sign and Send a transaction",
-    response_model=ResponseSignAndSendTransaction, tags=["TRANSACTION"]
+    response_model=ResponseSignAndSendTransaction, tags=["TRANSACTION"],
+    dependencies=[Depends(JWTBearer())]
 )
 async def sign_and_send_transaction(body: BodySignAndSendTransaction, network: str):
     try:

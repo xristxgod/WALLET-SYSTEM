@@ -4,3 +4,5 @@ tronpy==0.2.6
 asyncpg==0.25.0
 hdwallet==2.1.1
 aiohttp
+PyJWT==1.7.1
+python-decouple==3.3

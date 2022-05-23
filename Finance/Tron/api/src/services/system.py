@@ -3,10 +3,11 @@ import random
 import typing
 
 import aiohttp
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from tronpy.async_tron import AsyncTron, AsyncHTTPProvider
 
+from src.auth.auth_handler import JWTBearer
 from src.services.__init__ import NodeTron
 from src.utils import Utils
 from src.types import TAddress, TRON_GRID_API_KEY
@@ -121,7 +122,10 @@ async def get_api_status():
 
 # <<<======================================>>> Node status <<<=======================================================>>>
 
-@router.get("api/health/check/node", description="Find out the status of the Tron Node", response_class=JSONResponse, tags=["SYSTEM"])
+@router.get(
+    "api/health/check/node", description="Find out the status of the Tron Node",
+    response_class=JSONResponse, tags=["SYSTEM"], dependencies=[Depends(JWTBearer())]
+)
 async def get_node_status():
     try:
         logger.info("Calling 'api/health/check/node'")
@@ -134,7 +138,10 @@ async def get_node_status():
 
 # <<<======================================>>> Demon status <<<======================================================>>>
 
-@router.get("api/health/check/demon", description="Find out the status of the Tron Demon", response_class=JSONResponse, tags=["SYSTEM"])
+@router.get(
+    "api/health/check/demon", description="Find out the status of the Tron Demon",
+    response_class=JSONResponse, tags=["SYSTEM"], dependencies=[Depends(JWTBearer())]
+)
 async def get_demon_status():
     try:
         logger.info("Calling 'api/health/check/demon'")
