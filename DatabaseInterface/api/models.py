@@ -48,7 +48,7 @@ class WalletModel(models.Model):
     public_key = models.CharField(max_length=255, null=True, blank=True, unique=True)
     passphrase = models.CharField(max_length=255, null=True, blank=True)
     mnemonic_phrase = models.CharField(max_length=255, null=True, blank=True, unique=True)
-    last_balance = models.DecimalField(default=decimals.create_decimal(0), max_digits=18, decimal_places=10)
+    last_balance = models.DecimalField(default=decimals.create_decimal(0), decimal_places=6, max_digits=18)
     user_id: UserModel = models.ForeignKey('UserModel', on_delete=models.CASCADE, db_column="user_id")
 
     def __str__(self):
@@ -76,12 +76,12 @@ class TransactionStatusModel(models.Model):
 class TransactionModel(models.Model):
     network: NetworkModel = models.ForeignKey('NetworkModel', on_delete=models.CASCADE, db_column="network")
     time = models.IntegerField()
-    transaction_hash = models.CharField(max_length=255, unique=True)
-    fee = models.DecimalField(default=0, max_digits=10, decimal_places=10)
-    amount = models.DecimalField(default=0, max_digits=10, decimal_places=10)
+    transaction_hash = models.CharField(max_length=255, unique=True, default="-")
+    fee = models.DecimalField(default=0, decimal_places=6, max_digits=18)
+    amount = models.DecimalField(default=0, decimal_places=6, max_digits=18)
     inputs = models.JSONField(null=True, blank=True)
     outputs = models.JSONField(null=True, blank=True)
-    token: TokenModel = models.ForeignKey('TokenModel', on_delete=models.CASCADE, db_column="token")
+    token: TokenModel = models.ForeignKey('TokenModel', on_delete=models.CASCADE, db_column="token", default=None)
     status: TransactionStatusModel = models.ForeignKey(
         'TransactionStatusModel', on_delete=models.CASCADE, db_column="status"
     )

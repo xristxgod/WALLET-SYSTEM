@@ -1,9 +1,9 @@
 import decimal
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Tuple
 
 from rest_framework.exceptions import ValidationError
 
-from api.models import UserModel, NetworkModel, WalletModel
+from api.models import UserModel, NetworkModel, WalletModel, TransactionModel, TokenModel, TransactionStatusModel
 from api.serializers import BodyTransactionSerializer, ResponserSendTransactionSerializer
 from api.services.__init__ import BaseApiModel, transaction_repository
 from api.services.external.sender import Sender
@@ -20,6 +20,8 @@ class BodySendTransactionModel:
     MIN_AMOUNT = decimals.create_decimal(0)
     MAX_AMOUNT = decimals.create_decimal(1000000000000000)
 
+    NETWORK_OBJECT: object
+
     def __init__(
             self,
             chatID: TG_CHAT_ID,
@@ -30,35 +32,37 @@ class BodySendTransactionModel:
             is_check: bool = True
     ):
         self.chatID: TG_CHAT_ID = chatID
-        self.network: FULL_NETWORK = network.upper()
+        self.network: FULL_NETWORK = self.get_network(network.upper())
         self.inputs: List[CRYPRO_ADDRESS] = inputs
         self.outputs: List[Dict[CRYPRO_ADDRESS, str]] = outputs
         self.fee: decimal.Decimal = fee
         if is_check:
             self.is_valid()
 
+    def get_network(self, network: str) -> FULL_NETWORK:
+        try:
+            self.NETWORK_OBJECT = NetworkModel.objects.get(network=network.split("-")[0])
+        except Exception:
+            raise ValidationError('This network is not in the database!')
+        return network
+
     def is_valid(self):
         self.__correct_chat_id()
-        self.__correct_network()
         self.__correct_inputs()
         self.__correct_outputs()
 
     def __correct_chat_id(self):
         if isinstance(self.chatID, str) and not self.chatID.isdigit():
             raise ValidationError('The chatID must be an integer!')
-        if not UserModel.objects.get(self.chatID):
+        if not UserModel.objects.get(pk=self.chatID):
             raise ValidationError('This chatID is not in the database!')
-
-    def __correct_network(self):
-        if not NetworkModel.objects.filter(network=self.network.split("_")[0])[0]:
-            raise ValidationError('This network is not in the database!')
 
     def __correct_inputs(self):
         if self.inputs is None or (isinstance(self.inputs, list) and len(self.inputs) == 0):
-            self.inputs = [WalletModel.objects.filter(network=self.network.split("_")[0], user_id=self.chatID)[0]]
+            self.inputs = [WalletModel.objects.get(network=self.NETWORK_OBJECT, user_id=self.chatID).address]
         if self.inputs is not None and isinstance(self.inputs, list) and len(self.inputs) >= 1:
             for address in self.inputs:
-                if not WalletModel.objects.filter(network=self.network.split("_")[0], user_id=self.chatID, address=address)[0]:
+                if not WalletModel.objects.filter(network=self.NETWORK_OBJECT, user_id=self.chatID, address=address):
                     raise ValidationError('This address was not found in the database, or does not belong to this chatID!')
 
     def __correct_outputs(self):
@@ -86,13 +90,13 @@ class SendTransaction(BaseApiModel):
     This class sending transactions in a certain crypto network.
     """
     @staticmethod
-    def send_to_bot_alert(body: BodySendTransactionModel) -> Optional:
+    def send_to_bot_alert(network: FULL_NETWORK, body: BodySendTransactionModel) -> Optional:
         """Send to bot alert"""
         from_address, to_address = Utils.get_inputs_and_outputs_for_text(inputs=body.inputs, outputs=body.outputs)
         try:
             Sender.send_message_to_bot(
                 chat_id=body.chatID,
-                network=body.network,
+                network=network,
                 fromAddress=from_address,
                 to_address=to_address,
                 fee=body.fee,
@@ -110,9 +114,9 @@ class SendTransaction(BaseApiModel):
     @staticmethod
     def send_transaction(body: BodySendTransactionModel) -> ResponseSendTransactionModel:
         """Send transaction"""
-        network, token = body.network.split("_")
+        network, token = body.network.split("-")
         # Send to bot alert => bot main
-        SendTransaction.send_to_bot_alert(body=body)
+        SendTransaction.send_to_bot_alert(network=body.network, body=body)
         # Send to balancer
         status = Queue.send_message(
             queue_name=QUEUE,
@@ -126,6 +130,20 @@ class SendTransaction(BaseApiModel):
             }
         )
         transaction_repository.remove_transaction(chat_id=body.chatID, network=body.network)
+        transaction = TransactionModel(
+            network=NetworkModel.objects.get(network=network.split("-")[0]),
+            time=Utils.get_timestamp_now(),
+            fee=body.fee,
+            amount=Utils.get_amount(body.outputs),
+            inputs=body.inputs,
+            outputs=body.outputs,
+            token=TokenModel.objects.get(
+                token=token.upper(), network=NetworkModel.objects.get(network=network.split("-")[0])
+            ),
+            status=TransactionStatusModel.objects.get(title="PROCESSING"),
+            user_id=UserModel.objects.get(pk=body.chatID)
+        )
+        transaction.save()
         return ResponseSendTransactionModel(
             message=status
         )

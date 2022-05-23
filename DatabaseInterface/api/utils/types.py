@@ -9,6 +9,6 @@ NETWORK = str
 DOMAIN = str
 
 COINS = {
-    "TRON_TRX": "tron",
-    "TRON_USDT": "usdt"
+    "TRON-TRX": "tron",
+    "TRON-USDT": "usdt"
 }

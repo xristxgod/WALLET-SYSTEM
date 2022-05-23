@@ -1,5 +1,5 @@
 import decimal
-from typing import Dict, List, Tuple
+from typing import Optional, Dict, List, Tuple
 from datetime import datetime, timedelta
 
 from api.utils.types import CRYPRO_ADDRESS
@@ -34,8 +34,12 @@ class Utils:
         return from_address[:-3], to_address[:-3]
 
     @staticmethod
-    def get_amount(outputs: List[Dict[CRYPRO_ADDRESS, str]]) -> decimal.Decimal:
+    def get_amount(outputs: List[Dict]) -> decimal.Decimal:
         amount = decimals.create_decimal(0)
         for _output in outputs:
-            amount += decimals.create_decimal(_output.get('address'))
+            amount += decimals.create_decimal(_output.get('amount'))
         return amount
+
+    @staticmethod
+    def get_timestamp_now() -> int:
+        return int(datetime.timestamp(datetime.now()))

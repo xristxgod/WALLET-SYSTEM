@@ -1,3 +1,4 @@
+import json
 from typing import Optional, Dict
 
 import pika
@@ -21,7 +22,7 @@ class Queue:
             channel.basic_publish(
                 exchange='',
                 routing_key=queue_name,
-                body="{}".format(message),
+                body=json.dumps(message).encode("utf-8"),
                 properties=pika.BasicProperties(delivery_mode=2)
             )
             return True

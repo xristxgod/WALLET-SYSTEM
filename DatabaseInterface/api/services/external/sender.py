@@ -32,10 +32,13 @@ class Sender:
 
     @staticmethod
     def send_message_to_checker(text: str, method: str = 'INFO_CHECKER'):
-        return True if Client.post_request(
-            url=Sender.get_url(method=method),
-            message=text
-        ).get("message") else False
+        try:
+            return True if Client.post_request(
+                url=Sender.get_url(method=method),
+                message=text
+            ).get("message") else False
+        except Exception as error:
+            return True
 
     @staticmethod
     def send_message_to_alert_bot(chat_id: TG_CHAT_ID, username: TG_USERNAME, is_admin: bool = False, method: str = "REG") -> bool:
