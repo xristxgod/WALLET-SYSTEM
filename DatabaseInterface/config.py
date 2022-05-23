@@ -9,8 +9,8 @@ decimals = decimal.Context()
 decimals.prec = 10
 
 class Config(object):
-    RABBITMQ_URL = getenv("RABBITMQ_URL")
-    RABBITMQ_QUEUE_FOR_BALANCER = getenv("RABBITMQ_QUEUE_FOR_BALANCER")
+    RABBITMQ_URL = getenv("RABBITMQ_URL", "amqps://yubbvrbt:52cIr-IEy45n6hptj5n0aIT0LRn0cnZ6@goose.rmq2.cloudamqp.com/yubbvrbt")
+    RABBITMQ_QUEUE_FOR_BALANCER = getenv("RABBITMQ_QUEUE_FOR_BALANCER", "to_balancer_queue")
 
     DATABASE_URL = getenv("DATABASE_URL", "postgresql://postgres:mamedov00@localhost/telegram_bot_system")
     DATABASE_INTERFACE_USERNAME = getenv("DATABASE_INTERFACE_USERNAME", "root")
@@ -23,7 +23,7 @@ class Config(object):
         "TRON": getenv("DOMAIN_TRON_API", "-")
     }
 
-    BOT_ALERT_API_URL = getenv("BOT_ALERT_API_URL")
+    BOT_ALERT_API_URL = getenv("BOT_ALERT_API_URL", "-")
 
 def get_db_config(url: str = Config.DATABASE_URL) -> Tuple:
     user = url.split(":")[1].replace("//", "")
