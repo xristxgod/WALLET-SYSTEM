@@ -10,6 +10,9 @@ from api.services.external.sender import Sender
 from api.utils.types import CRYPTO_MNEMONIC_WORDS, NETWORK, TG_CHAT_ID, TG_USERNAME
 from config import Config, logger
 
+APIs_URL: Dict[NETWORK] = Config.CRYPTO_NETWORKS_APIS
+CREATE_WALLET_URL = "/api/<network>/create/wallet"
+
 # Body
 class BodyCreateWalletModel:
     """Type of input data"""
@@ -60,9 +63,6 @@ class CreateWallet(BaseApiModel):
     """
     This class creates wallets in a certain crypto network.
     """
-    APIs_URL: Dict[NETWORK] = Config.CRYPTO_NETWORKS_APIS
-    CREATE_WALLET_URL = "/api/<network>/create/wallet"
-
     @staticmethod
     def send_to_bot_alert(body: BodyCreateWalletModel, is_admin: bool = False):
         try:
@@ -82,8 +82,8 @@ class CreateWallet(BaseApiModel):
     def create_wallet(body: BodyCreateWalletModel) -> ResponseCreateWalletModel:
         data = Client.post_request(
             url=CreateWallet.get_url(
-                base_url=CreateWallet.APIs_URL.get(body.network),
-                url=CreateWallet.CREATE_WALLET_URL,
+                base_url=APIs_URL.get(body.network),
+                url=CREATE_WALLET_URL,
                 network=body.network
             ),
             passphrase=body.passphrase,

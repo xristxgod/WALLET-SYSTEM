@@ -6,6 +6,9 @@ from api.serializers import BodyCoinToCoinSerializer, ResponseCoinToCoinSerializ
 from api.services.external.client import Client
 from config import Config, decimals
 
+API_URL = Config.COIN_TO_COIN_API
+GET_PRICE_URL = "/api/v3/simple/price?ids=<coin>&vs_currencies=<to_coin>"
+
 # Body
 class BodyCoinToCoinModel:
     """Type of input data"""
@@ -33,15 +36,12 @@ class CoinToCoin(BaseApiModel):
     This class is used to work with the coingecko api.
     To get the exact exchange rates.
     """
-    API_URL = Config.COIN_TO_COIN_API
-    GET_PRICE_URL = "/api/v3/simple/price?ids=<coin>&vs_currencies=<to_coin>"
-
     @staticmethod
     def get_price(body: BodyCoinToCoinModel) -> ResponseCoinToCoinModel:
         """Get the price of the selected currency in the selected currency"""
         data = Client.get_request(CoinToCoin.get_url(
-            base_url=CoinToCoin.API_URL,
-            url=CoinToCoin.GET_PRICE_URL,
+            base_url=API_URL,
+            url=GET_PRICE_URL,
             coin=body.coin,
             to_coin=body.toCoin
         ))

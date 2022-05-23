@@ -10,6 +10,11 @@ from api.services.external.client import Client
 from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, NETWORK, TG_CHAT_ID, COINS
 from config import Config, decimals
 
+APIs_URL: Dict[NETWORK] = Config.CRYPTO_NETWORKS_APIS
+GET_BALANCE_URL = "/api/<network>/balance/<address>"
+COIN_TO_COIN_API_URL = Config.COIN_TO_COIN_API
+GET_PRICE_URL = "/api/v3/simple/price?ids=<coin>&vs_currencies=<to_coin>"
+
 # Body
 class BodyGetBalanaceModel:
     """Type of input data"""
@@ -73,20 +78,14 @@ class GetBalance(BaseApiModel):
     """
     This class creates wallets in a certain crypto network.
     """
-    APIs_URL: Dict[NETWORK] = Config.CRYPTO_NETWORKS_APIS
-    GET_BALANCE_URL = "/api/<network>/balance/<address>"
-
-    COIN_TO_COIN_API_URL = Config.COIN_TO_COIN_API
-    GET_PRICE_URL = "/api/v3/simple/price?ids=<coin>&vs_currencies=<to_coin>"
-
     @staticmethod
     def get_convert(balance: decimal.Decimal, network: FULL_NETWORK, toConvert: List[str]) -> Dict:
         balances = {}
         coin = COINS.get(network)
         for to_coin in toConvert:
             data = Client.get_request(GetBalance.get_url(
-                base_url=GetBalance.COIN_TO_COIN_API_URL,
-                url=GetBalance.GET_PRICE_URL,
+                base_url=COIN_TO_COIN_API_URL,
+                url=GET_PRICE_URL,
                 coin=coin,
                 to_coin=to_coin
             ))
@@ -99,8 +98,8 @@ class GetBalance(BaseApiModel):
     def get_balance(body: BodyGetBalanaceModel) -> ResponseGetBalanaceModel:
         data = Client.get_request(
             url=GetBalance.get_url(
-                base_url=GetBalance.APIs_URL.get(body.network.split("_")[0]),
-                url=GetBalance.GET_BALANCE_URL,
+                base_url=APIs_URL.get(body.network.split("_")[0]),
+                url=GET_BALANCE_URL,
                 network=body.network.split("_")[1],
                 address=body.address
             )

@@ -11,6 +11,9 @@ from api.serializers import BodyTransactionSerializer, ResponserCreateTransactio
 from api.services.external.client import Client
 from config import Config, decimals
 
+APIs_URL: Dict[NETWORK] = Config.CRYPTO_NETWORKS_APIS
+GET_OPTIMAL_FEE_URL = "/api/<network>/fee/<fromAddress>&<toAddress>"
+
 # Body
 class BodyCreateTransactionModel:
     """Type of input data"""
@@ -82,9 +85,6 @@ class CreateTransaction(BaseApiModel):
     """
     This class creates transactions in a certain crypto network.
     """
-    APIs_URL: Dict[NETWORK] = Config.CRYPTO_NETWORKS_APIS
-    GET_OPTIMAL_FEE_URL = "/api/<network>/fee/<fromAddress>&<toAddress>"
-
     @staticmethod
     def create_transaction(body: BodyCreateTransactionModel) -> ResponseCreateTransactionModel:
         """Creating a transaction"""
@@ -94,8 +94,8 @@ class CreateTransaction(BaseApiModel):
         )
         data = Client.get_request(
             url=CreateTransaction.get_url(
-                base_url=CreateTransaction.APIs_URL.get(body.network.split("_")[0]),
-                url=CreateTransaction.GET_OPTIMAL_FEE_URL,
+                base_url=APIs_URL.get(body.network.split("_")[0]),
+                url=GET_OPTIMAL_FEE_URL,
                 network=body.network.split("_")[1],
                 fromAddress=from_address,
                 toAddress=to_address

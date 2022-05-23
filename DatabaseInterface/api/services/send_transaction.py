@@ -12,6 +12,8 @@ from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, TG_CHAT_ID
 from api.utils.utils import Utils
 from config import Config, decimals, logger
 
+QUEUE = Config.RABBITMQ_QUEUE_FOR_BALANCER
+
 # Body
 class BodySendTransactionModel:
     """Type of input data"""
@@ -83,8 +85,6 @@ class SendTransaction(BaseApiModel):
     """
     This class sending transactions in a certain crypto network.
     """
-    QUEUE = Config.RABBITMQ_QUEUE_FOR_BALANCER
-
     @staticmethod
     def send_to_bot_alert(body: BodySendTransactionModel) -> Optional:
         """Send to bot alert"""
@@ -115,7 +115,7 @@ class SendTransaction(BaseApiModel):
         SendTransaction.send_to_bot_alert(body=body)
         # Send to balancer
         status = Queue.send_message(
-            queue_name=SendTransaction.QUEUE,
+            queue_name=QUEUE,
             message={
                 "chatID": body.chatID,
                 "network": network,
