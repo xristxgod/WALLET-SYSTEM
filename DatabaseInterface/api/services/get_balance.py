@@ -18,6 +18,8 @@ GET_PRICE_URL = "/api/v3/simple/price?ids=<coin>&vs_currencies=<to_coin>"
 # Body
 class BodyGetBalanaceModel:
     """Type of input data"""
+    NETWORK_OBJECT: object
+
     def __init__(
             self,
             chatID: TG_CHAT_ID,
@@ -26,31 +28,33 @@ class BodyGetBalanaceModel:
             convert: Optional[List[str]] = None
     ):
         self.chatID: TG_CHAT_ID = chatID
-        self.network: FULL_NETWORK = network
+        self.network: FULL_NETWORK = self.get_network(network.upper())
         self.address: CRYPRO_ADDRESS = address
         self.convert: Optional[List[str]] = convert
         self.is_valid()
 
+    def get_network(self, network: str) -> FULL_NETWORK:
+        try:
+            self.NETWORK_OBJECT = NetworkModel.objects.get(network=network.split("-")[0])
+        except Exception:
+            raise ValidationError('This network is not in the database!')
+        return network
+
     def is_valid(self):
         self.__correct_chat_id()
-        self.__correct_network()
         self.__correct_address()
         self.__correct_convert()
 
     def __correct_chat_id(self):
         if isinstance(self.chatID, str) and not self.chatID.isdigit():
             raise ValidationError('The chatID must be an integer!')
-        if not UserModel.objects.get(self.chatID):
+        if not UserModel.objects.get(pk=self.chatID):
             raise ValidationError('This chatID is not in the database!')
-
-    def __correct_network(self):
-        if not NetworkModel.objects.filter(network=self.network.split("_")[0])[0]:
-            raise ValidationError('This network is not in the database!')
 
     def __correct_address(self):
         if self.address is None:
-            self.address = WalletModel.objects.filter(network=self.network.split("_")[0], user_id=self.chatID)[0]
-        if not WalletModel.objects.filter(network=self.network.split("_")[0], user_id=self.chatID, address=self.address)[0]:
+            self.address = WalletModel.objects.get(network=self.NETWORK_OBJECT, user_id=self.chatID).address
+        if not WalletModel.objects.filter(network=self.NETWORK_OBJECT, user_id=self.chatID, address=self.address)[0]:
             raise ValidationError('This address was not found in the database, or does not belong to this chatID!')
 
     def __correct_convert(self):
