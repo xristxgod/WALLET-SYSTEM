@@ -1,8 +1,9 @@
 import decimal
+import json
 from typing import Optional, Dict, List, Tuple
 from datetime import datetime, timedelta
 
-from api.utils.types import CRYPRO_ADDRESS
+from api.utils.types import CRYPRO_ADDRESS, default_json
 from config import decimals
 
 class Utils:
@@ -43,3 +44,24 @@ class Utils:
     @staticmethod
     def get_timestamp_now() -> int:
         return int(datetime.timestamp(datetime.now()))
+
+    @staticmethod
+    def get_correct_inputs(inputs: List[CRYPRO_ADDRESS], amount: decimal.Decimal) -> json:
+        returned_data = []
+        if len(inputs) == 1:
+            returned_data.append({"address": inputs[0], "amount": amount})
+        else:
+            summa = amount // len(inputs)
+            _amount = amount
+            for address in inputs:
+                if _amount - summa >= 0:
+                    returned_data.append({
+                        "address": address,
+                        "amount": summa
+                    })
+                else:
+                    returned_data.append({
+                        "address": address,
+                        "amount": _amount
+                    })
+        return json.loads(json.dumps(returned_data, default=default_json))

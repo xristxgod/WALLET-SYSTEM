@@ -90,7 +90,7 @@ class SendTransaction(BaseApiModel):
     This class sending transactions in a certain crypto network.
     """
     @staticmethod
-    def send_to_bot_alert(network: FULL_NETWORK, body: BodySendTransactionModel) -> Optional:
+    def send_to_bot_alert(network: FULL_NETWORK, amount: decimal.Decimal, body: BodySendTransactionModel) -> Optional:
         """Send to bot alert"""
         from_address, to_address = Utils.get_inputs_and_outputs_for_text(inputs=body.inputs, outputs=body.outputs)
         try:
@@ -100,7 +100,7 @@ class SendTransaction(BaseApiModel):
                 fromAddress=from_address,
                 to_address=to_address,
                 fee=body.fee,
-                amount=Utils.get_amount(outputs=body.outputs),
+                amount=amount,
                 status=0,
                 method="CREATE",
             )
@@ -115,8 +115,9 @@ class SendTransaction(BaseApiModel):
     def send_transaction(body: BodySendTransactionModel) -> ResponseSendTransactionModel:
         """Send transaction"""
         network, token = body.network.split("-")
+        amount = Utils.get_amount(body.outputs)
         # Send to bot alert => bot main
-        SendTransaction.send_to_bot_alert(network=body.network, body=body)
+        SendTransaction.send_to_bot_alert(network=body.network, amount=amount, body=body)
         # Send to balancer
         status = Queue.send_message(
             queue_name=QUEUE,
@@ -134,8 +135,8 @@ class SendTransaction(BaseApiModel):
             network=NetworkModel.objects.get(network=network.split("-")[0]),
             time=Utils.get_timestamp_now(),
             fee=body.fee,
-            amount=Utils.get_amount(body.outputs),
-            inputs=body.inputs,
+            amount=amount,
+            inputs=Utils.get_correct_inputs(inputs=body.inputs, amount=amount),
             outputs=body.outputs,
             token=TokenModel.objects.get(
                 token=token.upper(), network=NetworkModel.objects.get(network=network.split("-")[0])
