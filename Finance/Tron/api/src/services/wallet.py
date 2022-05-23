@@ -15,7 +15,7 @@ from src.services.schemas import (
     BodyInputsOrOutputs
 )
 from src.services import NodeTron
-from src.utils import TransactionUtils
+from src.utils import TransactionUtils, TronUtils
 from src.types import TAddress
 from src import DB
 from config import Config, logger, decimals
@@ -53,8 +53,7 @@ class TronMethods(NodeTron):
 
     async def get_balance(self, address: TAddress, token: typing.Optional[str] = None) -> ResponseGetBalance:
         balance = 0
-        if address[0] != "T" or address[:2] == "41":
-            address = bytes.fromhex(address).decode("utf-8")
+        address = TronUtils.is_hex_address(address=address)
         if token is None:
             try:
                 balance = await self.node.get_account_balance(addr=address)
@@ -72,6 +71,8 @@ class TronMethods(NodeTron):
 
     async def get_optimal_fee(self, from_address: TAddress, to_address: TAddress, token: str = "TRX") -> ResponseGetOptimalFee:
         fee = 0
+        from_address = TronUtils.is_hex_address(address=from_address)
+        to_address = TronUtils.is_hex_address(address=to_address)
         if from_address == to_address:
             raise tronpy.exceptions.AddressNotFound('The transaction cannot be executed to the same address.')
         if token.upper() in ["TRX", "TRON"]:

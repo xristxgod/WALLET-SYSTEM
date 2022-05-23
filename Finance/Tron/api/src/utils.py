@@ -70,6 +70,11 @@ class TronUtils:
 
         return int(result)
 
+    @staticmethod
+    def is_hex_address(address: str) -> TAddress:
+        if address[0] != "T" or address[:2] == "41":
+            return bytes.fromhex(address).decode("utf-8")
+
 class TransactionUtils:
 
     @staticmethod
