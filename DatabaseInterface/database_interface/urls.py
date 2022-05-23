@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from api.views import DatabaseStatusAPIView, APISystemStatusAPIView, GetTransactionRepositoryCacheAPIView
 from api.views import (
     CoinToCoinAPIView,
     CreateTransactionAPIView, SendTransactionAPIView,
@@ -28,4 +29,8 @@ urlpatterns = [
     path('api/create/transaction/', CreateTransactionAPIView.as_view()),
     path('api/send/transaction/', SendTransactionAPIView.as_view()),
     path('api/create/wallet/', CreateWalletAPIView.as_view()),
+
+    path('api/health/check/isWork', APISystemStatusAPIView.as_view()),
+    path('api/health/check/database', DatabaseStatusAPIView.as_view()),
+    path('api/check/transaction/cache', GetTransactionRepositoryCacheAPIView.as_view()),
 ]
