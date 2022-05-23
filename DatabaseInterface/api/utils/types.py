@@ -6,6 +6,7 @@ CRYPTO_MNEMONIC_WORDS = str
 
 FULL_NETWORK = str
 NETWORK = str
+DOMAIN = str
 
 COINS = {
     "TRON_TRX": "tron",

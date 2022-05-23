@@ -7,10 +7,10 @@ from api.models import UserModel, NetworkModel, WalletModel
 from api.serializers import BodyGetBalanceSerializer, ResponserGetBalanceSerializer
 from api.services.__init__ import BaseApiModel
 from api.services.external.client import Client
-from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, NETWORK, TG_CHAT_ID, COINS
+from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, NETWORK, DOMAIN, TG_CHAT_ID, COINS
 from config import Config, decimals
 
-APIs_URL: Dict[NETWORK] = Config.CRYPTO_NETWORKS_APIS
+APIs_URL: Dict[NETWORK, DOMAIN] = Config.CRYPTO_NETWORKS_APIS
 GET_BALANCE_URL = "/api/<network>/balance/<address>"
 COIN_TO_COIN_API_URL = Config.COIN_TO_COIN_API
 GET_PRICE_URL = "/api/v3/simple/price?ids=<coin>&vs_currencies=<to_coin>"

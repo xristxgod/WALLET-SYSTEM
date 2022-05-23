@@ -6,12 +6,12 @@ from rest_framework.exceptions import ValidationError
 from api.services.__init__ import BaseApiModel, transaction_repository
 from api.utils.utils import Utils
 from api.models import UserModel, NetworkModel, WalletModel
-from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, NETWORK, TG_CHAT_ID
+from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, NETWORK, DOMAIN, TG_CHAT_ID
 from api.serializers import BodyTransactionSerializer, ResponserCreateTransactionSerializer
 from api.services.external.client import Client
 from config import Config, decimals
 
-APIs_URL: Dict[NETWORK] = Config.CRYPTO_NETWORKS_APIS
+APIs_URL: Dict[NETWORK, DOMAIN] = Config.CRYPTO_NETWORKS_APIS
 GET_OPTIMAL_FEE_URL = "/api/<network>/fee/<fromAddress>&<toAddress>"
 
 # Body
