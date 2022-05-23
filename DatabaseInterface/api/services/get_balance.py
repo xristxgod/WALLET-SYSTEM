@@ -106,24 +106,24 @@ class GetBalance(BaseApiModel):
                 base_url=APIs_URL.get(network),
                 url=GET_BALANCE_URL,
                 network=COINS.get(body.network),
-                address=body.address
+                address=body.address.encode("utf-8").hex().lower()
             )
         )
         if data.get("balance") is not None:
             balance = data.get("balance")
-            WalletModel.objects.filter(
-                network=body.network.split("_")[0],
-                user_id=body.chatID,
-                addres=body.address
-            ).update(
-                last_balance=decimals.create_decimal(balance)
+            wallet_object = WalletModel.objects.get(
+                network=NetworkModel.objects.get(network=network.split("-")[0]),
+                user_id=UserModel.objects.get(pk=body.chatID),
+                address=body.address
             )
-        balance = WalletModel.objects.filter(
-            network=body.network.split("_")[0],
-            user_id=body.chatID,
-            addres=body.address
-        ).balance
+            wallet_object.last_balance = balance
+            wallet_object.save()
 
+        balance = WalletModel.objects.get(
+            network=NetworkModel.objects.get(network=network.split("-")[0]),
+            user_id=UserModel.objects.get(pk=body.chatID),
+            address=body.address
+        ).last_balance
         if body.convert is not None:
             convert: Dict = GetBalance.get_convert(balance=balance, network=body.network, toConvert=body.convert)
         else:
