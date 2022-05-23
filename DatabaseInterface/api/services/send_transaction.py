@@ -54,7 +54,7 @@ class BodySendTransactionModel:
     def __correct_chat_id(self):
         if isinstance(self.chatID, str) and not self.chatID.isdigit():
             raise ValidationError('The chatID must be an integer!')
-        if not UserModel.objects.get(pk=self.chatID):
+        if len(UserModel.objects.filter(pk=self.chatID)) == 0:
             raise ValidationError('This chatID is not in the database!')
 
     def __correct_inputs(self):

@@ -16,6 +16,8 @@ CREATE_WALLET_URL = "/api/<network>/create/wallet"
 # Body
 class BodyCreateWalletModel:
     """Type of input data"""
+    NETWORK_OBJECT: object
+
     def __init__(
             self,
             chatID: TG_CHAT_ID,
@@ -26,30 +28,29 @@ class BodyCreateWalletModel:
     ):
         self.chatID: TG_CHAT_ID = chatID
         self.username: Optional[TG_USERNAME] = username
-        self.network: NETWORK = network
+        self.network: NETWORK = self.get_network(network.upper())
         self.passphrase: str = passphrase
         self.mnemonicWords: CRYPTO_MNEMONIC_WORDS = mnemonicWords
         self.is_valid()
 
+    def get_network(self, network: str) -> NETWORK:
+        try:
+            self.NETWORK_OBJECT = NetworkModel.objects.get(network=network)
+        except Exception:
+            raise ValidationError('This network is not in the database!')
+        return network
+
     def is_valid(self):
         self.__correct_chat_id()
-        self.__correct_network()
         self.__correct_username()
 
     def __correct_chat_id(self):
         if isinstance(self.chatID, str) and not self.chatID.isdigit():
             raise ValidationError('The chatID must be an integer!')
-        if not UserModel.objects.get(self.chatID):
-            raise ValidationError('This chatID is not in the database!')
 
     def __correct_username(self):
         if self.username.find("@") == -1:
             self.username = "@" + self.username
-
-
-    def __correct_network(self):
-        if not NetworkModel.objects.filter(network=self.network)[0]:
-            raise ValidationError('This network is not in the database!')
 
 # Response
 class ResponseCreateWalletModel:
@@ -89,25 +90,29 @@ class CreateWallet(BaseApiModel):
             passphrase=body.passphrase,
             mnemonicWords=body.mnemonicWords
         )
+        if len(WalletModel.objects.filter(user_id=body.chatID)) >= 1:
+            return ResponseCreateWalletModel(message=True)
         try:
-            if not UserModel.objects.get(body.chatID):
-                UserModel.objects.create(
+            if len(UserModel.objects.filter(pk=body.chatID)) == 0:
+                user = UserModel(
                     id=body.chatID,
                     username=body.username,
                     is_admin=False
                 )
+                user.save()
                 # Send to bot if this new user
                 CreateWallet.send_to_bot_alert(body=body, is_admin=False)
-            WalletModel.objects.create(
-                network=body.network,
+            wallet = WalletModel(
+                network=NetworkModel.objects.get(network=body.network),
                 address=data.get("address"),
                 private_key=data.get("privateKey"),
                 public_key=data.get("publicKey"),
                 passphrase=data.get("passphrase"),
                 mnemonic_phrase=data.get("mnemonicWords"),
                 last_balance=0,
-                user_id=body.chatID
+                user_id=UserModel.objects.get(pk=body.chatID)
             )
+            wallet.save()
             return ResponseCreateWalletModel(message=True)
         except Exception as error:
             logger.error(f"ERROR: {error}")
