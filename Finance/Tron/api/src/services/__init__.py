@@ -17,8 +17,6 @@ class NodeTron:
     def __init__(self):
         """
         Connect to Tron Node
-        :param node_url: Node url
-        :param network: Network | mainnet or shasta
         """
         self.node = AsyncTron(
             provider=NodeTron.PROVIDER if NodeTron.NETWORK == "mainnet" else None,

@@ -53,6 +53,8 @@ class TronMethods(NodeTron):
 
     async def get_balance(self, address: TAddress, token: typing.Optional[str] = None) -> ResponseGetBalance:
         balance = 0
+        if address[0] != "T" or address[:2] == "41":
+            address = bytes.fromhex(address).decode("utf-8")
         if token is None:
             try:
                 balance = await self.node.get_account_balance(addr=address)
