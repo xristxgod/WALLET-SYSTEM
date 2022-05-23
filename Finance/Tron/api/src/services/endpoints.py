@@ -34,7 +34,7 @@ async def create_wallet(body: BodyCreateWallet):
 
 @router.get(
     "/{network}/balance/{address}", description="Show balance on wallet address native/token",
-    response_model=ResponseGetBalance, tags=["WALLET"]
+    response_model=ResponseGetBalance, tags=["WALLET"], dependencies=[Depends(JWTBearer())]
 )
 async def get_balance(address: TAddress, network: Optional[str] = "tron"):
     try:
@@ -52,7 +52,7 @@ async def get_balance(address: TAddress, network: Optional[str] = "tron"):
 
 @router.get(
     "/{network}/fee/{fromAddress}&{toAddress}", description="Get a fixed transaction fee USDT",
-    response_model=ResponseGetOptimalFee, tags=["TRANSACTION"]
+    response_model=ResponseGetOptimalFee, tags=["TRANSACTION"], dependencies=[Depends(JWTBearer())]
 )
 async def get_optimal_fee(fromAddress: TAddress, toAddress: TAddress, network: Optional[str] = "tron"):
     try:
