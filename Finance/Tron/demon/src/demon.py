@@ -203,7 +203,8 @@ class TransactionDemon:
 
     async def run(self):
         """The script runs all the time"""
-        start = await TransactionDemon.getLastBlockNumber()
+        block = await TransactionDemon.getLastBlockNumber()
+        start = await self.get_node_block_number() if block is None else block
         pack_size = 1
         while True:
             end = await self.get_node_block_number()
