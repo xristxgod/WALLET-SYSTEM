@@ -15,8 +15,6 @@ services:
       - 82
     networks:
       - telegram_wallet_tron_systme
-    volumes:
-      - ./api/src/files:/home/app/files
     logging:
       options:
         max-size: 100m
@@ -27,7 +25,7 @@ services:
     container_name: tron_demon
     command: /usr/bin/supervisord
     volumes:
-      - ./demon/files:/home/app/files
+      - ./demon/files
     env_file:
       - ./.env
     networks:
