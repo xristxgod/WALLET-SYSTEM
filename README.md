@@ -28,7 +28,7 @@ Technologies:
 > Other: `Docker`, `Radis`, `RabbitMQ`, `Cron`.
 ---
 
-> `DatabaseInterface` - Admin panel and admin bot
+> `DatabaseInterface` - Database-Admin panel
 
 > `Bots` - The main bot and the bot for notifications.
 
