@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:9.6
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=mamedov00
+      - POSTGRES_DB=telegram_bot_system
+    ports:
+      - "5432:5432"
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    networks:
+      - TelegramWallet
+networks:
+  TelegramWallet:
+    driver: bridge
