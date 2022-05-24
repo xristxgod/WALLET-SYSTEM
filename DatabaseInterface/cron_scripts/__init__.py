@@ -46,7 +46,3 @@ class DB:
             sql="DELETE FROM transaction_model WHERE user_id = $1 AND transaction_hash = $2 AND status = $3;",
             data=(user_id, transaction_hash, status)
         )
-
-if __name__ == '__main__':
-    import asyncio
-    print(asyncio.run(DB.get_all_transactions_time()))

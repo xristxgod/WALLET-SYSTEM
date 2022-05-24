@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  database:
+    container_name: database
+    image: postgres:13.3
+    environment:
+      POSTGRES_DB: "database"
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "root"
+    ports:
+      - "5432:5432"
+    restart: always
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  pgAdmin:
+    container_name: pgAdmin
+    image: dpage/pgadmin4:5.7
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "root@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "root"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "5050:80"
+    restart: always
