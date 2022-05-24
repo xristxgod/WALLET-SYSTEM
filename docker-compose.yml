@@ -1,14 +1,14 @@
-version: '3'
+version: '3.7'
 
 services:
   postgresDB:
     image: postgres:9.6
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=mamedov00
-      - POSTGRES_DB=telegram_bot_system
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=0000
+      - POSTGRES_DB=tgdb
     ports:
-      - "5432:5432"
+      - "5433:5433"
     logging:
       options:
         max-size: 10m
