@@ -10,6 +10,8 @@ LAST_BLOCK = os.path.join(BASE_DIR, "last_block.txt")
 
 if "files" not in os.listdir(ROOT_DIR):
     os.mkdir(BASE_DIR)
+if 'not_send' not in os.listdir(BASE_DIR):
+    os.mkdir(NOT_SEND)
 
 decimals = decimal.Context()
 decimals.prec = 8
