@@ -18,11 +18,13 @@ TOKENS = [
 ]
 
 class DB:
+    DATABASE_URL = Config.DATABASE_URL
+
     @staticmethod
     async def __select_method(sql):
         connection: Optional[asyncpg.Connection] = None
         try:
-            connection = await asyncpg.connect(Config.DATABASE_URL)
+            connection = await asyncpg.connect(DB.DATABASE_URL)
             return await connection.fetch(sql)
         except Exception as error:
             raise error
