@@ -3,18 +3,17 @@ version: "3.9"
 services:
   database_interface:
     build:
-      context: ./
+      context: .
       dockerfile: Dockerfile
-    command: python manage.py runserver 0.0.0.0:8000
+    command: python ./manage.py runserver 0.0.0.0:8000
     env_file:
       - .env
     ports:
       - "8000:8000"
-    depends_on:
-      - database
     restart: always
     networks:
       - database_interface
+
   database:
     container_name: database
     image: postgres:13.3
@@ -37,6 +36,7 @@ services:
       options:
         max-size: 10m
         max-file: "3"
+
   pgAdmin:
     container_name: pgAdmin
     image: dpage/pgadmin4:5.7
