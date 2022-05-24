@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  postgres:
+  postgresDB:
     image: postgres:9.6
     environment:
       - POSTGRES_USER=postgres
@@ -13,6 +13,13 @@ services:
       options:
         max-size: 10m
         max-file: "3"
+    networks:
+      - TelegramWallet
+  pgAdmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=mamedov_99b@mail.ru
+      - PGADMIN_DEFAULT_PASSWORD=0000
     networks:
       - TelegramWallet
 networks:
