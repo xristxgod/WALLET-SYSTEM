@@ -10,9 +10,7 @@ services:
     env_file:
       - ./.env
     ports:
-      - "82:5000"
-    expose:
-      - 82
+      - "5000:5000"
     networks:
       - telegram_wallet_tron_systme
     logging:
