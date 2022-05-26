@@ -36,14 +36,19 @@ Technologies:
 
 > `Services` - Services for correct operation of the system.
 
-To run the entire system, use: `Be careful, there are numerous bugs!!`
-```shell
-# Start
-bash run.sh
-# End
-bash stop.sh
-```
+---------
+Launch instructions:
+####### PS. In the `dev-docker-compose.yml` container, I have assembled the entire project to run on one machine. But for the best work, it is necessary to divide each module into separate containers!
+> 1. Fill in your configurations in the `.dev.env` file
+> 2. Launch the docker container!
 
-#### My information will change!!!
+> ```shell
+> # Run 
+> docker-compose --file dev-docker-compose.yml up --build
+> # Stop
+> docker-compose --file dev-docker-compose.yml stop
+> ```
+
+###### My information will change!!!
 
 
