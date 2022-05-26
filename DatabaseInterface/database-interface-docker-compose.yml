@@ -10,6 +10,8 @@ services:
       - .env.dev
     ports:
       - "8000:8000"
+    expose:
+      - 8000
     restart: always
     depends_on:
       - db
