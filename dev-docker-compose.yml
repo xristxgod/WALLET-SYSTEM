@@ -17,7 +17,7 @@ services:
       - 8000
     restart: always
     volumes:
-      - ./logs:/home/app/logs
+      - ./files/logs:/home/app/files
     depends_on:
       - database
     networks:
@@ -42,7 +42,7 @@ services:
       start_period: 10s
     restart: always
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - ./files/db:/var/lib/postgresql/data
     logging:
       options:
         max-size: 10m
@@ -69,6 +69,8 @@ services:
       dockerfile: Dockerfile
     container_name: tron_api
     command: uvicorn app:app --host 0.0.0.0 --port 5000
+    volumes:
+      - ./files/logs:/home/app/files
     env_file:
       - .env.dev
     ports:
@@ -90,7 +92,7 @@ services:
     container_name: tron_demon
     command: /usr/bin/supervisord
     volumes:
-      - ./logs:/home/app/logs
+      - ./files/logs:/home/app/files
     env_file:
       - .env.dev
     depends_on:
