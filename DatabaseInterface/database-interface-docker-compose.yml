@@ -25,6 +25,8 @@ services:
       - .env.dev
     ports:
       - "5432:5432"
+    expose:
+      - 5432
     networks:
       - database_interface
     healthcheck:
@@ -48,6 +50,8 @@ services:
       - .env.dev
     ports:
       - "5050:80"
+    expose:
+      - 80
     restart: always
     networks:
       - database_interface
