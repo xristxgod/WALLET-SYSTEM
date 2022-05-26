@@ -1,1 +1,0 @@
-docker-compose --file services-docker-compose.yml stop
