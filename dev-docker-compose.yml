@@ -16,8 +16,10 @@ services:
     expose:
       - 8000
     restart: always
+    volumes:
+      - ./logs:/home/app/logs
     depends_on:
-      - db
+      - database
     networks:
       - telegram_bot_system
   # Database
@@ -73,6 +75,8 @@ services:
       - "5000:5000"
     expose:
       - 5000
+    depends_on:
+      - database
     networks:
       - telegram_bot_system
     logging:
@@ -89,6 +93,8 @@ services:
       - ./logs:/home/app/logs
     env_file:
       - .env.dev
+    depends_on:
+      - database
     networks:
       - telegram_bot_system
     logging:
