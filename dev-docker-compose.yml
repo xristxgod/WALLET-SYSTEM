@@ -1,10 +1,13 @@
 version: "3.9"
 
 services:
+  # <<<====================================>>> Module DatabaseInterface <<<==========================================>>>
+  # Database interface and Main Api
   database_interface:
     build:
-      context: .
+      context: ./DatabaseInterface
       dockerfile: Dockerfile
+    container_name: database_inteface
     command: python ./manage.py runserver 0.0.0.0:8000
     env_file:
       - .env.dev
@@ -16,8 +19,8 @@ services:
     depends_on:
       - db
     networks:
-      - database_interface
-
+      - telegram_bot_system
+  # Database
   database:
     container_name: database
     image: postgres:13.3
@@ -28,7 +31,7 @@ services:
     expose:
       - 5432
     networks:
-      - database_interface
+      - telegram_bot_system
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U root -d telegram_bot_wallet" ]
       interval: 10s
@@ -42,7 +45,7 @@ services:
       options:
         max-size: 10m
         max-file: "3"
-
+  # PgAdmin server
   pgAdmin:
     container_name: pgAdmin
     image: dpage/pgadmin4:5.7
@@ -54,7 +57,43 @@ services:
       - 80
     restart: always
     networks:
-      - database_interface
+      - telegram_bot_system
+  # <<<====================================>>> Module Finance <<<====================================================>>>
+  # >>> Tron node:
+  # Tron api
+  tron_api:
+    build:
+      context: ./Finance/Tron/api
+      dockerfile: Dockerfile
+    container_name: tron_api
+    command: uvicorn app:app --host 0.0.0.0 --port 5000
+    env_file:
+      - .env.dev
+    ports:
+      - "5000:5000"
+    expose:
+      - 5000
+    networks:
+      - telegram_bot_system
+    logging:
+      options:
+        max-size: 100m
+  # Tron demon
+  tron_demon:
+    build:
+      context: ./Finance/Tron/demon
+      dockerfile: Dockerfile
+    container_name: tron_demon
+    command: /usr/bin/supervisord
+    volumes:
+      - ./logs:/home/app/logs
+    env_file:
+      - .env.dev
+    networks:
+      - telegram_bot_system
+    logging:
+      options:
+        max-size: 100m
 networks:
-  database_interface:
+  telegram_bot_system:
     driver: bridge
