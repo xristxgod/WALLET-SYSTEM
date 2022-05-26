@@ -11,6 +11,8 @@ services:
     ports:
       - "8000:8000"
     restart: always
+    depends_on:
+      - db
     networks:
       - database_interface
 
