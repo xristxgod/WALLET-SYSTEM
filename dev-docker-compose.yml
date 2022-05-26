@@ -70,7 +70,7 @@ services:
     container_name: tron_api
     command: uvicorn app:app --host 0.0.0.0 --port 5000
     volumes:
-      - ./files/logs:/home/app/files
+      - ./files/logs/api:/home/app/files
     env_file:
       - .env.dev
     ports:
@@ -92,7 +92,7 @@ services:
     container_name: tron_demon
     command: /usr/bin/supervisord
     volumes:
-      - ./files/logs:/home/app/files
+      - ./files/logs/demon:/home/app/files
     env_file:
       - .env.dev
     depends_on:
