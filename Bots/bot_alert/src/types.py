@@ -3,6 +3,8 @@ from typing import Union
 
 from config import Config
 
+# Crypto address
+CryptoAddress = str
 # Telegram token
 TGToken = str
 # Text message for telegram

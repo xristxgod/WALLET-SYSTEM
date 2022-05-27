@@ -1,7 +1,7 @@
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 from pydantic import BaseModel, Field
-from src.types import TGMessage, TGChatID
+from src.types import TGMessage, TGChatID, CryptoAddress
 
 # <<<=================================>>> User endpoint <<<==========================================================>>>
 
@@ -62,8 +62,8 @@ class ResponseCheckerMethod(BaseModel):
 class BodyTransaction(BaseModel):
     chatID: int = Field(description="ID of the user")
     transactionHash: str = Field(description="Transaction hash")
-    fromAddress: str = Field(description="Sender's wallet address")
-    toAddress: str = Field(description="Recipient's wallet address")
+    inputs: List[Dict[CryptoAddress, float]] = Field(description="Sender's wallet address")
+    outputs: List[Dict[CryptoAddress, float]] = Field(description="Recipient's wallet address")
     amount: str = Field(description="Amount")
     fee: str = Field(description="Fee")
     network: str = Field(description="The network and the token '{network}-{token}' in which the transaction occurred.")
