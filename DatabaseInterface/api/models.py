@@ -81,7 +81,10 @@ class TransactionModel(models.Model):
     amount = models.DecimalField(default=0, decimal_places=6, max_digits=18)
     inputs = models.JSONField(null=True, blank=True)
     outputs = models.JSONField(null=True, blank=True)
-    token: TokenModel = models.ForeignKey('TokenModel', on_delete=models.CASCADE, db_column="token", default=None)
+    token: TokenModel = models.ForeignKey(
+        'TokenModel', on_delete=models.CASCADE,
+        db_column="token", default=None, null=True, blank=True
+    )
     status: TransactionStatusModel = models.ForeignKey(
         'TransactionStatusModel', on_delete=models.CASCADE, db_column="status"
     )
