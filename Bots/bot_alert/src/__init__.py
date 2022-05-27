@@ -10,11 +10,11 @@ class DB:
     DATABASE_URL = Config.DATABASE_URL
 
     @staticmethod
-    async def __select_method(sql) -> Dict:
+    async def __select_method(sql):
         connection: Optional[asyncpg.Connection] = None
         try:
             connection = await asyncpg.connect(DB.DATABASE_URL)
-            return dict(await connection.fetch(sql))
+            return await connection.fetch(sql)
         except Exception as error:
             raise error
         finally:
@@ -24,13 +24,13 @@ class DB:
     @staticmethod
     async def get_all_users() -> List[TGChatID]:
         return [user["id"] for user in (await DB.__select_method((
-            "SELECT id FROM user_model"
+            "SELECT id FROM user_model;"
         )))]
 
     @staticmethod
     async def get_all_admin() -> List[TGChatID]:
         return [user["id"] for user in (await DB.__select_method((
-            "SELECT id FROM user_model WHERE is_admin=true"
+            "SELECT id FROM user_model WHERE is_admin=true;"
         )))]
 
 class MessageRepository:

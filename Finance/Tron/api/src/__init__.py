@@ -7,17 +7,6 @@ from config import Config, TRON_NETWORK_INDEX
 
 class DB:
     DATABASE_URL = Config.DATABASE_URL
-    """
-    <<<--------------------------------------------------->>>
-    table = token_model
-        id: Integer Primary Key
-        network: String(256) NOT NULL UNIQUE = TRUE
-        token: String(256) NOT NULL
-        address: String(256) NOT NULL
-        decimals: String(256) NOT NULL UNIQUE = TRUE
-        token_info: JSON NOT NULL
-    <<<--------------------------------------------------->>>
-    """
     @staticmethod
     async def __select_method(sql) -> asyncpg.Record:
         connection: Optional[asyncpg.Connection] = None
