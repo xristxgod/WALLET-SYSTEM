@@ -43,9 +43,7 @@ class BodyCreateTransactionModel:
             self.is_valid()
 
     def get_inputs(self) -> List[CRYPRO_ADDRESS]:
-        if self.inputs is None or (isinstance(self.inputs, list) and len(self.inputs) == 0):
-            return [WalletModel.objects.get(network=self.NETWORK_OBJECT, user_id=self.chatID).address]
-        raise ValidationError('This address was not found in the database, or does not belong to this chatID!')
+        return [WalletModel.objects.get(network=self.NETWORK_OBJECT, user_id=self.chatID).address]
 
     def get_network(self, network: str) -> FULL_NETWORK:
         network = f"{network}-{CoinsHelper.get_native_by_network(network=network)}" if network.find("-") == -1 else network
