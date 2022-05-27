@@ -9,12 +9,14 @@ from config import Config, logger
 class AutoHandler:
     @staticmethod
     def sign_jwt_token() -> Dict[str, str]:
-        return jwt.encode({"token": Config.TRON_JWT_NAME}, Config.TRON_JWT_SECRET, algorithm=Config.TRON_JWT_ALGORITHM)
+        return jwt.encode(
+            {"token": Config.BOT_ALERT_JWT_NAME}, Config.BOT_ALERT_JWT_SECRET, algorithm=Config.BOT_ALERT_JWT_ALGORITHM
+        )
 
     @staticmethod
     def decode_jwt_token(token: str) -> Dict:
         try:
-            return jwt.decode(token, Config.TRON_JWT_SECRET, algorithm=Config.TRON_JWT_ALGORITHM)
+            return jwt.decode(token, Config.BOT_ALERT_JWT_SECRET, algorithm=Config.BOT_ALERT_JWT_ALGORITHM)
         except Exception as error:
             logger.error(f"ERROR: {error}")
             return {}
