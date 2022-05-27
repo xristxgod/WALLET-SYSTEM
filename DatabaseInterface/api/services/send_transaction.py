@@ -110,7 +110,11 @@ class SendTransaction(BaseApiModel):
         except Exception as error:
             logger.error(f"ERROR: {error}")
             Sender.send_message_to_checker(
-                text=f"{error}",
+                text=(
+                    f"Database interface API | Send transaction | Send to bot alert\n"
+                    f"ERROR: {error}\n"
+                    f"ChatID: {body.chatID}"
+                ),
                 method="INFO_CHECKER"
             )
 
