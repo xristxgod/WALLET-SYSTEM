@@ -1,10 +1,11 @@
 from typing import Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.responses import JSONResponse
 from pika import URLParameters, BlockingConnection
 
 from src.__init__ import message_repository
+from src.auth.auth_handler import JWTBearer
 from src.schemas import ResponseStatus, ResponseMessageRepository
 from src.endpoints.__init__ import router
 from config import Config, logger
@@ -13,6 +14,7 @@ app = FastAPI(
     title=f"BotAlert",
     description="Service for interacting with the Bot alert!",
     version="1.0.0",
+    dependencies=[Depends(JWTBearer())]
 )
 app.include_router(router)
 
