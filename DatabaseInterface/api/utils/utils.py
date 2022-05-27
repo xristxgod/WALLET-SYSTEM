@@ -35,6 +35,28 @@ class Utils:
         return from_address[:-3], to_address[:-3]
 
     @staticmethod
+    def get_inputs(inputs: List[CRYPRO_ADDRESS], amount: decimal.Decimal) -> List[Dict[CRYPRO_ADDRESS, str]]:
+        return_data = []
+        if len(inputs) == 1:
+            return_data.append({"address": inputs[0], "amount": amount})
+        else:
+            _amount = amount
+            amount_for_one = amount / len(inputs)
+            for address in inputs:
+                if _amount - amount_for_one < 0:
+                    return_data.append({
+                        "address": address,
+                        "amount": _amount
+                    })
+                else:
+                    _amount -= amount_for_one
+                    return_data.append({
+                        "address": address,
+                        "amount": amount_for_one
+                    })
+        return return_data
+
+    @staticmethod
     def get_amount(outputs: List[Dict]) -> decimal.Decimal:
         amount = decimals.create_decimal(0)
         for _output in outputs:
