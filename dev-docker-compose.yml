@@ -1,6 +1,29 @@
 version: "3.9"
 
 services:
+  # <<<====================================>>> Module Bots <<<=======================================================>>>
+  # Bot alert
+  bot_alert:
+    build:
+      context: ./Bots/bot_alert
+      dockerfile: Dockerfile
+    container_name: bot_alert
+    command: uvicorn app:app --host 0.0.0.0 --port 7000
+    volumes:
+      - ./files/logs/api/bot_alert:/home/app/files
+    env_file:
+      - .env.dev
+    ports:
+      - "7000:7000"
+    expose:
+      - 7000
+    depends_on:
+      - database
+    networks:
+      - telegram_bot_system
+    logging:
+      options:
+        max-size: 100m
   # <<<====================================>>> Module DatabaseInterface <<<==========================================>>>
   # Database interface and Main Api
   database_interface:
@@ -17,7 +40,7 @@ services:
       - 8000
     restart: always
     volumes:
-      - ./files/logs:/home/app/files
+      - ./files/logs/api/database_interface:/home/app/files
     depends_on:
       - database
     networks:
@@ -70,7 +93,7 @@ services:
     container_name: tron_api
     command: uvicorn app:app --host 0.0.0.0 --port 5000
     volumes:
-      - ./files/logs/api:/home/app/files
+      - ./files/logs/api/tron:/home/app/files
     env_file:
       - .env.dev
     ports:
@@ -92,7 +115,7 @@ services:
     container_name: tron_demon
     command: /usr/bin/supervisord
     volumes:
-      - ./files/logs/demon:/home/app/files
+      - ./files/logs/demons/tron:/home/app/files
     env_file:
       - .env.dev
     depends_on:
