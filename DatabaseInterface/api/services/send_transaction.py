@@ -93,7 +93,6 @@ class SendTransaction(BaseApiModel):
     @staticmethod
     def send_to_bot_alert(network: FULL_NETWORK, amount: decimal.Decimal, body: BodySendTransactionModel) -> Optional:
         """Send to bot alert"""
-
         try:
             Sender.send_message_to_bot(
                 chat_id=body.chatID,
