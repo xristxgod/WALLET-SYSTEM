@@ -12,7 +12,7 @@ Database interface
 >> `POST`:`https://<domain>/api/check/coinToCoin/`
 > 
 > Body:
->> ```json
+>> ```
 >> {
 >>  "coin": str,
 >>  "toCoin": Optional[str]
@@ -20,7 +20,7 @@ Database interface
 >> ```
 > 
 > Response:
->> ```json
+>> ```
 >> {
 >>  "price": float
 >> }
@@ -30,7 +30,7 @@ Database interface
 >> `POST`:`https://<domain>/api/create/wallet/`
 > 
 > Body:
->> ```json
+>> ```
 >> {
 >>  "chatID": str,                    // Telegram user id.
 >>  "username": str,                  // Telegram user username.
@@ -41,7 +41,7 @@ Database interface
 >> ```
 > 
 > Response:
->> ```json
+>> ```
 >> {
 >>  "message": bool
 >> }
@@ -51,7 +51,7 @@ Database interface
 >> `POST`:`https://<domain>/api/balance/`
 > 
 > Body:
->> ```json
+>> ```
 >> {
 >>  "chatID": str,                    // Telegram user id.
 >>  "network": str,                   // Network name and Token name. Example: TRON-TRX, TRON-USDT
@@ -61,7 +61,7 @@ Database interface
 >> ```
 > 
 > Response:
->> ```json
+>> ```
 >> {
 >>  "balance": float,
 >>  "network": str,                           // Network name and Token name. Example: TRON-TRX, TRON-USDT
@@ -73,7 +73,7 @@ Database interface
 >> `POST`:`https://<domain>/api/create/transaction/`
 > 
 > Body:
->> ```json
+>> ```
 >> {
 >>  "chatID": str,                        // Telegram user id.
 >>  "network": str,                       // Network name and Token name. Example: TRON-TRX, TRON-USDT
@@ -84,7 +84,7 @@ Database interface
 >> ```
 > 
 > Response:
->> ```json
+>> ```
 >> {
 >>  "fee": float                           // Commission for the transaction
 >> }
@@ -94,7 +94,7 @@ Database interface
 >> `POST`:`https://<domain>/api/send/transaction/`
 > 
 > Body:
->> ```json
+>> ```
 >> {
 >>  "chatID": str,                        // Telegram user id.
 >>  "network": str,                       // Network name and Token name. Example: TRON-TRX, TRON-USDT
@@ -105,7 +105,7 @@ Database interface
 >> ```
 > 
 > Response:
->> ```json
+>> ```
 >> {
 >>  "message": bool                           
 >> }
@@ -119,12 +119,12 @@ Database interface
 >> `GET`:`https://<domain>/api/health/check/isWork`
 > 
 > Body:
->> ```json
+>> ```
 >>  null
 >> ```
 > 
 > Response:
->> ```json
+>> ```
 >> {
 >>  "message": bool                           
 >> }
@@ -134,12 +134,12 @@ Database interface
 >> `GET`:`https://<domain>/api/health/check/database`
 > 
 > Body:
->> ```json
+>> ```
 >>  null
 >> ```
 > 
 > Response:
->> ```json
+>> ```
 >> {
 >>  "message": bool                           
 >> }
@@ -149,12 +149,12 @@ Database interface
 >> `GET`:`https://<domain>/api/check/transaction/cache`
 > 
 > Body:
->> ```json
+>> ```
 >>  null
 >> ```
 > 
 > Response:
->> ```json
+>> ```
 >> {
 >>  "repositoryCacheCount": int,          // The number of transactions pending.
 >>  "repositoryCacheData": Dict,          // Transactions that are waiting, in an expanded form!
