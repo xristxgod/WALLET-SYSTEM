@@ -23,3 +23,10 @@ def default_json(json_object: object):
     if isinstance(json_object, decimal.Decimal):
         return float(json_object)
     return str(json_object)
+
+class CoinsHelper(object):
+    TRON = "TRX"
+
+    @staticmethod
+    def get_native_by_network(network: str) -> str:
+        return CoinsHelper.__dict__.get(network.upper())

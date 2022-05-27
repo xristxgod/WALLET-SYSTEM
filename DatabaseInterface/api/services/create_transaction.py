@@ -6,7 +6,9 @@ from rest_framework.exceptions import ValidationError
 from api.services.__init__ import BaseApiModel, transaction_repository
 from api.utils.utils import Utils
 from api.models import UserModel, NetworkModel, WalletModel
-from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, NETWORK, DOMAIN, TG_CHAT_ID, COINS, JWT_TOKEN_BEARER
+from api.utils.types import (
+    CRYPRO_ADDRESS, FULL_NETWORK, NETWORK, DOMAIN, TG_CHAT_ID, COINS, JWT_TOKEN_BEARER, CoinsHelper
+)
 from api.serializers import BodyTransactionSerializer, ResponserCreateTransactionSerializer
 from api.services.external.client import Client
 from config import Config, decimals
@@ -41,6 +43,7 @@ class BodyCreateTransactionModel:
             self.is_valid()
 
     def get_network(self, network: str) -> FULL_NETWORK:
+        network = f"{network}-{CoinsHelper.get_native_by_network(network=network)}" if network.find("-") == -1 else network
         try:
             self.NETWORK_OBJECT = NetworkModel.objects.get(network=network.split("-")[0])
         except Exception:
