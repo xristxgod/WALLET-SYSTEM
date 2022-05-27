@@ -9,7 +9,7 @@ from api.serializers import BodyTransactionSerializer, ResponserSendTransactionS
 from api.services.__init__ import BaseApiModel, transaction_repository
 from api.services.external.sender import Sender
 from api.services.external.queue import Queue
-from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, TG_CHAT_ID
+from api.utils.types import CRYPRO_ADDRESS, FULL_NETWORK, TG_CHAT_ID, CoinsHelper
 from api.utils.utils import Utils
 from config import Config, decimals, logger
 
@@ -139,7 +139,7 @@ class SendTransaction(BaseApiModel):
             outputs=body.outputs,
             token=TokenModel.objects.get(
                 token=token.upper(), network=NetworkModel.objects.get(network=network.split("-")[0])
-            ),
+            ) if CoinsHelper.get_native_by_network(network=network) != token else None,
             status=TransactionStatusModel.objects.get(title="PROCESSING"),
             user_id=UserModel.objects.get(pk=body.chatID)
         )
