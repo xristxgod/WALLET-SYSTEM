@@ -5,15 +5,6 @@ import asyncpg
 
 from config import Config, TRON_NETWORK_INDEX
 
-TOKENS = [
-    {
-        "token": "USDT",
-        "address": "TRvz1r3URQq5otL7ioTbxVUfim9RVSm1hA",
-        "decimals": 6,
-        "token_info": '{"bandwidth": 345, "feeLimit": 1000, "isBalanceNotNullEnergy": 14631, "isBalanceNullEnergy": 29631}',
-    }
-]
-
 class DB:
     DATABASE_URL = Config.DATABASE_URL
     """
@@ -42,13 +33,10 @@ class DB:
     @staticmethod
     async def get_token_info(token: str) -> Union[Dict, None]:
         try:
-            if Config.NETWORK == "TESTNET":
-                data = [t for t in TOKENS if t["token"] == token.upper()][0]
-            else:
-                data = (await DB.__select_method((
-                    f"SELECT address, decimals, token_info FROM token_model "
-                    f"WHERE token = '{token.upper()}' AND network = {TRON_NETWORK_INDEX};"
-                )))[0]
+            data = (await DB.__select_method((
+                f"SELECT address, decimals, token_info FROM token_model "
+                f"WHERE token = '{token.upper()}' AND network = {TRON_NETWORK_INDEX};"
+            )))[0]
             return {
                 "token": token,
                 "address": data["address"],

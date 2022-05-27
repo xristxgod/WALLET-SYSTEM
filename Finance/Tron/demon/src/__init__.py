@@ -8,15 +8,6 @@ from src.utils import Errors, Utils
 from src.types import TAddress, TRON_NETWORK_INDEX, CREATE_TRANSACTION_STATUS_NUMBER
 from config import Config, logger
 
-TOKENS = [
-    {
-        "token": "USDT",
-        "address": "TRvz1r3URQq5otL7ioTbxVUfim9RVSm1hA",
-        "decimals": 6,
-        "token_info": {"bandwidth": 345, "feeLimit": 1000, "isBalanceNotNullEnergy": 14631, "isBalanceNullEnergy": 29631},
-    }
-]
-
 class DB:
     DATABASE_URL = Config.DATABASE_URL
 
@@ -56,23 +47,17 @@ class DB:
 
     @staticmethod
     async def get_all_tokens() -> List[Dict]:
-        if Config.NETWORK == "TESTNET":
-            return TOKENS
-        else:
-            return await DB.__select_method(
-                sql=f"SELECT address, decimals, token_info FROM token_model WHERE network={TRON_NETWORK_INDEX}"
-            )
+        return await DB.__select_method(
+            sql=f"SELECT address, decimals, token_info FROM token_model WHERE network={TRON_NETWORK_INDEX}"
+        )
 
     @staticmethod
     async def get_token_info(address: TAddress) -> Union[Dict, None]:
         try:
-            if Config.NETWORK == "TESTNET":
-                data = [t for t in TOKENS if t["address"] == address][0]
-            else:
-                data = await DB.__select_method((
-                    f"SELECT token, address, decimals, token_info FROM token_model "
-                    f"WHERE address = '{address}' AND network = {TRON_NETWORK_INDEX};"
-                ))
+            data = await DB.__select_method((
+                f"SELECT token, address, decimals, token_info FROM token_model "
+                f"WHERE address = '{address}' AND network = {TRON_NETWORK_INDEX};"
+            ))
             return {
                 "token": data["token"],
                 "address": data["address"],
@@ -84,15 +69,12 @@ class DB:
 
     @staticmethod
     async def get_all_token_address() -> List[TAddress]:
-        if Config.NETWORK == "TESTNET":
-            return [symbol["address"] for symbol in TOKENS]
-        else:
-            return [
-                symbol["address"]
-                for symbol in dict(await DB.__select_method(
-                    sql=f"SELECT address FROM token_model WHERE network={TRON_NETWORK_INDEX};"
-                ))
-            ]
+        return [
+            symbol["address"]
+            for symbol in dict(await DB.__select_method(
+                sql=f"SELECT address FROM token_model WHERE network={TRON_NETWORK_INDEX};"
+            ))
+        ]
 
 class RabbitMQ:
     RABBITMQ_URL = Config.RABBITMQ_URL
