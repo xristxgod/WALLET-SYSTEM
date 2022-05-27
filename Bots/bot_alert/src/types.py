@@ -3,6 +3,10 @@ from typing import Union
 
 from config import Config
 
+# Ful network
+FullNetwork = str
+# Network
+Network = str
 # Crypto address
 CryptoAddress = str
 # Telegram token

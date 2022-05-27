@@ -38,7 +38,7 @@ class BodyInfo(BaseModel):
 # <<< Response >>>
 
 class ResponseUserMethod(BaseModel):
-    message: bool
+    message: bool = Field(description="")
 
 # <<<=================================>>> Checker endpoint <<<=======================================================>>>
 
@@ -53,7 +53,7 @@ class BodyInfoChecker(BaseModel):
 # <<< Response >>>
 
 class ResponseCheckerMethod(BaseModel):
-    message: bool
+    message: bool = Field(description="")
 
 # <<<=================================>>> Transaction endpoint <<<===================================================>>>
 
@@ -77,4 +77,16 @@ class BodyTransaction(BaseModel):
 # <<< Response >>>
 
 class ResponseTransactionMethod(BaseModel):
-    message: bool
+    message: bool = Field(description="")
+
+# <<<=================================>>> Status endpoint <<<========================================================>>>
+
+# <<< Response >>>
+
+class ResponseStatus(BaseModel):
+    message: bool = Field(description="")
+
+class ResponseMessageRepository(BaseModel):
+    repositoryCacheCount: Optional[int] = Field(description="", default=None)
+    repositoryCacheData: Optional[Dict] = Field(description="", default=None)
+    message: bool = Field(description="")

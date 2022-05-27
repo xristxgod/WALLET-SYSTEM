@@ -85,3 +85,13 @@ class MessageRepository:
                 return False
         else:
             return False
+
+    @property
+    def messages(self) -> Dict:
+        return self.messages_box
+
+    def remove_all_messages(self) -> bool:
+        self.messages_box = []
+        return True
+
+message_repository = MessageRepository()

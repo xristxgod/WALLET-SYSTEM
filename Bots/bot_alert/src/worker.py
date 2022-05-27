@@ -1,13 +1,13 @@
-from src.__init__ import MessageRepository
+from typing import List, Tuple, Dict
+
+from src.__init__ import message_repository
 from src.schemas import BodyRegUser, BodyBalance, BodyInfo
 from src.schemas import BodyNews
 from src.schemas import BodyTransaction
 from src.sender import Sender
 from src.utils import Utils
-from src.types import Symbol, CoinsURL, TGToken
+from src.types import Symbol, CoinsURL, TGToken, CryptoAddress, Network
 from config import Config
-
-message_repository = MessageRepository()
 
 class WorkerUser:
     """This class forms the text for the message"""
@@ -108,15 +108,31 @@ class WorkerTransaction:
     BOT_MAIN: TGToken = Config.BOT_MAIN_TOKEN
 
     @staticmethod
+    def __get_inputs_and_outputs(
+            inputs: List[Dict[CryptoAddress, float]],
+            outputs: List[Dict[CryptoAddress, float]],
+            network: Network
+    ) -> Tuple[str, str]:
+        from_addresses, to_addresses = "", ""
+        for _input in inputs:
+            from_addresses += f"<b>{_input.get('address')} == {_input.get('amount')} {network}</b>\n"
+        for _output in outputs:
+            to_addresses += f"<b>{_output.get('address')} == {_output.get('amount')} {network}</b>\n"
+        return from_addresses, to_addresses
+
+    @staticmethod
     async def create_text(body: BodyTransaction) -> bool:
         """Transaction creation message"""
         network, token = body.network.split('-')
         url = CoinsURL.get_blockchain_url_by_network(network) + f"/#/transaction/{body.transactionHash}"
+        from_addresses, to_addresses = WorkerTransaction.__get_inputs_and_outputs(
+            inputs=body.inputs, outputs=body.outputs, network=body.network
+        )
         text = (
             f"{Symbol.DEC} The transaction on <b>{network}</b> network has been created!\n"
-            f"The sender/s: <b>{body.fromAddress}</b>\n"
-            f"The Recipient/s: <b>{body.toAddress}</b>\n"
-            f"For the amount of: <b>{body.amount} {body.network}</b>\n"
+            f"The Sender/s:\n{from_addresses}"
+            f"The Recipient/s:\n{to_addresses}"
+            f"Transaction amount: <b>{body.amount} {body.network}</b>\n"
             f"Commission: <b>{body.fee} {CoinsURL.get_native_by_network(network)}</b>\n"
             f"                                          <b><a href='{url}'>Check transaction:</a></b>\n"
         )
@@ -137,17 +153,20 @@ class WorkerTransaction:
     @staticmethod
     async def update_text(body: BodyTransaction) -> bool:
         network, token = body.network.split('-')
+        from_addresses, to_addresses = WorkerTransaction.__get_inputs_and_outputs(
+            inputs=body.inputs, outputs=body.outputs, network=body.network
+        )
         url = CoinsURL.get_blockchain_url_by_network(network) + f"/#/transaction/{body.transactionHash}"
         if body.status == 1:
-            text = f"{Symbol.DEC} The transaction on <b>{network}</b> network is waiting to be sent!\n"
+            text = f"{Symbol.ADD} The transaction on <b>{network}</b> network is waiting to be sent!\n"
         else:
             text = (
                 f"{Symbol.DEC} The transaction on <b>{network}</b> network is ERROR!\n"
                 f"Error Information: {body.errorMessage}\n"
             )
         text += (
-            f"The sender/s: <b>{body.fromAddress}</b>\n"
-            f"The Recipient/s: <b>{body.toAddress}</b>\n"
+            f"The Sender/s:\n{from_addresses}"
+            f"The Recipient/s:\n{to_addresses}"
             f"For the amount of: <b>{body.amount} {body.network}</b>\n"
             f"Commission: <b>{body.fee} {CoinsURL.get_native_by_network(network)}</b>\n"
             f"                                          <b><a href='{url}'>Check transaction:</a></b>\n"
