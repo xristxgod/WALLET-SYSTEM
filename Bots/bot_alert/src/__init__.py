@@ -2,7 +2,7 @@ from typing import List, Optional, Dict
 
 import asyncpg
 
-from src.types import TGChatID
+from src.utils.types import TGChatID
 from config import Config
 
 class DB:

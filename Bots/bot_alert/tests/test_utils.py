@@ -1,6 +1,6 @@
 import unittest
 from src.utils import Utils
-from src.types import CoinsURL
+from src.utils.types import CoinsURL
 
 class TestUtils(unittest.TestCase):
 

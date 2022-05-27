@@ -3,7 +3,7 @@ from typing import Dict, Optional
 import aiohttp
 
 from src.__init__ import DB
-from src.types import TGToken, TGMessage, TGMessageID, TGChatID
+from src.utils.types import TGToken, TGMessage, TGMessageID, TGChatID
 from config import logger
 
 class Sender:

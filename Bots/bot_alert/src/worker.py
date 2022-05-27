@@ -1,12 +1,11 @@
-from typing import List, Tuple, Dict
-
 from src.__init__ import message_repository
+from src.parser.messager import MessageTransaction
 from src.schemas import BodyRegUser, BodyBalance, BodyInfo
 from src.schemas import BodyNews
 from src.schemas import BodyTransaction
 from src.sender import Sender
-from src.utils import Utils
-from src.types import Symbol, CoinsURL, TGToken, CryptoAddress, Network
+from src.utils.types import Symbol, CoinsURL, TGToken
+from src.utils.utils import Utils
 from config import Config
 
 class WorkerUser:
@@ -108,119 +107,70 @@ class WorkerTransaction:
     BOT_MAIN: TGToken = Config.BOT_MAIN_TOKEN
 
     @staticmethod
-    def __get_inputs_and_outputs(
-            inputs: List[Dict[CryptoAddress, float]],
-            outputs: List[Dict[CryptoAddress, float]],
-            network: Network
-    ) -> Tuple[str, str]:
-        from_addresses, to_addresses = "", ""
-        for _input in inputs:
-            from_addresses += f"<b>{_input.get('address')} == {_input.get('amount')} {network}</b>\n"
-        for _output in outputs:
-            to_addresses += f"<b>{_output.get('address')} == {_output.get('amount')} {network}</b>\n"
-        return from_addresses, to_addresses
-
-    @staticmethod
     async def create_text(body: BodyTransaction) -> bool:
-        """Transaction creation message"""
-        network, token = body.network.split('-')
-        url = CoinsURL.get_blockchain_url_by_network(network) + f"/#/transaction/{body.transactionHash}"
-        from_addresses, to_addresses = WorkerTransaction.__get_inputs_and_outputs(
-            inputs=body.inputs, outputs=body.outputs, network=body.network
-        )
-        text = (
-            f"{Symbol.DEC} The transaction on <b>{network}</b> network has been created!\n"
-            f"The Sender/s:\n{from_addresses}"
-            f"The Recipient/s:\n{to_addresses}"
-            f"Transaction amount: <b>{body.amount} {body.network}</b>\n"
-            f"Commission: <b>{body.fee} {CoinsURL.get_native_by_network(network)}</b>\n"
-            f"                                          <b><a href='{url}'>Check transaction:</a></b>\n"
-        )
+        """Create transaction"""
+        # Create and send message to main bot
         message = await Sender.send_to_bot_by_chat_id_response(
-            chat_id=body.chatID,
-            token=WorkerTransaction.BOT_MAIN,
-            text=text
+            chat_id=body.chatID, token=WorkerTransaction.BOT_MAIN, text=MessageTransaction(
+                network=body.network, transaction_hash=body.transactionHash, amount=body.amount, fee=body.fee,
+                inputs=body.inputs,  outputs=body.outputs
+            ).generate_text(status="PROCESSING")
         )
+        # Save transaction in repository
         message_repository.set_message(
-            chat_id=body.chatID,
-            transaction_hash=body.transactionHash,
-            network=body.network,
-            status=body.status,
+            chat_id=body.chatID, transaction_hash=body.transactionHash, network=body.network, status=body.status,
             message_id=Utils.get_message_id(message=message)
         )
         return True
 
     @staticmethod
     async def update_text(body: BodyTransaction) -> bool:
-        network, token = body.network.split('-')
-        from_addresses, to_addresses = WorkerTransaction.__get_inputs_and_outputs(
-            inputs=body.inputs, outputs=body.outputs, network=body.network
-        )
-        url = CoinsURL.get_blockchain_url_by_network(network) + f"/#/transaction/{body.transactionHash}"
-        if body.status == 1:
-            text = f"{Symbol.ADD} The transaction on <b>{network}</b> network is waiting to be sent!\n"
-        else:
-            text = (
-                f"{Symbol.DEC} The transaction on <b>{network}</b> network is ERROR!\n"
-                f"Error Information: {body.errorMessage}\n"
-            )
-        text += (
-            f"The Sender/s:\n{from_addresses}"
-            f"The Recipient/s:\n{to_addresses}"
-            f"For the amount of: <b>{body.amount} {body.network}</b>\n"
-            f"Commission: <b>{body.fee} {CoinsURL.get_native_by_network(network)}</b>\n"
-            f"                                          <b><a href='{url}'>Check transaction:</a></b>\n"
-        )
+        """Update transaction"""
+        # Create and send message to main bot
+        message = MessageTransaction(
+            network=body.network, transaction_hash=body.transactionHash, amount=body.amount, fee=body.fee,
+            inputs=body.inputs, outputs=body.outputs
+        ).generate_text(status="CREATE" if body.status == 1 else "ERROR")
+        # Get message in transaction repository
         message_id = message_repository.get_message(
-            chat_id=body.chatID,
-            transaction_hash=body.transactionHash,
-            network=body.network
+            chat_id=body.chatID, transaction_hash=body.transactionHash, network=body.network
         ).get("message_id")
+        # If message not in repository, that send to new transaction message to main bot
         if message_id is None:
             return await Sender.send_to_bot_by_chat_id(
                 chat_id=body.chatID,
                 token=WorkerTransaction.BOT_MAIN,
-                text=text
+                text=message
             )
+        # Else message has in repository, that update transaction message in main bot
         return await Sender.update_message_by_message_id(
-            text=text,
-            token=token,
-            chat_id=body.chatID,
-            message_id=message_id
+            text=message, token=body.network.split("-")[1], chat_id=body.chatID, message_id=message_id
         )
 
     @staticmethod
     async def send_text(body: BodyTransaction) -> bool:
-        """Transaction sending message"""
-        network, token = body.network.split('-')
-        url = CoinsURL.get_blockchain_url_by_network(network) + f"/#/transaction/{body.transactionHash}"
-        text = (
-            f"{Symbol.ADD} The transaction on <b>{network}</b> network has been sent!\n"
-            f"The sender/s: <b>{body.fromAddress}</b>\n"
-            f"The Recipient/s: <b>{body.toAddress}</b>\n"
-            f"For the amount of: <b>{body.amount} {body.network}</b>\n"
-            f"Commission: <b>{body.fee} {CoinsURL.get_native_by_network(network)}</b>\n"
-            f"                                          <b><a href='{url}'>Check transaction:</a></b>\n"
-        )
+        """Sent transaction"""
+        # Create and send message to main bot
+        message = MessageTransaction(
+            network=body.network, transaction_hash=body.transactionHash, amount=body.amount, fee=body.fee,
+            inputs=body.inputs, outputs=body.outputs
+        ).generate_text(status="SENT")
+        # Get message in transaction repository
         message_id = message_repository.get_message(
-            chat_id=body.chatID,
-            transaction_hash=body.transactionHash,
-            network=body.network
+            chat_id=body.chatID, transaction_hash=body.transactionHash, network=body.network
         ).get("message_id")
+        # If message not in repository, that send to new transaction message to main bot
         if message_id is None:
             return await Sender.send_to_bot_by_chat_id(
-                chat_id=body.chatID,
-                token=WorkerTransaction.BOT_MAIN,
-                text=text
+                chat_id=body.chatID, token=WorkerTransaction.BOT_MAIN, text=message
             )
+        # If message has in repository, that delete message in repository!
         message_repository.del_message(
             chat_id=body.chatID,
             transaction_hash=body.transactionHash,
             network=body.network
         )
+        # Send message to main bot
         return await Sender.update_message_by_message_id(
-            text=text,
-            token=token,
-            chat_id=body.chatID,
-            message_id=message_id
+            text=message, token=body.network.split("-")[1], chat_id=body.chatID, message_id=message_id
         )

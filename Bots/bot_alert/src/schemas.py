@@ -1,7 +1,8 @@
-from typing import Optional, List, Dict
+import decimal
+from typing import Optional, List, Dict, Union
 
 from pydantic import BaseModel, Field
-from src.types import TGMessage, TGChatID, CryptoAddress
+from src.utils.types import TGMessage, TGChatID, CryptoAddress, FullNetwork
 
 # <<<=================================>>> User endpoint <<<==========================================================>>>
 
@@ -60,13 +61,13 @@ class ResponseCheckerMethod(BaseModel):
 # <<< Body >>>
 
 class BodyTransaction(BaseModel):
-    chatID: int = Field(description="ID of the user")
+    chatID: TGChatID = Field(description="ID of the user")
     transactionHash: str = Field(description="Transaction hash")
     inputs: List[Dict[CryptoAddress, float]] = Field(description="Sender's wallet address")
     outputs: List[Dict[CryptoAddress, float]] = Field(description="Recipient's wallet address")
-    amount: str = Field(description="Amount")
-    fee: str = Field(description="Fee")
-    network: str = Field(description="The network and the token '{network}-{token}' in which the transaction occurred.")
+    amount: Union[str, decimal.Decimal, float] = Field(description="Amount")
+    fee: Union[str, decimal.Decimal, float] = Field(description="Fee")
+    network: FullNetwork = Field(description="The network and the token '{network}-{token}' in which the transaction occurred.")
     status: int = Field(description=(
         "There are 4 types of transaction statuses. 0 - created in api, "
         "1 - created in balancer, 2 - successfully sent, 3 - an error occurred."
