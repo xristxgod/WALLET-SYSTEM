@@ -46,13 +46,13 @@ class Utils:
                 if _amount - amount_for_one < 0:
                     return_data.append({
                         "address": address,
-                        "amount": _amount
+                        "amount": float(_amount)
                     })
                 else:
                     _amount -= amount_for_one
                     return_data.append({
                         "address": address,
-                        "amount": amount_for_one
+                        "amount": float(amount_for_one)
                     })
         return return_data
 

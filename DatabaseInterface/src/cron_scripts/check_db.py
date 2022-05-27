@@ -1,7 +1,7 @@
 import asyncio
 from typing import Dict
 
-from cron_scripts.__init__ import DB
+from src.cron_scripts import DB
 from api.utils.utils import Utils
 from api.services.__init__ import transaction_repository
 from config import logger

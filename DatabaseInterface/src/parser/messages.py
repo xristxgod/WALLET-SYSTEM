@@ -1,11 +1,4 @@
-class JSONMessage:
-
-    def __init__(self, **kwargs):
-        pass
-
-    @property
-    def generate_text(self) -> str:
-        return "text"
+from src.parser.__init__ import JSONMessage
 
 class JSONError(JSONMessage):
     def __init__(self, error: Exception, func: str, chat_id: int, **kwargs):

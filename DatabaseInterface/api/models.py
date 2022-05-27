@@ -83,7 +83,7 @@ class TransactionModel(models.Model):
     outputs = models.JSONField(null=True, blank=True)
     token: TokenModel = models.ForeignKey(
         'TokenModel', on_delete=models.CASCADE,
-        db_column="token", default=None, null=True, blank=True
+        db_column="token", null=True, blank=True
     )
     status: TransactionStatusModel = models.ForeignKey(
         'TransactionStatusModel', on_delete=models.CASCADE, db_column="status"
