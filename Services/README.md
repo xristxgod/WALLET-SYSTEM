@@ -8,16 +8,3 @@ Working with auxiliary services
 ---
 > `Services/balancer` - The service creates\send transactions on crypto nodes
 ---
-
-```shell
->> START:
-docker-compose --file Services/services-docker-compose.yml up --build
->> STOP:
-docker-compose --file Services/services-docker-compose.yml stop
-
->> Or you can run a bash script: 
->> START:
-bash Services/run.sh
->> STOP:
-bash Services/stop.sh
-```

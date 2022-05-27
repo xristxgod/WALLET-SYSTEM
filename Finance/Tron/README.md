@@ -8,16 +8,3 @@ The Tron network
 
 > `Finance/Tron/demon/` - The daemon for continuous operation and tracking user transactions on the `TRON` network.
 > When detected, it sends it to RabbitMQ for further work. Works endlessly.
-
-```shell
->> START:
-docker-compose --file ./Finance/Tron/tron-system-docker-compose.yml up --build
->> STOP:
-docker-compose --file ./Finance/Tron/tron-system-docker-compose.yml stop
-
->> Or you can run a bash script: 
->> START:
-bash ./Finance/Tron/run.sh
->> STOP:
-bash ./Finance/Tron/stop.sh
-```
