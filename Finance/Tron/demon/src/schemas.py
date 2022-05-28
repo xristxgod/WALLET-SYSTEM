@@ -36,7 +36,6 @@ class BodyTransaction(BaseModel):
         if self.data is None:
             del self.data
 
-
 class BodyMessage(BaseModel):
     address: TAddress = Field(description="The sender's wallet address.")
     transactions: List[BodyTransaction] = Field(description="The transactions for send")
