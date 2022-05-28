@@ -2,5 +2,5 @@ class Message:
     def __init__(self, **kwargs):
         pass
 
-    def generate_text(self, **kwargs) -> str:
-        return ""
+    def generate_text(self, **kwargs):
+        raise NotImplementedError

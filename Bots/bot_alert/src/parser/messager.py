@@ -1,5 +1,3 @@
-import decimal
-
 from src.parser.__init__ import Message
 from src.utils.types import CoinsURL, Symbol, FullNetwork
 from src.utils.utils import Utils
@@ -31,4 +29,19 @@ class MessageTransaction(Message):
             f"Transaction amount: <b>{self.amount}</b>\n"
             f"Commission: <b>{self.fee}</b>\n"
             f"                                          <b><a href='{self.url}'>Check transaction:</a></b>\n"
+        )
+
+class MessageChecker(Message):
+    GOOD = f"{Symbol.ADD} Good news:\n"
+    BAD = f"{Symbol.DEC} Bad news:\n"
+    INFO = f"{Symbol.ADD} Info:\n"
+
+    def __init__(self, text: str, **data):
+        super(Message, self).__init__(**data)
+        self.text = text
+
+    def generate_text(self, status: str = "GOOD"):
+        return (
+            f"{MessageChecker.__dict__.get(status)}"
+            f"{self.text}"
         )

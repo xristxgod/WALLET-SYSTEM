@@ -1,5 +1,5 @@
 from src.__init__ import message_repository
-from src.parser.messager import MessageTransaction
+from src.parser.messager import MessageTransaction, MessageChecker
 from src.schemas import BodyRegUser, BodyBalance, BodyInfo
 from src.schemas import BodyNews
 from src.schemas import BodyTransaction
@@ -79,26 +79,22 @@ class WorkerUser:
             )
 
 class WorkerChecker:
+    """This class generate checker message"""
     BOT_CHECKER: TGToken = Config.BOT_CHECKER_TOKEN
 
     @staticmethod
     async def news_text(body: BodyNews, is_good: bool = False) -> bool:
         """Sends a message to the bot with the system status"""
-        if is_good:
-            text = f"{Symbol.ADD} Good news:\n"
-        else:
-            text = f"{Symbol.DEC} Bad news:\n"
-
-        text += body.message
         return await Sender.send_to_bot_by_admin(
-            text=text,
+            text=MessageChecker(text=body.message).generate_text(status="GOOD" if is_good else "BAD"),
             token=WorkerChecker.BOT_CHECKER
         )
 
     @staticmethod
     async def info_text(body: BodyNews) -> bool:
+        """Send info to the bot with the system status"""
         return await Sender.send_to_bot_by_admin(
-            text=f"{Symbol.ADD} {body.message}",
+            text=MessageChecker(text=body.message).generate_text(status="INFO"),
             token=WorkerChecker.BOT_CHECKER
         )
 
