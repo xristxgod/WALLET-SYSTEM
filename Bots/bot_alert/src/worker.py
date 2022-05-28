@@ -1,10 +1,10 @@
 from src.__init__ import message_repository
-from src.parser.messager import MessageTransaction, MessageChecker
+from src.parser.messager import MessageTransaction, MessageChecker, MessageUser
 from src.schemas import BodyRegUser, BodyBalance, BodyInfo
 from src.schemas import BodyNews
 from src.schemas import BodyTransaction
 from src.sender import Sender
-from src.utils.types import Symbol, CoinsURL, TGToken
+from src.utils.types import TGToken
 from src.utils.utils import Utils
 from config import Config
 
@@ -16,33 +16,20 @@ class WorkerUser:
     @staticmethod
     async def reg_user_text(body: BodyRegUser) -> bool:
         """Message at registration"""
-        if body.isAdmin:
-            text = f"{Symbol.ADMIN} New admin!\n"
-        else:
-            text = f"{Symbol.REG} New user!\n"
-        text += (
-            f"ChatID: {body.chatID}\n"
-            f"Username: {body.username}"
-        )
         return await Sender.send_to_bot_by_admin(
-            text=text,
+            text=MessageUser(chat_id=body.chatID, username=body.username).generate_text(
+                status="REG_ADMIN" if body.isAdmin else "REG_USER"
+            ),
             token=WorkerUser.BOT_ALERT
         )
 
     @staticmethod
     async def balance_text(body: BodyBalance, is_add: bool = False) -> bool:
         """Message at the deposit/debit"""
-        network, token = body.network.split('-')
-        if is_add:
-            text = f"{Symbol.ADD} There was a replenishment: {body.amount} {body.network}\n"
-        else:
-            text = f"{Symbol.DEC} Funds were debited: {body.amount} {body.network}\n"
-        url = CoinsURL.get_blockchain_url_by_network(network) + f'/#/transaction/{body.transactionHash}'
-        text += (
-            f"ChatID: {body.chatID}\n"
-            f"Username: {body.username}",
-            f"<b><a href='{url}'>Check transaction:</a></b>\n"
-        )
+        text = MessageUser(
+            chat_id=body.chatID, username=body.username, amount=body.amount, network=body.network,
+            transaction_hash=body.transactionHash
+        ).generate_text(status="ADD" if is_add else "DEC")
         return (await Sender.send_to_bot_by_admin(
             text=text,
             token=WorkerUser.BOT_ALERT
@@ -55,15 +42,8 @@ class WorkerUser:
     @staticmethod
     async def info_text(body: BodyInfo) -> bool:
         """Message at the information"""
-        text = (
-            f"{Symbol.INFO} Urgent information!\n"
-            f"{body.message}"
-        )
-        if body.toMain:
-            token = WorkerUser.BOT_MAIN
-        else:
-            token = WorkerUser.BOT_ALERT
-
+        text = MessageUser(text=body.message).generate_text(status="INFO")
+        token = WorkerUser.BOT_MAIN if body.toMain else WorkerUser.BOT_ALERT
         if body.chatIDs is not None:
             for chat_id in body.chatIDs:
                 await Sender.send_to_bot_by_chat_id(

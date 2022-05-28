@@ -1,5 +1,5 @@
 from typing import List, Tuple, Dict
-from src.utils.types import CryptoAddress, Network
+from src.utils.types import CoinsURL, CryptoAddress, Network
 
 class Utils:
 
@@ -22,3 +22,10 @@ class Utils:
         for _output in outputs:
             to_addresses += f"<b>{_output.get('address')} == {_output.get('amount')} {network}</b>\n"
         return from_addresses, to_addresses
+
+    @staticmethod
+    def get_blockchain_url(network: Network, transaction_hash: str) -> str:
+        try:
+            return CoinsURL.get_blockchain_url_by_network(network) + f"/#/transaction/{transaction_hash}"
+        except Exception:
+            return None

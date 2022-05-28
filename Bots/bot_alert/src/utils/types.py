@@ -29,9 +29,9 @@ class CoinsURL(object):
     TRON = {"url": Config.TRON_BLOCKCHAIN, "native": "TRX"}
 
     @staticmethod
-    def get_blockchain_url_by_network(network: str) -> str:
-        return CoinsURL.__dict__.get(network)["url"]
+    def get_blockchain_url_by_network(network: Network) -> str:
+        return CoinsURL.__dict__.get(network.upper())["url"]
 
     @staticmethod
-    def get_native_by_network(network: str) -> str:
+    def get_native_by_network(network: Network) -> str:
         return CoinsURL.__dict__.get(network.upper())["native"]
