@@ -2,7 +2,7 @@ from typing import Dict, List
 
 from src.__init__ import DB
 from src.utils.utils import Utils
-from src.sender import Sender
+from src.services.sender import Sender
 
 class Parser:
     """This class is used to unpack the transaction and send it to the bot"""
