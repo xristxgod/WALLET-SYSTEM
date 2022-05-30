@@ -11,7 +11,6 @@ from src.__init__ import RabbitMQ, observer
 from worker.celery_app import celery_app
 from config import NOT_SEND, Config, logger
 
-
 async def processing_message(message: aio_pika.Message) -> Optional:
     """
     Decrypt the message from the queue and send it for forwarding.

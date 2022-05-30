@@ -146,5 +146,4 @@ class Observer:
                 self._addresses.update({address: [self._addresses[address][0] + timedelta(seconds=60 - seconds), data]})
                 return False, 60 - seconds
 
-
 observer = Observer()

@@ -1,7 +1,7 @@
 from typing import Dict, List
 
 from src.__init__ import DB
-from src.utils import Utils
+from src.utils.utils import Utils
 from src.sender import Sender
 
 class Parser:
