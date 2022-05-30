@@ -1,6 +1,4 @@
 from django.contrib import admin
-from django.contrib import messages
-from django.utils.translation import ngettext
 
 from api.models import (
     UserModel, TokenModel, NetworkModel, WalletModel,
@@ -14,16 +12,16 @@ class UserModelAdmin(admin.ModelAdmin):
     list_filter = ("id", "username", "is_admin")
 
 class TokenModelAdmin(admin.ModelAdmin):
-    list_display = ("id", "network", "token")
-    list_display_links = ("id", "network", "token")
-    search_fields = ("id", "network", "token")
-    list_filter = ("id", "network", "token")
+    list_display = ("network", "token")
+    list_display_links = ("network", "token")
+    search_fields = ("network", "token")
+    list_filter = ("network", "token")
 
 class NetworkModelAdmin(admin.ModelAdmin):
-    list_display = ("id", "network")
-    list_display_links = ("id", "network")
-    search_fields = ("id", "network")
-    list_filter = ("id", "network")
+    list_display = ("network",)
+    list_display_links = ("network",)
+    search_fields = ("network",)
+    list_filter = ("network",)
 
 class WalletModelAdmin(admin.ModelAdmin):
     list_display = ("id", "network", "address", "user_id")
@@ -32,10 +30,10 @@ class WalletModelAdmin(admin.ModelAdmin):
     list_filter = ("id", "network", "user_id")
 
 class TransactionStatusModelAdmin(admin.ModelAdmin):
-    list_display = ("id", "title", "status_number")
-    list_display_links = ("id", "title", "status_number")
-    search_fields = ("id", "title", "status_number")
-    list_filter = ("id", "title", "status_number")
+    list_display = ("id", "title")
+    list_display_links = ("id", "title")
+    search_fields = ("id", "title")
+    list_filter = ("id", "title")
 
 class TransactionModelAdmin(admin.ModelAdmin):
     list_display = ("id", "network", "token", "transaction_hash", "amount", "status", "user_id")
@@ -44,10 +42,10 @@ class TransactionModelAdmin(admin.ModelAdmin):
     list_filter = ("id", "network", "token", "user_id", "status")
 
 class BalanceModelAdmin(admin.ModelAdmin):
-    list_display = ("id", "balance", "user_id", "network", "token")
-    list_display_links = ("id", "balance", "user_id", "network", "token")
-    search_fields = ("id", "balance", "user_id", "network", "token")
-    list_filter = ("id", "balance", "user_id", "network", "token")
+    list_display = ("balance", "user_id", "network", "token")
+    list_display_links = ("balance", "user_id", "network", "token")
+    search_fields = ("balance", "user_id", "network", "token")
+    list_filter = ("balance", "user_id", "network", "token")
 
 admin.site.register(UserModel, UserModelAdmin)
 admin.site.register(TokenModel, TokenModelAdmin)
