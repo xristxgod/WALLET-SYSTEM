@@ -26,6 +26,7 @@ class NetworkModel(models.Model):
 
     def save(self, *args, **kwargs):
         self.network = self.network.upper()
+        self.url = self.url[:-1] if self.url is not None and (self.url[-1] == "/") else self.url
         super(self).save(*args, **kwargs)
 
     def __str__(self):
