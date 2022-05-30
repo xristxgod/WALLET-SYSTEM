@@ -10,9 +10,9 @@ from config import NOT_SEND
 class Utils:
 
     @staticmethod
-    def is_address(address: str, data: List[Dict]) -> bool:
+    def is_address(address: str, data: List[BodyParticipant]) -> bool:
         for d in data:
-            if d.get("address") == address:
+            if d.address == address:
                 return True
         else:
             return False

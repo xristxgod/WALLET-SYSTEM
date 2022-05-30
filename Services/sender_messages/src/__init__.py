@@ -6,6 +6,7 @@ import aio_pika
 import asyncpg
 
 from src.utils.utils import Utils
+from src.utils.types import NETWORK, CryptAddress, TGChatID
 from config import Config, logger
 
 lock = asyncio.Lock()
@@ -37,16 +38,25 @@ class DB:
                 await connection.close()
 
     @staticmethod
-    async def get_user_id_by_wallet_address(address: str, network: str) -> Optional[int]:
+    async def get_user_id_by_wallet_address(address: CryptAddress, network: NETWORK) -> Optional[int]:
         data = await DB.__select_method(
-            sql="SELECT user_id FROM wallet_model WHERE address = $1 AND network = $2;",
+            sql="SELECT user_id FROM wallet_model WHERE address = $1 AND "
+                "network = (SELECT id FROM network_model WHERE network = $2;);",
             data=(address, network.upper()))
         return data[0] if data == 1 else None
 
     @staticmethod
-    async def get_transaction_status(tx_hash: str, network: str) -> Optional[bool]:
+    async def get_network_id(network: NETWORK) -> int:
+        return (await DB.__select_method(
+            sql="SELECT id FROM network_model WHERE network = $1",
+            data=(network,)
+        ))[0]
+
+    @staticmethod
+    async def get_transaction_status(tx_hash: str, network: NETWORK) -> Optional[bool]:
         data = await DB.__select_method(
-            sql="SELECT status FROM transaction_model WHERE transaction_hash = $1 AND network = $2;",
+            sql="SELECT status FROM transaction_model WHERE transaction_hash = $1 AND "
+                "network = (SELECT id FROM network_model WHERE network = $2;);",
             data=(tx_hash, network.upper())
         )
         return data[0] if data == 1 else None
@@ -57,19 +67,19 @@ class DB:
         return await DB.__insert_method(
             sql=(
                 "INSERT INTO transaction_model "
-                "(network, time, transaction_hash, fee, amount, senders, recipients, token, status, user_id)"
+                "(network, time, transaction_hash, fee, amount, inputs, outputs, token, status, user_id)"
                 "VALUES"
                 "($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);"
             ),
             data=(
-                data.get("network"), data.get("time"), data.get("transaction_hash"), data.get("fee"),
-                data.get("amount"), data.get("senders"), data.get("recipients"), data.get("token"),
+                await DB.get_network_id(data.get("network")), data.get("time"), data.get("transaction_hash"),
+                data.get("fee"), data.get("amount"), data.get("inputs"), data.get("outputs"), data.get("token"),
                 data.get("status"), data.get("user_id")
             )
         )
 
     @staticmethod
-    async def update_transaction(tx_hash: str, network: str, user_id: int, status: int = 2) -> bool:
+    async def update_transaction(tx_hash: str, network: NETWORK, user_id: TGChatID, status: int = 2) -> bool:
         """Update the transaction status"""
         return await DB.__insert_method(
             sql=(
@@ -77,7 +87,7 @@ class DB:
                 "SET status = $1 "
                 "WHERE transaction_hash = $2 AND network = $3 AND user_id = $4;"
             ),
-            data=(status, tx_hash, network, user_id)
+            data=(status, tx_hash, await DB.get_network_id(network), user_id)
         )
 
     @staticmethod

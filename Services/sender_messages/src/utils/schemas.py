@@ -46,3 +46,12 @@ class BodyApiTransaction(BaseModel):
     fee: float = Field(description="Transaction fee")
     amount: float = Field(description="Transaction amount")
     status: int = Field(description="Transaction status", default=2)
+    method: str = Field(description="Method for sender", default="send")
+
+class ReturnedData(BaseModel):
+    forApiBalance: Optional[List[BodyApiBalance]] = Field(
+        description="Messages to send to the bot about the fullness / withdrawal of the balance", default=[]
+    )
+    forApiTransaction: Optional[List[BodyApiTransaction]] = Field(
+        description="Messages to send to the bot about the transaction status change!", default=[]
+    )
