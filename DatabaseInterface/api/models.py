@@ -7,6 +7,11 @@ class UserModel(models.Model):
     username = models.CharField(max_length=255, blank=True, null=True)
     is_admin = models.BooleanField(blank=True, null=True, default=False)
 
+    def save(self, *args, **kwargs):
+        if self.username.find("@") == -1:
+            self.username = f"@{self.username}"
+        super(self).save(*args, **kwargs)
+
     def __str__(self):
         return self.username
 
@@ -16,7 +21,12 @@ class UserModel(models.Model):
         db_table = 'user_model'
 
 class NetworkModel(models.Model):
-    network = models.CharField(max_length=255, null=False, unique=True)
+    network = models.CharField(primary_key=True, max_length=255, null=False, unique=True)
+    url = models.CharField(max_length=255, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        self.network = self.network.upper()
+        super(self).save(*args, **kwargs)
 
     def __str__(self):
         return self.network
@@ -27,8 +37,8 @@ class NetworkModel(models.Model):
         db_table = 'network_model'
 
 class TokenModel(models.Model):
+    token = models.CharField(primary_key=True, max_length=255, null=False)
     network: NetworkModel = models.ForeignKey('NetworkModel', on_delete=models.CASCADE, db_column="network")
-    token = models.CharField(max_length=255, null=False)
     decimals = models.IntegerField()
     address = models.CharField(max_length=255, null=False, unique=True)
     token_info = models.JSONField(null=True, blank=True)
@@ -42,12 +52,12 @@ class TokenModel(models.Model):
         db_table = 'token_model'
 
 class WalletModel(models.Model):
-    network: NetworkModel = models.ForeignKey('NetworkModel', on_delete=models.CASCADE, db_column="network")
     address = models.CharField(max_length=255, null=False, unique=True)
     private_key = models.CharField(max_length=255, null=False, unique=True)
     public_key = models.CharField(max_length=255, null=True, blank=True, unique=True)
     passphrase = models.CharField(max_length=255, null=True, blank=True)
     mnemonic_phrase = models.CharField(max_length=255, null=True, blank=True, unique=True)
+    network: NetworkModel = models.ForeignKey('NetworkModel', on_delete=models.CASCADE, db_column="network")
     user_id: UserModel = models.ForeignKey('UserModel', on_delete=models.CASCADE, db_column="user_id")
 
     def __str__(self):
@@ -61,7 +71,6 @@ class WalletModel(models.Model):
 class TransactionStatusModel(models.Model):
     id = models.IntegerField(primary_key=True, unique=True)
     title = models.CharField(max_length=255, null=False)
-    status_number = models.IntegerField(unique=True)
     description = models.TextField(null=True, blank=True)
 
     def __str__(self):
@@ -73,13 +82,13 @@ class TransactionStatusModel(models.Model):
         db_table = 'transaction_status_model'
 
 class TransactionModel(models.Model):
-    network: NetworkModel = models.ForeignKey('NetworkModel', on_delete=models.CASCADE, db_column="network")
     time = models.IntegerField()
     transaction_hash = models.CharField(max_length=255, unique=True, default="-")
     fee = models.DecimalField(default=0, decimal_places=6, max_digits=18)
     amount = models.DecimalField(default=0, decimal_places=6, max_digits=18)
     inputs = models.JSONField(null=True, blank=True)
     outputs = models.JSONField(null=True, blank=True)
+    network: NetworkModel = models.ForeignKey('NetworkModel', on_delete=models.CASCADE, db_column="network")
     token: TokenModel = models.ForeignKey(
         'TokenModel', on_delete=models.CASCADE,
         db_column="token", null=True, blank=True
@@ -90,7 +99,7 @@ class TransactionModel(models.Model):
     user_id: UserModel = models.ForeignKey('UserModel', on_delete=models.CASCADE, db_column="user_id")
 
     def save(self, *args, **kwargs):
-        if self.token is not None and self.token.network == self.network.network:
+        if self.token is not None and (self.token.network == self.network.network):
             super(self).save(*args, **kwargs)
 
     def __str__(self):
@@ -120,7 +129,8 @@ class BalanceModel(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        if self.token is not None and (self.network.network == self.token.token) and (self.user_id.id == self.wallet.user_id.id):
+        if self.token is not None and (self.network.network == self.token.token) and \
+                (self.user_id.id == self.wallet.user_id.id):
             super(self).save(*args, **kwargs)
 
     def __str__(self):
