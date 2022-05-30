@@ -1,6 +1,11 @@
 from django.contrib import admin
+from django.contrib import messages
+from django.utils.translation import ngettext
 
-from api.models import UserModel, TokenModel, NetworkModel, WalletModel, TransactionStatusModel, TransactionModel
+from api.models import (
+    UserModel, TokenModel, NetworkModel, WalletModel,
+    TransactionStatusModel, TransactionModel, BalanceModel
+)
 
 class UserModelAdmin(admin.ModelAdmin):
     list_display = ("id", "username", "is_admin")
@@ -21,8 +26,8 @@ class NetworkModelAdmin(admin.ModelAdmin):
     list_filter = ("id", "network")
 
 class WalletModelAdmin(admin.ModelAdmin):
-    list_display = ("id", "network", "address", "user_id", "last_balance")
-    list_display_links = ("id", "network", "address", "user_id", "last_balance")
+    list_display = ("id", "network", "address", "user_id")
+    list_display_links = ("id", "network", "address", "user_id")
     search_fields = ("id", "network", "user_id")
     list_filter = ("id", "network", "user_id")
 
@@ -38,9 +43,16 @@ class TransactionModelAdmin(admin.ModelAdmin):
     search_fields = ("id", "network", "token", "user_id", "status")
     list_filter = ("id", "network", "token", "user_id", "status")
 
+class BalanceModelAdmin(admin.ModelAdmin):
+    list_display = ("id", "balance", "user_id", "network", "token")
+    list_display_links = ("id", "balance", "user_id", "network", "token")
+    search_fields = ("id", "balance", "user_id", "network", "token")
+    list_filter = ("id", "balance", "user_id", "network", "token")
+
 admin.site.register(UserModel, UserModelAdmin)
 admin.site.register(TokenModel, TokenModelAdmin)
 admin.site.register(NetworkModel, NetworkModelAdmin)
 admin.site.register(WalletModel, WalletModelAdmin)
 admin.site.register(TransactionStatusModel, TransactionStatusModelAdmin)
 admin.site.register(TransactionModel, TransactionModelAdmin)
+admin.site.register(BalanceModel, BalanceModelAdmin)

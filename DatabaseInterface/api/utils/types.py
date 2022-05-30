@@ -28,5 +28,5 @@ class CoinsHelper(object):
     TRON = "TRX"
 
     @staticmethod
-    def get_native_by_network(network: str) -> str:
+    def get_native_by_network(network: NETWORK) -> str:
         return CoinsHelper.__dict__.get(network.upper())

@@ -1,6 +1,6 @@
 from django.db import models
 
-from config import decimals
+from api.utils.types import CoinsHelper
 
 class UserModel(models.Model):
     id = models.IntegerField(primary_key=True, unique=True)
@@ -48,7 +48,6 @@ class WalletModel(models.Model):
     public_key = models.CharField(max_length=255, null=True, blank=True, unique=True)
     passphrase = models.CharField(max_length=255, null=True, blank=True)
     mnemonic_phrase = models.CharField(max_length=255, null=True, blank=True, unique=True)
-    last_balance = models.DecimalField(default=decimals.create_decimal(0), decimal_places=6, max_digits=18)
     user_id: UserModel = models.ForeignKey('UserModel', on_delete=models.CASCADE, db_column="user_id")
 
     def __str__(self):
@@ -90,10 +89,44 @@ class TransactionModel(models.Model):
     )
     user_id: UserModel = models.ForeignKey('UserModel', on_delete=models.CASCADE, db_column="user_id")
 
+    def save(self, *args, **kwargs):
+        if self.token is not None and self.token.network == self.network.network:
+            super(self).save(*args, **kwargs)
+
     def __str__(self):
-        return f"{self.network.network}-{self.token.token} | {self.user_id.username}"
+        token = self.token.token if self.token is not None else CoinsHelper.get_native_by_network(
+            network=self.network.network
+        )
+        return f"{self.network.network}-{token} | {self.user_id.username}"
 
     class Meta:
         verbose_name = 'Transaction'
         verbose_name_plural = 'Transactions'
         db_table = 'transaction_model'
+
+class BalanceModel(models.Model):
+    balance = models.DecimalField(default=0, decimal_places=6, max_digits=18)
+    wallet: WalletModel = models.ForeignKey(
+        'WalletModel', on_delete=models.CASCADE, db_column="wallet"
+    )
+    token: TokenModel = models.ForeignKey(
+        'TokenModel', on_delete=models.CASCADE, db_column="token", null=True, blank=True
+    )
+    network: NetworkModel = models.ForeignKey(
+        'NetworkModel', on_delete=models.CASCADE, db_column="network"
+    )
+    user_id: UserModel = models.ForeignKey(
+        'UserModel', on_delete=models.CASCADE, db_column="user_id"
+    )
+
+    def save(self, *args, **kwargs):
+        if self.token is not None and (self.network.network == self.token.token) and (self.user_id.id == self.wallet.user_id.id):
+            super(self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.user_id.username} | {self.network.network}-{self.token.token}"
+
+    class Meta:
+        verbose_name = 'Balance'
+        verbose_name_plural = 'Balances'
+        db_table = 'balance_model'

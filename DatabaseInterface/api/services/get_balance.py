@@ -122,21 +122,10 @@ class GetBalance(BaseApiModel):
                 jwt_token=JWT_TOKENS_BEARER.get(body.network)
             ),
         )
+        balance = 0
         if data.get("balance") is not None:
             balance = data.get("balance")
-            wallet_object = WalletModel.objects.get(
-                network=NetworkModel.objects.get(network=network.split("-")[0]),
-                user_id=UserModel.objects.get(pk=body.chatID),
-                address=body.address
-            )
-            wallet_object.last_balance = balance
-            wallet_object.save()
 
-        balance = WalletModel.objects.get(
-            network=NetworkModel.objects.get(network=network.split("-")[0]),
-            user_id=UserModel.objects.get(pk=body.chatID),
-            address=body.address
-        ).last_balance
         if body.convert is not None:
             convert = GetBalance.get_convert(balance=balance, network=body.network, toConvert=body.convert)
         else:
