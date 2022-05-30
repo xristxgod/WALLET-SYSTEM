@@ -1,13 +1,21 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from src.__init__ import DB
 from src.utils.utils import Utils
+from src.utils.types import NETWORK, TGChatID, CryptAddress
+from src.utils.schemas import HeadMessage, BodyMessage, BodyTransaction
 from src.services.sender import Sender
 
 class Parser:
     """This class is used to unpack the transaction and send it to the bot"""
     @staticmethod
-    async def processing_transaction(txs_data: List[Dict], network: str, token: str, user_id: int, address: str) -> Dict:
+    async def processing_transaction(
+            txs_data: List[BodyTransaction],
+            network: NETWORK,
+            token: str,
+            user_id: TGChatID,
+            address: CryptAddress
+    ) -> Dict:
         """
         Packaging of the transaction
         :param txs_data: Transactions data
@@ -65,16 +73,16 @@ class Parser:
         return returned_data
 
     @staticmethod
-    async def processing_message(data: List[Dict]) -> None:
+    async def processing_message(data: Tuple[HeadMessage, BodyMessage]) -> None:
         """
         Unpacking a message
         :param data: Data from the message
         """
-        network, token = data[0].get("network").split("-")
-        transaction_info: Dict = data[1]
-        from_address = transaction_info.get("address")
+        network, token = data[0].network.split("-")
+        transaction_info: BodyMessage = data[1]
+        from_address = transaction_info.address
         transactions_for_send: Dict = await Parser.processing_transaction(
-            txs_data=transaction_info.get("transactions"), token=token, network=network, address=from_address,
+            txs_data=transaction_info.transactions, token=token, network=network, address=from_address,
             user_id=(await DB.get_user_id_by_wallet_address(address=from_address, network=network))
         )
         if len(transactions_for_send.get("forApiBalanceAddOrDec")) > 0:

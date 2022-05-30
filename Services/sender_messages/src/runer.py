@@ -26,7 +26,7 @@ async def processing_message(message: aio_pika.Message) -> Optional:
         celery_app.send_task("worker.celery_worker.parser_message", args=[msg], **extra)
     except Exception as error:
         # Resend method
-        logger.error("ERROR: error")
+        logger.error(f"ERROR: {error}")
         await RabbitMQ.resend_message(message=message)
 
 async def run(loop) -> Optional:
