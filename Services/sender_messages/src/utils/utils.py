@@ -33,4 +33,42 @@ class Utils:
 
     @staticmethod
     async def message_packaging(message: List[Dict]) -> Tuple[HeadMessage, BodyMessage]:
-        pass
+        head: Optional[HeadMessage] = None
+        body: Optional[BodyMessage] = None
+        for msg in message:
+            if msg.get("network") is not None:
+                head = HeadMessage(
+                    network=msg.get("network"),
+                    block=int(msg.get("block"))
+                )
+            else:
+                body = BodyMessage(
+                    address=msg.get("address"),
+                    transactions=await Utils.__get_transactions(msg.get("transactions"))
+                )
+        return head, body
+
+    @staticmethod
+    async def __get_transactions(transactions: List[Dict]) -> List[BodyTransaction]:
+        transactions_list: List[BodyTransaction] = []
+        for transaction in transactions:
+            transactions_list.append(BodyTransaction(
+                time=transaction.get("time"),
+                transactionHash=transaction.get("transactionHash"),
+                fee=float(transaction.get("fee")),
+                amount=float(transaction.get("amount")),
+                inputs=await Utils.__get_participants(transaction.get("inputs")),
+                outputs=await Utils.__get_participants(transaction.get("outputs")),
+                token=transaction.get("token"),
+            ))
+        return transactions_list
+
+    @staticmethod
+    async def __get_participants(participants: List[Dict]) -> List[BodyParticipant]:
+        participants_list: List[BodyParticipant] = []
+        for participant in participants:
+            participants_list.append(BodyParticipant(
+                address=participant.get("address"),
+                amount=float(participant.get("amount")),
+            ))
+        return participants_list
