@@ -1,7 +1,7 @@
 import asyncio
 import typing
 
-from src.services.runer import run
+from src.runer import run
 
 async def main(loop: typing.Any):
     await asyncio.gather(*[

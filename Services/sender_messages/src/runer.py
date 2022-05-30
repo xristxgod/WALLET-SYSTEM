@@ -7,7 +7,6 @@ import aio_pika
 import aiofiles
 
 from src.__init__ import RabbitMQ, observer
-
 from worker.celery_app import celery_app
 from config import NOT_SEND, Config, logger
 
