@@ -5,7 +5,7 @@ from typing import Union, Optional, List, Tuple, Dict
 import aio_pika
 import asyncpg
 
-from src.utils import Utils
+from src.utils.utils import Utils
 from config import Config, logger
 
 lock = asyncio.Lock()
@@ -126,7 +126,7 @@ class SenderMethod:
 class Observer:
     def __init__(self):
         self._addresses = {}
-        # self._addresses = {"WALLET_ADDRESS": data}
+        # self._addresses = {"WALLET_ADDRESS": [datetime, data]}
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

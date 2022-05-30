@@ -1,9 +1,10 @@
 import os
 import uuid
-from typing import Optional, List, Dict
+from typing import Optional, List, Tuple, Dict
 
 import aiofiles
 
+from src.utils.schemas import BodyMessage, BodyParticipant, BodyTransaction, HeadMessage
 from config import NOT_SEND
 
 class Utils:
@@ -29,3 +30,7 @@ class Utils:
         async with aiofiles.open(new_not_send_file, 'w') as file:
             # Write all the verified data to a json file, and do not praise the work
             await file.write(str(value))
+
+    @staticmethod
+    async def message_packaging(message: List[Dict]) -> Tuple[HeadMessage, BodyMessage]:
+        pass

@@ -1,12 +1,14 @@
 import os
 import json
 import asyncio
-from typing import Optional, List, Dict, Any
+from typing import Optional, Tuple
 
 import aio_pika
 import aiofiles
 
 from src.__init__ import RabbitMQ, observer
+from src.utils.schemas import BodyMessage, HeadMessage
+from src.utils.utils import Utils
 from worker.celery_app import celery_app
 from config import NOT_SEND, Config, logger
 
@@ -17,9 +19,9 @@ async def processing_message(message: aio_pika.Message) -> Optional:
     """
     try:
         async with message.process():
-            msg: List[Dict] = json.loads(message.body)
+            msg: Tuple[HeadMessage, BodyMessage] = await Utils.message_packaging(message=json.loads(message.body))
             logger.error(f"MESSAGE: {msg}")
-        can_go, wait_time = await observer.can_go(address=msg[1].get("address"), data=msg)
+        can_go, wait_time = await observer.can_go(address=msg[1].address, data=msg)
         extra = {"countdown": wait_time} if not can_go and wait_time > 5 else {}
         celery_app.send_task("worker.celery_worker.parser_message", args=[msg], **extra)
     except Exception as error:
@@ -27,7 +29,7 @@ async def processing_message(message: aio_pika.Message) -> Optional:
         logger.error("ERROR: error")
         await RabbitMQ.resend_message(message=message)
 
-async def run(loop: Any) -> Optional:
+async def run(loop) -> Optional:
     """Infinitely included script"""
     while True:
         try:
